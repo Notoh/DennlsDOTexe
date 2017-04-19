@@ -1,0 +1,27 @@
+<component name="libraryTable">
+  <library name="netty-codec-http-4.1.9.Final">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-codec-http-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-example-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-build-22.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-codec-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-handler-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-tcnative-2.0.0.Final-linux-x86_64-fedora.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-handler-proxy-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-transport-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-buffer-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-transport-rxtx-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-resolver-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-common-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-codec-http2-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-codec-memcache-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-codec-redis-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-codec-socks-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-codec-stomp-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-transport-sctp-4.1.9.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/netty-4.1.9.Final/netty-4.1.9.Final/jar/netty-transport-udt-4.1.9.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,35 @@
+<component name="libraryTable">
+  <library name="netty-all-4.0.15.Final">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/codecjorbis-20101023.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/commons-compress-1.8.1.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/jutils-1.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/vecmath-1.5.2.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/netty-1.6.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/log4j-core-2.0-beta9.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/commons-io-2.4.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/httpcore-4.3.2.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/twitch-6.5.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/httpclient-4.3.3.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/gson-2.2.4.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/commons-logging-1.1.3.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/authlib-1.5.21.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/icu4j-core-mojang-51.2.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/soundsystem-20120107.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/trove4j-3.0.3.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/commons-lang3-3.3.2.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/librarylwjglopenal-20100824.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/commons-codec-1.9.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/log4j-api-2.0-beta9.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/jopt-simple-4.6.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/lwjgl_util-2.9.1.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/jinput-2.0.5.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/realms-1.6.1.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/lwjgl-2.9.1.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/libraryjavasound-20101123.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mcp910/jars/codecwav-20101023.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

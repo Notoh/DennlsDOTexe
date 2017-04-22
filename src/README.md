@@ -1,2 +1,0 @@
-# DennlsDOTexe
-the meme

@@ -2,10 +2,9 @@ package net.minecraft.block;
 
 public class BlockYellowFlower extends BlockFlower
 {
-    /**
-     * Get the Type of this flower (Yellow/Red)
-     */
-    public BlockFlower.EnumFlowerColor getBlockType()
+    private static final String __OBFID = "CL_00002045";
+
+    public BlockFlower.EnumFlowerColor func_176495_j()
     {
         return BlockFlower.EnumFlowerColor.YELLOW;
     }

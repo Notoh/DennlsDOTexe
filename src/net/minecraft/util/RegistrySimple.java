@@ -9,25 +9,31 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class RegistrySimple<K, V> implements IRegistry<K, V>
+public class RegistrySimple implements IRegistry
 {
     private static final Logger logger = LogManager.getLogger();
-    protected final Map<K, V> registryObjects = this.createUnderlyingMap();
 
-    protected Map<K, V> createUnderlyingMap()
+    /** Objects registered on this registry. */
+    protected final Map registryObjects = this.createUnderlyingMap();
+    private static final String __OBFID = "CL_00001210";
+
+    /**
+     * Creates the Map we will use to map keys to their registered values.
+     */
+    protected Map createUnderlyingMap()
     {
-        return Maps.<K, V>newHashMap();
+        return Maps.newHashMap();
     }
 
-    public V getObject(K name)
+    public Object getObject(Object p_82594_1_)
     {
-        return this.registryObjects.get(name);
+        return this.registryObjects.get(p_82594_1_);
     }
 
     /**
      * Register an object on this registry.
      */
-    public void putObject(K p_82595_1_, V p_82595_2_)
+    public void putObject(Object p_82595_1_, Object p_82595_2_)
     {
         Validate.notNull(p_82595_1_);
         Validate.notNull(p_82595_2_);
@@ -40,20 +46,23 @@ public class RegistrySimple<K, V> implements IRegistry<K, V>
         this.registryObjects.put(p_82595_1_, p_82595_2_);
     }
 
-    public Set<K> getKeys()
+    /**
+     * Gets all the keys recognized by this registry.
+     */
+    public Set getKeys()
     {
-        return Collections.<K>unmodifiableSet(this.registryObjects.keySet());
+        return Collections.unmodifiableSet(this.registryObjects.keySet());
     }
 
     /**
      * Does this registry contain an entry for the given key?
      */
-    public boolean containsKey(K p_148741_1_)
+    public boolean containsKey(Object p_148741_1_)
     {
         return this.registryObjects.containsKey(p_148741_1_);
     }
 
-    public Iterator<V> iterator()
+    public Iterator iterator()
     {
         return this.registryObjects.values().iterator();
     }

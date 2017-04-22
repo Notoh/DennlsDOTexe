@@ -5,7 +5,6 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityWaterMob;
-import net.minecraft.entity.passive.IAnimals;
 
 public enum EnumCreatureType
 {
@@ -14,7 +13,11 @@ public enum EnumCreatureType
     AMBIENT(EntityAmbientCreature.class, 15, Material.air, true, false),
     WATER_CREATURE(EntityWaterMob.class, 5, Material.water, true, false);
 
-    private final Class <? extends IAnimals > creatureClass;
+    /**
+     * The root class of creatures associated with this EnumCreatureType (IMobs for aggressive creatures, EntityAnimals
+     * for friendly ones)
+     */
+    private final Class creatureClass;
     private final int maxNumberOfCreature;
     private final Material creatureMaterial;
 
@@ -23,17 +26,18 @@ public enum EnumCreatureType
 
     /** Whether this creature type is an animal. */
     private final boolean isAnimal;
+    private static final String __OBFID = "CL_00001551";
 
-    private EnumCreatureType(Class <? extends IAnimals > creatureClassIn, int maxNumberOfCreatureIn, Material creatureMaterialIn, boolean isPeacefulCreatureIn, boolean isAnimalIn)
+    private EnumCreatureType(Class p_i1596_3_, int p_i1596_4_, Material p_i1596_5_, boolean p_i1596_6_, boolean p_i1596_7_)
     {
-        this.creatureClass = creatureClassIn;
-        this.maxNumberOfCreature = maxNumberOfCreatureIn;
-        this.creatureMaterial = creatureMaterialIn;
-        this.isPeacefulCreature = isPeacefulCreatureIn;
-        this.isAnimal = isAnimalIn;
+        this.creatureClass = p_i1596_3_;
+        this.maxNumberOfCreature = p_i1596_4_;
+        this.creatureMaterial = p_i1596_5_;
+        this.isPeacefulCreature = p_i1596_6_;
+        this.isAnimal = p_i1596_7_;
     }
 
-    public Class <? extends IAnimals > getCreatureClass()
+    public Class getCreatureClass()
     {
         return this.creatureClass;
     }

@@ -5,6 +5,8 @@ import net.minecraft.init.Blocks;
 
 public class BiomeGenMushroomIsland extends BiomeGenBase
 {
+    private static final String __OBFID = "CL_00000177";
+
     public BiomeGenMushroomIsland(int p_i1984_1_)
     {
         super(p_i1984_1_);

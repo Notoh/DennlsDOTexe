@@ -11,6 +11,7 @@ public class EntityTNTPrimed extends Entity
     /** How long the fuse is */
     public int fuse;
     private EntityLivingBase tntPlacedBy;
+    private static final String __OBFID = "CL_00001681";
 
     public EntityTNTPrimed(World worldIn)
     {
@@ -23,10 +24,10 @@ public class EntityTNTPrimed extends Entity
     {
         this(worldIn);
         this.setPosition(p_i1730_2_, p_i1730_4_, p_i1730_6_);
-        float f = (float)(Math.random() * Math.PI * 2.0D);
-        this.motionX = (double)(-((float)Math.sin((double)f)) * 0.02F);
+        float var9 = (float)(Math.random() * Math.PI * 2.0D);
+        this.motionX = (double)(-((float)Math.sin((double)var9)) * 0.02F);
         this.motionY = 0.20000000298023224D;
-        this.motionZ = (double)(-((float)Math.cos((double)f)) * 0.02F);
+        this.motionZ = (double)(-((float)Math.cos((double)var9)) * 0.02F);
         this.fuse = 80;
         this.prevPosX = p_i1730_2_;
         this.prevPosY = p_i1730_4_;
@@ -34,9 +35,7 @@ public class EntityTNTPrimed extends Entity
         this.tntPlacedBy = p_i1730_8_;
     }
 
-    protected void entityInit()
-    {
-    }
+    protected void entityInit() {}
 
     /**
      * returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for spiders and wolves to
@@ -94,8 +93,8 @@ public class EntityTNTPrimed extends Entity
 
     private void explode()
     {
-        float f = 4.0F;
-        this.worldObj.createExplosion(this, this.posX, this.posY + (double)(this.height / 16.0F), this.posZ, f, true);
+        float var1 = 4.0F;
+        this.worldObj.createExplosion(this, this.posX, this.posY + (double)(this.height / 2.0F), this.posZ, var1, true);
     }
 
     /**

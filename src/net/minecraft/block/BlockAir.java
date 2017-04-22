@@ -8,13 +8,15 @@ import net.minecraft.world.World;
 
 public class BlockAir extends Block
 {
+    private static final String __OBFID = "CL_00000190";
+
     protected BlockAir()
     {
         super(Material.air);
     }
 
     /**
-     * The type of render function called. 3 for standard block models, 2 for TESR's, 1 for liquids, -1 is no render
+     * The type of render function that is called for this block
      */
     public int getRenderType()
     {
@@ -26,31 +28,21 @@ public class BlockAir extends Block
         return null;
     }
 
-    /**
-     * Used to determine ambient occlusion and culling when rebuilding chunks for render
-     */
     public boolean isOpaqueCube()
     {
         return false;
     }
 
-    public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
+    public boolean canCollideCheck(IBlockState state, boolean p_176209_2_)
     {
         return false;
     }
 
     /**
      * Spawns this Block's drops into the World as EntityItems.
+     *  
+     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
+     * @param fortune The player's fortune level
      */
-    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
-    {
-    }
-
-    /**
-     * Whether this Block can be replaced directly by other blocks (true for e.g. tall grass)
-     */
-    public boolean isReplaceable(World worldIn, BlockPos pos)
-    {
-        return true;
-    }
+    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {}
 }

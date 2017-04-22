@@ -4,9 +4,11 @@ import net.minecraft.block.Block;
 
 public class ItemAnvilBlock extends ItemMultiTexture
 {
-    public ItemAnvilBlock(Block block)
+    private static final String __OBFID = "CL_00001764";
+
+    public ItemAnvilBlock(Block p_i1826_1_)
     {
-        super(block, block, new String[] {"intact", "slightlyDamaged", "veryDamaged"});
+        super(p_i1826_1_, p_i1826_1_, new String[] {"intact", "slightlyDamaged", "veryDamaged"});
     }
 
     /**

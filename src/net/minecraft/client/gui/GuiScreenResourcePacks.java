@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.ResourcePackListEntry;
@@ -19,59 +21,56 @@ import org.lwjgl.Sys;
 public class GuiScreenResourcePacks extends GuiScreen
 {
     private static final Logger logger = LogManager.getLogger();
-    private final GuiScreen parentScreen;
-    private List<ResourcePackListEntry> availableResourcePacks;
-    private List<ResourcePackListEntry> selectedResourcePacks;
+    private GuiScreen field_146965_f;
+    private List field_146966_g;
+    private List field_146969_h;
+    private GuiResourcePackAvailable field_146970_i;
+    private GuiResourcePackSelected field_146967_r;
+    private boolean field_175289_s = false;
+    private static final String __OBFID = "CL_00000820";
 
-    /** List component that contains the available resource packs */
-    private GuiResourcePackAvailable availableResourcePacksList;
-
-    /** List component that contains the selected resource packs */
-    private GuiResourcePackSelected selectedResourcePacksList;
-    private boolean changed = false;
-
-    public GuiScreenResourcePacks(GuiScreen parentScreenIn)
+    public GuiScreenResourcePacks(GuiScreen p_i45050_1_)
     {
-        this.parentScreen = parentScreenIn;
+        this.field_146965_f = p_i45050_1_;
     }
 
     /**
-     * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
-     * window resizes, the buttonList is cleared beforehand.
+     * Adds the buttons (and other controls) to the screen in question.
      */
     public void initGui()
     {
         this.buttonList.add(new GuiOptionButton(2, this.width / 2 - 154, this.height - 48, I18n.format("resourcePack.openFolder", new Object[0])));
         this.buttonList.add(new GuiOptionButton(1, this.width / 2 + 4, this.height - 48, I18n.format("gui.done", new Object[0])));
+        this.field_146966_g = Lists.newArrayList();
+        this.field_146969_h = Lists.newArrayList();
+        ResourcePackRepository var1 = this.mc.getResourcePackRepository();
+        var1.updateRepositoryEntriesAll();
+        ArrayList var2 = Lists.newArrayList(var1.getRepositoryEntriesAll());
+        var2.removeAll(var1.getRepositoryEntries());
+        Iterator var3 = var2.iterator();
+        ResourcePackRepository.Entry var4;
 
-        if (!this.changed)
+        while (var3.hasNext())
         {
-            this.availableResourcePacks = Lists.<ResourcePackListEntry>newArrayList();
-            this.selectedResourcePacks = Lists.<ResourcePackListEntry>newArrayList();
-            ResourcePackRepository resourcepackrepository = this.mc.getResourcePackRepository();
-            resourcepackrepository.updateRepositoryEntriesAll();
-            List<ResourcePackRepository.Entry> list = Lists.newArrayList(resourcepackrepository.getRepositoryEntriesAll());
-            list.removeAll(resourcepackrepository.getRepositoryEntries());
-
-            for (ResourcePackRepository.Entry resourcepackrepository$entry : list)
-            {
-                this.availableResourcePacks.add(new ResourcePackListEntryFound(this, resourcepackrepository$entry));
-            }
-
-            for (ResourcePackRepository.Entry resourcepackrepository$entry1 : Lists.reverse(resourcepackrepository.getRepositoryEntries()))
-            {
-                this.selectedResourcePacks.add(new ResourcePackListEntryFound(this, resourcepackrepository$entry1));
-            }
-
-            this.selectedResourcePacks.add(new ResourcePackListEntryDefault(this));
+            var4 = (ResourcePackRepository.Entry)var3.next();
+            this.field_146966_g.add(new ResourcePackListEntryFound(this, var4));
         }
 
-        this.availableResourcePacksList = new GuiResourcePackAvailable(this.mc, 200, this.height, this.availableResourcePacks);
-        this.availableResourcePacksList.setSlotXBoundsFromLeft(this.width / 2 - 4 - 200);
-        this.availableResourcePacksList.registerScrollButtons(7, 8);
-        this.selectedResourcePacksList = new GuiResourcePackSelected(this.mc, 200, this.height, this.selectedResourcePacks);
-        this.selectedResourcePacksList.setSlotXBoundsFromLeft(this.width / 2 + 4);
-        this.selectedResourcePacksList.registerScrollButtons(7, 8);
+        var3 = Lists.reverse(var1.getRepositoryEntries()).iterator();
+
+        while (var3.hasNext())
+        {
+            var4 = (ResourcePackRepository.Entry)var3.next();
+            this.field_146969_h.add(new ResourcePackListEntryFound(this, var4));
+        }
+
+        this.field_146969_h.add(new ResourcePackListEntryDefault(this));
+        this.field_146970_i = new GuiResourcePackAvailable(this.mc, 200, this.height, this.field_146966_g);
+        this.field_146970_i.setSlotXBoundsFromLeft(this.width / 2 - 4 - 200);
+        this.field_146970_i.registerScrollButtons(7, 8);
+        this.field_146967_r = new GuiResourcePackSelected(this.mc, 200, this.height, this.field_146969_h);
+        this.field_146967_r.setSlotXBoundsFromLeft(this.width / 2 + 4);
+        this.field_146967_r.registerScrollButtons(7, 8);
     }
 
     /**
@@ -80,124 +79,120 @@ public class GuiScreenResourcePacks extends GuiScreen
     public void handleMouseInput() throws IOException
     {
         super.handleMouseInput();
-        this.selectedResourcePacksList.handleMouseInput();
-        this.availableResourcePacksList.handleMouseInput();
+        this.field_146967_r.func_178039_p();
+        this.field_146970_i.func_178039_p();
     }
 
     public boolean hasResourcePackEntry(ResourcePackListEntry p_146961_1_)
     {
-        return this.selectedResourcePacks.contains(p_146961_1_);
+        return this.field_146969_h.contains(p_146961_1_);
     }
 
-    public List<ResourcePackListEntry> getListContaining(ResourcePackListEntry p_146962_1_)
+    public List func_146962_b(ResourcePackListEntry p_146962_1_)
     {
-        return this.hasResourcePackEntry(p_146962_1_) ? this.selectedResourcePacks : this.availableResourcePacks;
+        return this.hasResourcePackEntry(p_146962_1_) ? this.field_146969_h : this.field_146966_g;
     }
 
-    public List<ResourcePackListEntry> getAvailableResourcePacks()
+    public List func_146964_g()
     {
-        return this.availableResourcePacks;
+        return this.field_146966_g;
     }
 
-    public List<ResourcePackListEntry> getSelectedResourcePacks()
+    public List func_146963_h()
     {
-        return this.selectedResourcePacks;
+        return this.field_146969_h;
     }
 
-    /**
-     * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
-     */
     protected void actionPerformed(GuiButton button) throws IOException
     {
         if (button.enabled)
         {
             if (button.id == 2)
             {
-                File file1 = this.mc.getResourcePackRepository().getDirResourcepacks();
-                String s = file1.getAbsolutePath();
+                File var2 = this.mc.getResourcePackRepository().getDirResourcepacks();
+                String var3 = var2.getAbsolutePath();
 
                 if (Util.getOSType() == Util.EnumOS.OSX)
                 {
                     try
                     {
-                        logger.info(s);
-                        Runtime.getRuntime().exec(new String[] {"/usr/bin/open", s});
+                        logger.info(var3);
+                        Runtime.getRuntime().exec(new String[] {"/usr/bin/open", var3});
                         return;
                     }
-                    catch (IOException ioexception1)
+                    catch (IOException var9)
                     {
-                        logger.error((String)"Couldn\'t open file", (Throwable)ioexception1);
+                        logger.error("Couldn\'t open file", var9);
                     }
                 }
                 else if (Util.getOSType() == Util.EnumOS.WINDOWS)
                 {
-                    String s1 = String.format("cmd.exe /C start \"Open file\" \"%s\"", new Object[] {s});
+                    String var4 = String.format("cmd.exe /C start \"Open file\" \"%s\"", new Object[] {var3});
 
                     try
                     {
-                        Runtime.getRuntime().exec(s1);
+                        Runtime.getRuntime().exec(var4);
                         return;
                     }
-                    catch (IOException ioexception)
+                    catch (IOException var8)
                     {
-                        logger.error((String)"Couldn\'t open file", (Throwable)ioexception);
+                        logger.error("Couldn\'t open file", var8);
                     }
                 }
 
-                boolean flag = false;
+                boolean var12 = false;
 
                 try
                 {
-                    Class<?> oclass = Class.forName("java.awt.Desktop");
-                    Object object = oclass.getMethod("getDesktop", new Class[0]).invoke((Object)null, new Object[0]);
-                    oclass.getMethod("browse", new Class[] {URI.class}).invoke(object, new Object[] {file1.toURI()});
+                    Class var5 = Class.forName("java.awt.Desktop");
+                    Object var6 = var5.getMethod("getDesktop", new Class[0]).invoke((Object)null, new Object[0]);
+                    var5.getMethod("browse", new Class[] {URI.class}).invoke(var6, new Object[] {var2.toURI()});
                 }
-                catch (Throwable throwable)
+                catch (Throwable var7)
                 {
-                    logger.error("Couldn\'t open link", throwable);
-                    flag = true;
+                    logger.error("Couldn\'t open link", var7);
+                    var12 = true;
                 }
 
-                if (flag)
+                if (var12)
                 {
                     logger.info("Opening via system class!");
-                    Sys.openURL("file://" + s);
+                    Sys.openURL("file://" + var3);
                 }
             }
             else if (button.id == 1)
             {
-                if (this.changed)
+                if (this.field_175289_s)
                 {
-                    List<ResourcePackRepository.Entry> list = Lists.<ResourcePackRepository.Entry>newArrayList();
+                    ArrayList var10 = Lists.newArrayList();
+                    Iterator var11 = this.field_146969_h.iterator();
 
-                    for (ResourcePackListEntry resourcepacklistentry : this.selectedResourcePacks)
+                    while (var11.hasNext())
                     {
-                        if (resourcepacklistentry instanceof ResourcePackListEntryFound)
+                        ResourcePackListEntry var13 = (ResourcePackListEntry)var11.next();
+
+                        if (var13 instanceof ResourcePackListEntryFound)
                         {
-                            list.add(((ResourcePackListEntryFound)resourcepacklistentry).func_148318_i());
+                            var10.add(((ResourcePackListEntryFound)var13).func_148318_i());
                         }
                     }
 
-                    Collections.reverse(list);
-                    this.mc.getResourcePackRepository().setRepositories(list);
+                    Collections.reverse(var10);
+                    this.mc.getResourcePackRepository().func_148527_a(var10);
                     this.mc.gameSettings.resourcePacks.clear();
-                    this.mc.gameSettings.field_183018_l.clear();
+                    var11 = var10.iterator();
 
-                    for (ResourcePackRepository.Entry resourcepackrepository$entry : list)
+                    while (var11.hasNext())
                     {
-                        this.mc.gameSettings.resourcePacks.add(resourcepackrepository$entry.getResourcePackName());
-
-                        if (resourcepackrepository$entry.func_183027_f() != 1)
-                        {
-                            this.mc.gameSettings.field_183018_l.add(resourcepackrepository$entry.getResourcePackName());
-                        }
+                        ResourcePackRepository.Entry var14 = (ResourcePackRepository.Entry)var11.next();
+                        this.mc.gameSettings.resourcePacks.add(var14.getResourcePackName());
                     }
 
                     this.mc.gameSettings.saveOptions();
                     this.mc.refreshResources();
                 }
 
-                this.mc.displayGuiScreen(this.parentScreen);
+                this.mc.displayGuiScreen(this.field_146965_f);
             }
         }
     }
@@ -208,8 +203,8 @@ public class GuiScreenResourcePacks extends GuiScreen
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        this.availableResourcePacksList.mouseClicked(mouseX, mouseY, mouseButton);
-        this.selectedResourcePacksList.mouseClicked(mouseX, mouseY, mouseButton);
+        this.field_146970_i.func_148179_a(mouseX, mouseY, mouseButton);
+        this.field_146967_r.func_148179_a(mouseX, mouseY, mouseButton);
     }
 
     /**
@@ -226,18 +221,15 @@ public class GuiScreenResourcePacks extends GuiScreen
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         this.drawBackground(0);
-        this.availableResourcePacksList.drawScreen(mouseX, mouseY, partialTicks);
-        this.selectedResourcePacksList.drawScreen(mouseX, mouseY, partialTicks);
+        this.field_146970_i.drawScreen(mouseX, mouseY, partialTicks);
+        this.field_146967_r.drawScreen(mouseX, mouseY, partialTicks);
         this.drawCenteredString(this.fontRendererObj, I18n.format("resourcePack.title", new Object[0]), this.width / 2, 16, 16777215);
         this.drawCenteredString(this.fontRendererObj, I18n.format("resourcePack.folderInfo", new Object[0]), this.width / 2 - 77, this.height - 26, 8421504);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    /**
-     * Marks the selected resource packs list as changed to trigger a resource reload when the screen is closed
-     */
-    public void markChanged()
+    public void func_175288_g()
     {
-        this.changed = true;
+        this.field_175289_s = true;
     }
 }

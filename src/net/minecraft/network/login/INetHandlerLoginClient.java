@@ -14,5 +14,5 @@ public interface INetHandlerLoginClient extends INetHandler
 
     void handleDisconnect(S00PacketDisconnect packetIn);
 
-    void handleEnableCompression(S03PacketEnableCompression packetIn);
+    void func_180464_a(S03PacketEnableCompression p_180464_1_);
 }

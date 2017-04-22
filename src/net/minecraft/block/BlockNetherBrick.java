@@ -7,6 +7,8 @@ import net.minecraft.creativetab.CreativeTabs;
 
 public class BlockNetherBrick extends Block
 {
+    private static final String __OBFID = "CL_00002091";
+
     public BlockNetherBrick()
     {
         super(Material.rock);

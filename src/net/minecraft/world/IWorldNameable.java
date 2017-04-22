@@ -14,8 +14,5 @@ public interface IWorldNameable
      */
     boolean hasCustomName();
 
-    /**
-     * Get the formatted ChatComponent that will be used for the sender's username in chat
-     */
     IChatComponent getDisplayName();
 }

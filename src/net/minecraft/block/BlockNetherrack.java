@@ -7,6 +7,8 @@ import net.minecraft.creativetab.CreativeTabs;
 
 public class BlockNetherrack extends Block
 {
+    private static final String __OBFID = "CL_00000275";
+
     public BlockNetherrack()
     {
         super(Material.rock);

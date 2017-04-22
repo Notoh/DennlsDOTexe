@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class RealmsMth
 {
+    private static final String __OBFID = "CL_00001900";
+
     public static float sin(float p_sin_0_)
     {
         return MathHelper.sin(p_sin_0_);

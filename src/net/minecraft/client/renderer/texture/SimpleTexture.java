@@ -14,50 +14,51 @@ public class SimpleTexture extends AbstractTexture
 {
     private static final Logger logger = LogManager.getLogger();
     protected final ResourceLocation textureLocation;
+    private static final String __OBFID = "CL_00001052";
 
-    public SimpleTexture(ResourceLocation textureResourceLocation)
+    public SimpleTexture(ResourceLocation p_i1275_1_)
     {
-        this.textureLocation = textureResourceLocation;
+        this.textureLocation = p_i1275_1_;
     }
 
-    public void loadTexture(IResourceManager resourceManager) throws IOException
+    public void loadTexture(IResourceManager p_110551_1_) throws IOException
     {
         this.deleteGlTexture();
-        InputStream inputstream = null;
+        InputStream var2 = null;
 
         try
         {
-            IResource iresource = resourceManager.getResource(this.textureLocation);
-            inputstream = iresource.getInputStream();
-            BufferedImage bufferedimage = TextureUtil.readBufferedImage(inputstream);
-            boolean flag = false;
-            boolean flag1 = false;
+            IResource var3 = p_110551_1_.getResource(this.textureLocation);
+            var2 = var3.getInputStream();
+            BufferedImage var4 = TextureUtil.func_177053_a(var2);
+            boolean var5 = false;
+            boolean var6 = false;
 
-            if (iresource.hasMetadata())
+            if (var3.hasMetadata())
             {
                 try
                 {
-                    TextureMetadataSection texturemetadatasection = (TextureMetadataSection)iresource.getMetadata("texture");
+                    TextureMetadataSection var7 = (TextureMetadataSection)var3.getMetadata("texture");
 
-                    if (texturemetadatasection != null)
+                    if (var7 != null)
                     {
-                        flag = texturemetadatasection.getTextureBlur();
-                        flag1 = texturemetadatasection.getTextureClamp();
+                        var5 = var7.getTextureBlur();
+                        var6 = var7.getTextureClamp();
                     }
                 }
-                catch (RuntimeException runtimeexception)
+                catch (RuntimeException var11)
                 {
-                    logger.warn((String)("Failed reading metadata of: " + this.textureLocation), (Throwable)runtimeexception);
+                    logger.warn("Failed reading metadata of: " + this.textureLocation, var11);
                 }
             }
 
-            TextureUtil.uploadTextureImageAllocate(this.getGlTextureId(), bufferedimage, flag, flag1);
+            TextureUtil.uploadTextureImageAllocate(this.getGlTextureId(), var4, var5, var6);
         }
         finally
         {
-            if (inputstream != null)
+            if (var2 != null)
             {
-                inputstream.close();
+                var2.close();
             }
         }
     }

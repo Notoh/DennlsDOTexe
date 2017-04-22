@@ -9,12 +9,12 @@ public interface IRecipe
     /**
      * Used to check if a recipe matches current crafting inventory
      */
-    boolean matches(InventoryCrafting inv, World worldIn);
+    boolean matches(InventoryCrafting p_77569_1_, World worldIn);
 
     /**
      * Returns an Item that is the result of this recipe
      */
-    ItemStack getCraftingResult(InventoryCrafting inv);
+    ItemStack getCraftingResult(InventoryCrafting p_77572_1_);
 
     /**
      * Returns the size of the recipe area
@@ -23,5 +23,5 @@ public interface IRecipe
 
     ItemStack getRecipeOutput();
 
-    ItemStack[] getRemainingItems(InventoryCrafting inv);
+    ItemStack[] func_179532_b(InventoryCrafting p_179532_1_);
 }

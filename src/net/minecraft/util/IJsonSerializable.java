@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 
 public interface IJsonSerializable
 {
-    void fromJson(JsonElement json);
+    void func_152753_a(JsonElement p_152753_1_);
 
     /**
      * Gets the JsonElement that can be serialized.

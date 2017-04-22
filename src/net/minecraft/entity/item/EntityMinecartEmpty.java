@@ -6,6 +6,8 @@ import net.minecraft.world.World;
 
 public class EntityMinecartEmpty extends EntityMinecart
 {
+    private static final String __OBFID = "CL_00001677";
+
     public EntityMinecartEmpty(World worldIn)
     {
         super(worldIn);
@@ -43,9 +45,9 @@ public class EntityMinecartEmpty extends EntityMinecart
     /**
      * Called every tick the minecart is on an activator rail. Args: x, y, z, is the rail receiving power
      */
-    public void onActivatorRailPass(int x, int y, int z, boolean receivingPower)
+    public void onActivatorRailPass(int p_96095_1_, int p_96095_2_, int p_96095_3_, boolean p_96095_4_)
     {
-        if (receivingPower)
+        if (p_96095_4_)
         {
             if (this.riddenByEntity != null)
             {
@@ -62,7 +64,7 @@ public class EntityMinecartEmpty extends EntityMinecart
         }
     }
 
-    public EntityMinecart.EnumMinecartType getMinecartType()
+    public EntityMinecart.EnumMinecartType func_180456_s()
     {
         return EntityMinecart.EnumMinecartType.RIDEABLE;
     }

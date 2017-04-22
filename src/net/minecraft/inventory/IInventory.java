@@ -12,19 +12,21 @@ public interface IInventory extends IWorldNameable
     int getSizeInventory();
 
     /**
-     * Returns the stack in the given slot.
+     * Returns the stack in slot i
      */
-    ItemStack getStackInSlot(int index);
+    ItemStack getStackInSlot(int slotIn);
 
     /**
-     * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
+     * Removes from an inventory slot (first arg) up to a specified number (second arg) of items and returns them in a
+     * new stack.
      */
     ItemStack decrStackSize(int index, int count);
 
     /**
-     * Removes a stack from the given slot and returns it.
+     * When some containers are closed they call this on each slot, then drop whatever it returns as an EntityItem -
+     * like when you close a workbench GUI.
      */
-    ItemStack removeStackFromSlot(int index);
+    ItemStack getStackInSlotOnClosing(int index);
 
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
@@ -32,7 +34,8 @@ public interface IInventory extends IWorldNameable
     void setInventorySlotContents(int index, ItemStack stack);
 
     /**
-     * Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be extended.
+     * Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be extended. *Isn't
+     * this more of a set than a get?*
      */
     int getInventoryStackLimit();
 
@@ -45,11 +48,11 @@ public interface IInventory extends IWorldNameable
     /**
      * Do not make give this method the name canInteractWith because it clashes with Container
      */
-    boolean isUseableByPlayer(EntityPlayer player);
+    boolean isUseableByPlayer(EntityPlayer playerIn);
 
-    void openInventory(EntityPlayer player);
+    void openInventory(EntityPlayer playerIn);
 
-    void closeInventory(EntityPlayer player);
+    void closeInventory(EntityPlayer playerIn);
 
     /**
      * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot.
@@ -62,5 +65,5 @@ public interface IInventory extends IWorldNameable
 
     int getFieldCount();
 
-    void clear();
+    void clearInventory();
 }

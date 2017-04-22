@@ -6,15 +6,15 @@ public enum EnumDifficulty
     EASY(1, "options.difficulty.easy"),
     NORMAL(2, "options.difficulty.normal"),
     HARD(3, "options.difficulty.hard");
-
     private static final EnumDifficulty[] difficultyEnums = new EnumDifficulty[values().length];
     private final int difficultyId;
     private final String difficultyResourceKey;
+    private static final String __OBFID = "CL_00001510";
 
-    private EnumDifficulty(int difficultyIdIn, String difficultyResourceKeyIn)
+    private EnumDifficulty(int p_i45312_3_, String p_i45312_4_)
     {
-        this.difficultyId = difficultyIdIn;
-        this.difficultyResourceKey = difficultyResourceKeyIn;
+        this.difficultyId = p_i45312_3_;
+        this.difficultyResourceKey = p_i45312_4_;
     }
 
     public int getDifficultyId()
@@ -33,9 +33,13 @@ public enum EnumDifficulty
     }
 
     static {
-        for (EnumDifficulty enumdifficulty : values())
+        EnumDifficulty[] var0 = values();
+        int var1 = var0.length;
+
+        for (int var2 = 0; var2 < var1; ++var2)
         {
-            difficultyEnums[enumdifficulty.difficultyId] = enumdifficulty;
+            EnumDifficulty var3 = var0[var2];
+            difficultyEnums[var3.difficultyId] = var3;
         }
     }
 }

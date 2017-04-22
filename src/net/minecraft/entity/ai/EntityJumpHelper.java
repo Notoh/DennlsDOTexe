@@ -6,10 +6,11 @@ public class EntityJumpHelper
 {
     private EntityLiving entity;
     protected boolean isJumping;
+    private static final String __OBFID = "CL_00001571";
 
-    public EntityJumpHelper(EntityLiving entityIn)
+    public EntityJumpHelper(EntityLiving p_i1612_1_)
     {
-        this.entity = entityIn;
+        this.entity = p_i1612_1_;
     }
 
     public void setJumping()

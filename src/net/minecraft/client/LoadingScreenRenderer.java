@@ -6,45 +6,43 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.util.MinecraftError;
 
 public class LoadingScreenRenderer implements IProgressUpdate
 {
-    private String message = "";
+    private String field_73727_a = "";
 
     /** A reference to the Minecraft object. */
     private Minecraft mc;
 
     /**
-     * The text currently displayed (i.e. the argument to the last call to printText or displayString)
+     * The text currently displayed (i.e. the argument to the last call to printText or func_73722_d)
      */
     private String currentlyDisplayedText = "";
-
-    /** The system's time represented in milliseconds. */
-    private long systemTime = Minecraft.getSystemTime();
+    private long field_73723_d = Minecraft.getSystemTime();
     private boolean field_73724_e;
-    private ScaledResolution scaledResolution;
-    private Framebuffer framebuffer;
+    private ScaledResolution field_146587_f;
+    private Framebuffer field_146588_g;
+    private static final String __OBFID = "CL_00000655";
 
     public LoadingScreenRenderer(Minecraft mcIn)
     {
         this.mc = mcIn;
-        this.scaledResolution = new ScaledResolution(mcIn);
-        this.framebuffer = new Framebuffer(mcIn.displayWidth, mcIn.displayHeight, false);
-        this.framebuffer.setFramebufferFilter(9728);
+        this.field_146587_f = new ScaledResolution(mcIn, mcIn.displayWidth, mcIn.displayHeight);
+        this.field_146588_g = new Framebuffer(mcIn.displayWidth, mcIn.displayHeight, false);
+        this.field_146588_g.setFramebufferFilter(9728);
     }
 
     /**
      * this string, followed by "working..." and then the "% complete" are the 3 lines shown. This resets progress to 0,
      * and the WorkingString to "working...".
      */
-    public void resetProgressAndMessage(String message)
+    public void resetProgressAndMessage(String p_73721_1_)
     {
         this.field_73724_e = false;
-        this.displayString(message);
+        this.func_73722_d(p_73721_1_);
     }
 
     /**
@@ -53,12 +51,12 @@ public class LoadingScreenRenderer implements IProgressUpdate
     public void displaySavingString(String message)
     {
         this.field_73724_e = true;
-        this.displayString(message);
+        this.func_73722_d(message);
     }
 
-    private void displayString(String message)
+    private void func_73722_d(String p_73722_1_)
     {
-        this.currentlyDisplayedText = message;
+        this.currentlyDisplayedText = p_73722_1_;
 
         if (!this.mc.running)
         {
@@ -75,13 +73,13 @@ public class LoadingScreenRenderer implements IProgressUpdate
 
             if (OpenGlHelper.isFramebufferEnabled())
             {
-                int i = this.scaledResolution.getScaleFactor();
-                GlStateManager.ortho(0.0D, (double)(this.scaledResolution.getScaledWidth() * i), (double)(this.scaledResolution.getScaledHeight() * i), 0.0D, 100.0D, 300.0D);
+                int var2 = this.field_146587_f.getScaleFactor();
+                GlStateManager.ortho(0.0D, (double)(this.field_146587_f.getScaledWidth() * var2), (double)(this.field_146587_f.getScaledHeight() * var2), 0.0D, 100.0D, 300.0D);
             }
             else
             {
-                ScaledResolution scaledresolution = new ScaledResolution(this.mc);
-                GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
+                ScaledResolution var3 = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
+                GlStateManager.ortho(0.0D, var3.getScaledWidth_double(), var3.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
             }
 
             GlStateManager.matrixMode(5888);
@@ -104,10 +102,10 @@ public class LoadingScreenRenderer implements IProgressUpdate
         }
         else
         {
-            this.systemTime = 0L;
-            this.message = message;
+            this.field_73723_d = 0L;
+            this.field_73727_a = message;
             this.setLoadingProgress(-1);
-            this.systemTime = 0L;
+            this.field_73723_d = 0L;
         }
     }
 
@@ -125,29 +123,29 @@ public class LoadingScreenRenderer implements IProgressUpdate
         }
         else
         {
-            long i = Minecraft.getSystemTime();
+            long var2 = Minecraft.getSystemTime();
 
-            if (i - this.systemTime >= 100L)
+            if (var2 - this.field_73723_d >= 100L)
             {
-                this.systemTime = i;
-                ScaledResolution scaledresolution = new ScaledResolution(this.mc);
-                int j = scaledresolution.getScaleFactor();
-                int k = scaledresolution.getScaledWidth();
-                int l = scaledresolution.getScaledHeight();
+                this.field_73723_d = var2;
+                ScaledResolution var4 = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
+                int var5 = var4.getScaleFactor();
+                int var6 = var4.getScaledWidth();
+                int var7 = var4.getScaledHeight();
 
                 if (OpenGlHelper.isFramebufferEnabled())
                 {
-                    this.framebuffer.framebufferClear();
+                    this.field_146588_g.framebufferClear();
                 }
                 else
                 {
                     GlStateManager.clear(256);
                 }
 
-                this.framebuffer.bindFramebuffer(false);
+                this.field_146588_g.bindFramebuffer(false);
                 GlStateManager.matrixMode(5889);
                 GlStateManager.loadIdentity();
-                GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
+                GlStateManager.ortho(0.0D, var4.getScaledWidth_double(), var4.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
                 GlStateManager.matrixMode(5888);
                 GlStateManager.loadIdentity();
                 GlStateManager.translate(0.0F, 0.0F, -200.0F);
@@ -157,49 +155,52 @@ public class LoadingScreenRenderer implements IProgressUpdate
                     GlStateManager.clear(16640);
                 }
 
-                Tessellator tessellator = Tessellator.getInstance();
-                WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+                Tessellator var8 = Tessellator.getInstance();
+                WorldRenderer var9 = var8.getWorldRenderer();
                 this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
-                float f = 32.0F;
-                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                worldrenderer.pos(0.0D, (double)l, 0.0D).tex(0.0D, (double)((float)l / f)).color(64, 64, 64, 255).endVertex();
-                worldrenderer.pos((double)k, (double)l, 0.0D).tex((double)((float)k / f), (double)((float)l / f)).color(64, 64, 64, 255).endVertex();
-                worldrenderer.pos((double)k, 0.0D, 0.0D).tex((double)((float)k / f), 0.0D).color(64, 64, 64, 255).endVertex();
-                worldrenderer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, 0.0D).color(64, 64, 64, 255).endVertex();
-                tessellator.draw();
+                float var10 = 32.0F;
+                var9.startDrawingQuads();
+                var9.func_178991_c(4210752);
+                var9.addVertexWithUV(0.0D, (double)var7, 0.0D, 0.0D, (double)((float)var7 / var10));
+                var9.addVertexWithUV((double)var6, (double)var7, 0.0D, (double)((float)var6 / var10), (double)((float)var7 / var10));
+                var9.addVertexWithUV((double)var6, 0.0D, 0.0D, (double)((float)var6 / var10), 0.0D);
+                var9.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+                var8.draw();
 
                 if (progress >= 0)
                 {
-                    int i1 = 100;
-                    int j1 = 2;
-                    int k1 = k / 2 - i1 / 2;
-                    int l1 = l / 2 + 16;
-                    GlStateManager.disableTexture2D();
-                    worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-                    worldrenderer.pos((double)k1, (double)l1, 0.0D).color(128, 128, 128, 255).endVertex();
-                    worldrenderer.pos((double)k1, (double)(l1 + j1), 0.0D).color(128, 128, 128, 255).endVertex();
-                    worldrenderer.pos((double)(k1 + i1), (double)(l1 + j1), 0.0D).color(128, 128, 128, 255).endVertex();
-                    worldrenderer.pos((double)(k1 + i1), (double)l1, 0.0D).color(128, 128, 128, 255).endVertex();
-                    worldrenderer.pos((double)k1, (double)l1, 0.0D).color(128, 255, 128, 255).endVertex();
-                    worldrenderer.pos((double)k1, (double)(l1 + j1), 0.0D).color(128, 255, 128, 255).endVertex();
-                    worldrenderer.pos((double)(k1 + progress), (double)(l1 + j1), 0.0D).color(128, 255, 128, 255).endVertex();
-                    worldrenderer.pos((double)(k1 + progress), (double)l1, 0.0D).color(128, 255, 128, 255).endVertex();
-                    tessellator.draw();
-                    GlStateManager.enableTexture2D();
+                    byte var11 = 100;
+                    byte var12 = 2;
+                    int var13 = var6 / 2 - var11 / 2;
+                    int var14 = var7 / 2 + 16;
+                    GlStateManager.func_179090_x();
+                    var9.startDrawingQuads();
+                    var9.func_178991_c(8421504);
+                    var9.addVertex((double)var13, (double)var14, 0.0D);
+                    var9.addVertex((double)var13, (double)(var14 + var12), 0.0D);
+                    var9.addVertex((double)(var13 + var11), (double)(var14 + var12), 0.0D);
+                    var9.addVertex((double)(var13 + var11), (double)var14, 0.0D);
+                    var9.func_178991_c(8454016);
+                    var9.addVertex((double)var13, (double)var14, 0.0D);
+                    var9.addVertex((double)var13, (double)(var14 + var12), 0.0D);
+                    var9.addVertex((double)(var13 + progress), (double)(var14 + var12), 0.0D);
+                    var9.addVertex((double)(var13 + progress), (double)var14, 0.0D);
+                    var8.draw();
+                    GlStateManager.func_179098_w();
                 }
 
                 GlStateManager.enableBlend();
                 GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-                this.mc.fontRendererObj.drawStringWithShadow(this.currentlyDisplayedText, (float)((k - this.mc.fontRendererObj.getStringWidth(this.currentlyDisplayedText)) / 2), (float)(l / 2 - 4 - 16), 16777215);
-                this.mc.fontRendererObj.drawStringWithShadow(this.message, (float)((k - this.mc.fontRendererObj.getStringWidth(this.message)) / 2), (float)(l / 2 - 4 + 8), 16777215);
-                this.framebuffer.unbindFramebuffer();
+                this.mc.fontRendererObj.func_175063_a(this.currentlyDisplayedText, (float)((var6 - this.mc.fontRendererObj.getStringWidth(this.currentlyDisplayedText)) / 2), (float)(var7 / 2 - 4 - 16), 16777215);
+                this.mc.fontRendererObj.func_175063_a(this.field_73727_a, (float)((var6 - this.mc.fontRendererObj.getStringWidth(this.field_73727_a)) / 2), (float)(var7 / 2 - 4 + 8), 16777215);
+                this.field_146588_g.unbindFramebuffer();
 
                 if (OpenGlHelper.isFramebufferEnabled())
                 {
-                    this.framebuffer.framebufferRender(k * j, l * j);
+                    this.field_146588_g.framebufferRender(var6 * var5, var7 * var5);
                 }
 
-                this.mc.updateDisplay();
+                this.mc.func_175601_h();
 
                 try
                 {
@@ -213,7 +214,5 @@ public class LoadingScreenRenderer implements IProgressUpdate
         }
     }
 
-    public void setDoneWorking()
-    {
-    }
+    public void setDoneWorking() {}
 }

@@ -19,9 +19,10 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
 {
     private static final Logger field_179436_a = LogManager.getLogger();
     private EntityLiving field_179434_b;
-    private final Predicate<Entity> field_179435_c;
+    private final Predicate field_179435_c;
     private final EntityAINearestAttackableTarget.Sorter field_179432_d;
     private EntityLivingBase field_179433_e;
+    private static final String __OBFID = "CL_00002248";
 
     public EntityAIFindEntityNearestPlayer(EntityLiving p_i45882_1_)
     {
@@ -32,41 +33,42 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
             field_179436_a.warn("Use NearestAttackableTargetGoal.class for PathfinerMob mobs!");
         }
 
-        this.field_179435_c = new Predicate<Entity>()
+        this.field_179435_c = new Predicate()
         {
-            public boolean apply(Entity p_apply_1_)
+            private static final String __OBFID = "CL_00002247";
+            public boolean func_179880_a(Entity p_179880_1_)
             {
-                if (!(p_apply_1_ instanceof EntityPlayer))
-                {
-                    return false;
-                }
-                else if (((EntityPlayer)p_apply_1_).capabilities.disableDamage)
+                if (!(p_179880_1_ instanceof EntityPlayer))
                 {
                     return false;
                 }
                 else
                 {
-                    double d0 = EntityAIFindEntityNearestPlayer.this.func_179431_f();
+                    double var2 = EntityAIFindEntityNearestPlayer.this.func_179431_f();
 
-                    if (p_apply_1_.isSneaking())
+                    if (p_179880_1_.isSneaking())
                     {
-                        d0 *= 0.800000011920929D;
+                        var2 *= 0.800000011920929D;
                     }
 
-                    if (p_apply_1_.isInvisible())
+                    if (p_179880_1_.isInvisible())
                     {
-                        float f = ((EntityPlayer)p_apply_1_).getArmorVisibility();
+                        float var4 = ((EntityPlayer)p_179880_1_).getArmorVisibility();
 
-                        if (f < 0.1F)
+                        if (var4 < 0.1F)
                         {
-                            f = 0.1F;
+                            var4 = 0.1F;
                         }
 
-                        d0 *= (double)(0.7F * f);
+                        var2 *= (double)(0.7F * var4);
                     }
 
-                    return (double)p_apply_1_.getDistanceToEntity(EntityAIFindEntityNearestPlayer.this.field_179434_b) > d0 ? false : EntityAITarget.isSuitableTarget(EntityAIFindEntityNearestPlayer.this.field_179434_b, (EntityLivingBase)p_apply_1_, false, true);
+                    return (double)p_179880_1_.getDistanceToEntity(EntityAIFindEntityNearestPlayer.this.field_179434_b) > var2 ? false : EntityAITarget.func_179445_a(EntityAIFindEntityNearestPlayer.this.field_179434_b, (EntityLivingBase)p_179880_1_, false, true);
                 }
+            }
+            public boolean apply(Object p_apply_1_)
+            {
+                return this.func_179880_a((Entity)p_apply_1_);
             }
         };
         this.field_179432_d = new EntityAINearestAttackableTarget.Sorter(p_i45882_1_);
@@ -77,17 +79,17 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-        double d0 = this.func_179431_f();
-        List<EntityPlayer> list = this.field_179434_b.worldObj.<EntityPlayer>getEntitiesWithinAABB(EntityPlayer.class, this.field_179434_b.getEntityBoundingBox().expand(d0, 4.0D, d0), this.field_179435_c);
-        Collections.sort(list, this.field_179432_d);
+        double var1 = this.func_179431_f();
+        List var3 = this.field_179434_b.worldObj.func_175647_a(EntityPlayer.class, this.field_179434_b.getEntityBoundingBox().expand(var1, 4.0D, var1), this.field_179435_c);
+        Collections.sort(var3, this.field_179432_d);
 
-        if (list.isEmpty())
+        if (var3.isEmpty())
         {
             return false;
         }
         else
         {
-            this.field_179433_e = (EntityLivingBase)list.get(0);
+            this.field_179433_e = (EntityLivingBase)var3.get(0);
             return true;
         }
     }
@@ -97,33 +99,29 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
      */
     public boolean continueExecuting()
     {
-        EntityLivingBase entitylivingbase = this.field_179434_b.getAttackTarget();
+        EntityLivingBase var1 = this.field_179434_b.getAttackTarget();
 
-        if (entitylivingbase == null)
+        if (var1 == null)
         {
             return false;
         }
-        else if (!entitylivingbase.isEntityAlive())
-        {
-            return false;
-        }
-        else if (entitylivingbase instanceof EntityPlayer && ((EntityPlayer)entitylivingbase).capabilities.disableDamage)
+        else if (!var1.isEntityAlive())
         {
             return false;
         }
         else
         {
-            Team team = this.field_179434_b.getTeam();
-            Team team1 = entitylivingbase.getTeam();
+            Team var2 = this.field_179434_b.getTeam();
+            Team var3 = var1.getTeam();
 
-            if (team != null && team1 == team)
+            if (var2 != null && var3 == var2)
             {
                 return false;
             }
             else
             {
-                double d0 = this.func_179431_f();
-                return this.field_179434_b.getDistanceSqToEntity(entitylivingbase) > d0 * d0 ? false : !(entitylivingbase instanceof EntityPlayerMP) || !((EntityPlayerMP)entitylivingbase).theItemInWorldManager.isCreative();
+                double var4 = this.func_179431_f();
+                return this.field_179434_b.getDistanceSqToEntity(var1) > var4 * var4 ? false : !(var1 instanceof EntityPlayerMP) || !((EntityPlayerMP)var1).theItemInWorldManager.isCreative();
             }
         }
     }
@@ -148,7 +146,7 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
 
     protected double func_179431_f()
     {
-        IAttributeInstance iattributeinstance = this.field_179434_b.getEntityAttribute(SharedMonsterAttributes.followRange);
-        return iattributeinstance == null ? 16.0D : iattributeinstance.getAttributeValue();
+        IAttributeInstance var1 = this.field_179434_b.getEntityAttribute(SharedMonsterAttributes.followRange);
+        return var1 == null ? 16.0D : var1.getAttributeValue();
     }
 }

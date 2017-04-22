@@ -10,14 +10,10 @@ public interface IBlockAccess
 {
     TileEntity getTileEntity(BlockPos pos);
 
-    int getCombinedLight(BlockPos pos, int lightValue);
+    int getCombinedLight(BlockPos p_175626_1_, int p_175626_2_);
 
     IBlockState getBlockState(BlockPos pos);
 
-    /**
-     * Checks to see if an air block exists at the provided location. Note that this only checks to see if the blocks
-     * material is set to air, meaning it is possible for non-vanilla blocks to still pass this check.
-     */
     boolean isAirBlock(BlockPos pos);
 
     BiomeGenBase getBiomeGenForCoords(BlockPos pos);

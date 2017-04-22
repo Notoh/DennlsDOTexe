@@ -17,9 +17,9 @@ public interface IStream
 
     boolean func_152936_l();
 
-    boolean isReadyToBroadcast();
+    boolean func_152924_m();
 
-    boolean isBroadcasting();
+    boolean func_152934_n();
 
     void func_152911_a(Metadata p_152911_1_, long p_152911_2_);
 
@@ -27,23 +27,17 @@ public interface IStream
 
     boolean isPaused();
 
-    void requestCommercial();
+    void func_152931_p();
 
-    /**
-     * pauses a stream
-     */
-    void pause();
+    void func_152916_q();
 
-    /**
-     * unpauses a stream
-     */
-    void unpause();
+    void func_152933_r();
 
-    void updateStreamVolume();
+    void func_152915_s();
 
     void func_152930_t();
 
-    void stopBroadcasting();
+    void func_152914_u();
 
     IngestServer[] func_152925_v();
 
@@ -69,10 +63,7 @@ public interface IStream
 
     boolean func_152913_F();
 
-    /**
-     * mutes or unmutes the microphone based on the boolean parameter passed into the method
-     */
-    void muteMicrophone(boolean p_152910_1_);
+    void func_152910_a(boolean p_152910_1_);
 
     boolean func_152929_G();
 
@@ -80,7 +71,12 @@ public interface IStream
 
     public static enum AuthFailureReason
     {
-        ERROR,
-        INVALID_TOKEN;
+        ERROR("ERROR", 0),
+        INVALID_TOKEN("INVALID_TOKEN", 1);
+
+        private static final IStream.AuthFailureReason[] $VALUES = new IStream.AuthFailureReason[]{ERROR, INVALID_TOKEN};
+        private static final String __OBFID = "CL_00001813";
+
+        private AuthFailureReason(String p_i1014_1_, int p_i1014_2_) {}
     }
 }

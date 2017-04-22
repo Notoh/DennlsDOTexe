@@ -13,16 +13,22 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 
 public class BiomeGenHills extends BiomeGenBase
 {
-    private WorldGenerator theWorldGenerator = new WorldGenMinable(Blocks.monster_egg.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.STONE), 9);
-    private WorldGenTaiga2 field_150634_aD = new WorldGenTaiga2(false);
-    private int field_150635_aE = 0;
-    private int field_150636_aF = 1;
-    private int field_150637_aG = 2;
+    private WorldGenerator theWorldGenerator;
+    private WorldGenTaiga2 field_150634_aD;
+    private int field_150635_aE;
+    private int field_150636_aF;
+    private int field_150637_aG;
     private int field_150638_aH;
+    private static final String __OBFID = "CL_00000168";
 
     protected BiomeGenHills(int p_i45373_1_, boolean p_i45373_2_)
     {
         super(p_i45373_1_);
+        this.theWorldGenerator = new WorldGenMinable(Blocks.monster_egg.getDefaultState().withProperty(BlockSilverfish.VARIANT_PROP, BlockSilverfish.EnumType.STONE), 9);
+        this.field_150634_aD = new WorldGenTaiga2(false);
+        this.field_150635_aE = 0;
+        this.field_150636_aF = 1;
+        this.field_150637_aG = 2;
         this.field_150638_aH = this.field_150635_aE;
 
         if (p_i45373_2_)
@@ -32,39 +38,42 @@ public class BiomeGenHills extends BiomeGenBase
         }
     }
 
-    public WorldGenAbstractTree genBigTreeChance(Random rand)
+    public WorldGenAbstractTree genBigTreeChance(Random p_150567_1_)
     {
-        return (WorldGenAbstractTree)(rand.nextInt(3) > 0 ? this.field_150634_aD : super.genBigTreeChance(rand));
+        return (WorldGenAbstractTree)(p_150567_1_.nextInt(3) > 0 ? this.field_150634_aD : super.genBigTreeChance(p_150567_1_));
     }
 
-    public void decorate(World worldIn, Random rand, BlockPos pos)
+    public void func_180624_a(World worldIn, Random p_180624_2_, BlockPos p_180624_3_)
     {
-        super.decorate(worldIn, rand, pos);
-        int i = 3 + rand.nextInt(6);
+        super.func_180624_a(worldIn, p_180624_2_, p_180624_3_);
+        int var4 = 3 + p_180624_2_.nextInt(6);
+        int var5;
+        int var6;
+        int var7;
 
-        for (int j = 0; j < i; ++j)
+        for (var5 = 0; var5 < var4; ++var5)
         {
-            int k = rand.nextInt(16);
-            int l = rand.nextInt(28) + 4;
-            int i1 = rand.nextInt(16);
-            BlockPos blockpos = pos.add(k, l, i1);
+            var6 = p_180624_2_.nextInt(16);
+            var7 = p_180624_2_.nextInt(28) + 4;
+            int var8 = p_180624_2_.nextInt(16);
+            BlockPos var9 = p_180624_3_.add(var6, var7, var8);
 
-            if (worldIn.getBlockState(blockpos).getBlock() == Blocks.stone)
+            if (worldIn.getBlockState(var9).getBlock() == Blocks.stone)
             {
-                worldIn.setBlockState(blockpos, Blocks.emerald_ore.getDefaultState(), 2);
+                worldIn.setBlockState(var9, Blocks.emerald_ore.getDefaultState(), 2);
             }
         }
 
-        for (i = 0; i < 7; ++i)
+        for (var4 = 0; var4 < 7; ++var4)
         {
-            int j1 = rand.nextInt(16);
-            int k1 = rand.nextInt(64);
-            int l1 = rand.nextInt(16);
-            this.theWorldGenerator.generate(worldIn, rand, pos.add(j1, k1, l1));
+            var5 = p_180624_2_.nextInt(16);
+            var6 = p_180624_2_.nextInt(64);
+            var7 = p_180624_2_.nextInt(16);
+            this.theWorldGenerator.generate(worldIn, p_180624_2_, p_180624_3_.add(var5, var6, var7));
         }
     }
 
-    public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int p_180622_4_, int p_180622_5_, double p_180622_6_)
+    public void genTerrainBlocks(World worldIn, Random p_180622_2_, ChunkPrimer p_180622_3_, int p_180622_4_, int p_180622_5_, double p_180622_6_)
     {
         this.topBlock = Blocks.grass.getDefaultState();
         this.fillerBlock = Blocks.dirt.getDefaultState();
@@ -80,7 +89,7 @@ public class BiomeGenHills extends BiomeGenBase
             this.fillerBlock = Blocks.stone.getDefaultState();
         }
 
-        this.generateBiomeTerrain(worldIn, rand, chunkPrimerIn, p_180622_4_, p_180622_5_, p_180622_6_);
+        this.func_180628_b(worldIn, p_180622_2_, p_180622_3_, p_180622_4_, p_180622_5_, p_180622_6_);
     }
 
     /**

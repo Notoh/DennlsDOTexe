@@ -9,10 +9,11 @@ import net.minecraft.client.gui.spectator.SpectatorMenu;
 public class SpectatorDetails
 {
     private final ISpectatorMenuView field_178684_a;
-    private final List<ISpectatorMenuObject> field_178682_b;
+    private final List field_178682_b;
     private final int field_178683_c;
+    private static final String __OBFID = "CL_00001923";
 
-    public SpectatorDetails(ISpectatorMenuView p_i45494_1_, List<ISpectatorMenuObject> p_i45494_2_, int p_i45494_3_)
+    public SpectatorDetails(ISpectatorMenuView p_i45494_1_, List p_i45494_2_, int p_i45494_3_)
     {
         this.field_178684_a = p_i45494_1_;
         this.field_178682_b = p_i45494_2_;

@@ -8,30 +8,24 @@ import net.minecraft.item.ItemStack;
 public class EntityDamageSource extends DamageSource
 {
     protected Entity damageSourceEntity;
+    private boolean field_180140_r = false;
+    private static final String __OBFID = "CL_00001522";
 
-    /**
-     * Whether this EntityDamageSource is from an entity wearing Thorns-enchanted armor.
-     */
-    private boolean isThornsDamage = false;
-
-    public EntityDamageSource(String p_i1567_1_, Entity damageSourceEntityIn)
+    public EntityDamageSource(String p_i1567_1_, Entity p_i1567_2_)
     {
         super(p_i1567_1_);
-        this.damageSourceEntity = damageSourceEntityIn;
+        this.damageSourceEntity = p_i1567_2_;
     }
 
-    /**
-     * Sets this EntityDamageSource as originating from Thorns armor
-     */
-    public EntityDamageSource setIsThornsDamage()
+    public EntityDamageSource func_180138_v()
     {
-        this.isThornsDamage = true;
+        this.field_180140_r = true;
         return this;
     }
 
-    public boolean getIsThornsDamage()
+    public boolean func_180139_w()
     {
-        return this.isThornsDamage;
+        return this.field_180140_r;
     }
 
     public Entity getEntity()
@@ -44,10 +38,10 @@ public class EntityDamageSource extends DamageSource
      */
     public IChatComponent getDeathMessage(EntityLivingBase p_151519_1_)
     {
-        ItemStack itemstack = this.damageSourceEntity instanceof EntityLivingBase ? ((EntityLivingBase)this.damageSourceEntity).getHeldItem() : null;
-        String s = "death.attack." + this.damageType;
-        String s1 = s + ".item";
-        return itemstack != null && itemstack.hasDisplayName() && StatCollector.canTranslate(s1) ? new ChatComponentTranslation(s1, new Object[] {p_151519_1_.getDisplayName(), this.damageSourceEntity.getDisplayName(), itemstack.getChatComponent()}): new ChatComponentTranslation(s, new Object[] {p_151519_1_.getDisplayName(), this.damageSourceEntity.getDisplayName()});
+        ItemStack var2 = this.damageSourceEntity instanceof EntityLivingBase ? ((EntityLivingBase)this.damageSourceEntity).getHeldItem() : null;
+        String var3 = "death.attack." + this.damageType;
+        String var4 = var3 + ".item";
+        return var2 != null && var2.hasDisplayName() && StatCollector.canTranslate(var4) ? new ChatComponentTranslation(var4, new Object[] {p_151519_1_.getDisplayName(), this.damageSourceEntity.getDisplayName(), var2.getChatComponent()}): new ChatComponentTranslation(var3, new Object[] {p_151519_1_.getDisplayName(), this.damageSourceEntity.getDisplayName()});
     }
 
     /**

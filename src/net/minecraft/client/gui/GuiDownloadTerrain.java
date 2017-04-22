@@ -9,23 +9,21 @@ public class GuiDownloadTerrain extends GuiScreen
 {
     private NetHandlerPlayClient netHandlerPlayClient;
     private int progress;
+    private static final String __OBFID = "CL_00000708";
 
-    public GuiDownloadTerrain(NetHandlerPlayClient netHandler)
+    public GuiDownloadTerrain(NetHandlerPlayClient p_i45023_1_)
     {
-        this.netHandlerPlayClient = netHandler;
+        this.netHandlerPlayClient = p_i45023_1_;
     }
 
     /**
-     * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
+     * Fired when a key is typed (except F11 who toggle full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
-    {
-    }
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {}
 
     /**
-     * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
-     * window resizes, the buttonList is cleared beforehand.
+     * Adds the buttons (and other controls) to the screen in question.
      */
     public void initGui()
     {

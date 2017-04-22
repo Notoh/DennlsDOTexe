@@ -2,7 +2,7 @@ package net.minecraft.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 public enum EnumParticleTypes
@@ -49,78 +49,78 @@ public enum EnumParticleTypes
     WATER_DROP("droplet", 39, false),
     ITEM_TAKE("take", 40, false),
     MOB_APPEARANCE("mobappearance", 41, true);
+    private final String field_179369_Q;
+    private final int field_179372_R;
+    private final boolean field_179371_S;
+    private final int field_179366_T;
+    private static final Map field_179365_U = Maps.newHashMap();
+    private static final String[] field_179368_V;
+    private static final String __OBFID = "CL_00002317";
 
-    private final String particleName;
-    private final int particleID;
-    private final boolean shouldIgnoreRange;
-    private final int argumentCount;
-    private static final Map<Integer, EnumParticleTypes> PARTICLES = Maps.<Integer, EnumParticleTypes>newHashMap();
-    private static final String[] PARTICLE_NAMES;
-
-    private EnumParticleTypes(String particleNameIn, int particleIDIn, boolean p_i46011_5_, int argumentCountIn)
+    private EnumParticleTypes(String p_i46011_3_, int p_i46011_4_, boolean p_i46011_5_, int p_i46011_6_)
     {
-        this.particleName = particleNameIn;
-        this.particleID = particleIDIn;
-        this.shouldIgnoreRange = p_i46011_5_;
-        this.argumentCount = argumentCountIn;
+        this.field_179369_Q = p_i46011_3_;
+        this.field_179372_R = p_i46011_4_;
+        this.field_179371_S = p_i46011_5_;
+        this.field_179366_T = p_i46011_6_;
     }
 
-    private EnumParticleTypes(String particleNameIn, int particleIDIn, boolean p_i46012_5_)
+    private EnumParticleTypes(String p_i46012_3_, int p_i46012_4_, boolean p_i46012_5_)
     {
-        this(particleNameIn, particleIDIn, p_i46012_5_, 0);
+        this(p_i46012_3_, p_i46012_4_, p_i46012_5_, 0);
     }
 
-    public static String[] getParticleNames()
+    public static String[] func_179349_a()
     {
-        return PARTICLE_NAMES;
+        return field_179368_V;
     }
 
-    public String getParticleName()
+    public String func_179346_b()
     {
-        return this.particleName;
+        return this.field_179369_Q;
     }
 
-    public int getParticleID()
+    public int func_179348_c()
     {
-        return this.particleID;
+        return this.field_179372_R;
     }
 
-    public int getArgumentCount()
+    public int func_179345_d()
     {
-        return this.argumentCount;
+        return this.field_179366_T;
     }
 
-    public boolean getShouldIgnoreRange()
+    public boolean func_179344_e()
     {
-        return this.shouldIgnoreRange;
+        return this.field_179371_S;
     }
 
-    public boolean hasArguments()
+    public boolean func_179343_f()
     {
-        return this.argumentCount > 0;
+        return this.field_179366_T > 0;
     }
 
-    /**
-     * Gets the relative EnumParticleTypes by id.
-     */
-    public static EnumParticleTypes getParticleFromId(int particleId)
+    public static EnumParticleTypes func_179342_a(int p_179342_0_)
     {
-        return (EnumParticleTypes)PARTICLES.get(Integer.valueOf(particleId));
+        return (EnumParticleTypes)field_179365_U.get(Integer.valueOf(p_179342_0_));
     }
 
     static {
-        List<String> list = Lists.<String>newArrayList();
+        ArrayList var0 = Lists.newArrayList();
+        EnumParticleTypes[] var1 = values();
+        int var2 = var1.length;
 
-        for (EnumParticleTypes enumparticletypes : values())
+        for (int var3 = 0; var3 < var2; ++var3)
         {
-            PARTICLES.put(Integer.valueOf(enumparticletypes.getParticleID()), enumparticletypes);
+            EnumParticleTypes var4 = var1[var3];
+            field_179365_U.put(Integer.valueOf(var4.func_179348_c()), var4);
 
-            if (!enumparticletypes.getParticleName().endsWith("_"))
+            if (!var4.func_179346_b().endsWith("_"))
             {
-                list.add(enumparticletypes.getParticleName());
+                var0.add(var4.func_179346_b());
             }
         }
 
-        PARTICLE_NAMES = (String[])list.toArray(new String[list.size()]);
+        field_179368_V = (String[])var0.toArray(new String[var0.size()]);
     }
 }

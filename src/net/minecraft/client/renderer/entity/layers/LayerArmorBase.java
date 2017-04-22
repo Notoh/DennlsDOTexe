@@ -10,31 +10,32 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public abstract class LayerArmorBase<T extends ModelBase> implements LayerRenderer<EntityLivingBase>
+public abstract class LayerArmorBase implements LayerRenderer
 {
-    protected static final ResourceLocation ENCHANTED_ITEM_GLINT_RES = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-    protected T field_177189_c;
-    protected T field_177186_d;
-    private final RendererLivingEntity<?> renderer;
-    private float alpha = 1.0F;
-    private float colorR = 1.0F;
-    private float colorG = 1.0F;
-    private float colorB = 1.0F;
+    protected static final ResourceLocation field_177188_b = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+    protected ModelBase field_177189_c;
+    protected ModelBase field_177186_d;
+    private final RendererLivingEntity field_177190_a;
+    private float field_177187_e = 1.0F;
+    private float field_177184_f = 1.0F;
+    private float field_177185_g = 1.0F;
+    private float field_177192_h = 1.0F;
     private boolean field_177193_i;
-    private static final Map<String, ResourceLocation> ARMOR_TEXTURE_RES_MAP = Maps.<String, ResourceLocation>newHashMap();
+    private static final Map field_177191_j = Maps.newHashMap();
+    private static final String __OBFID = "CL_00002428";
 
-    public LayerArmorBase(RendererLivingEntity<?> rendererIn)
+    public LayerArmorBase(RendererLivingEntity p_i46125_1_)
     {
-        this.renderer = rendererIn;
-        this.initArmor();
+        this.field_177190_a = p_i46125_1_;
+        this.func_177177_a();
     }
 
-    public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float partialTicks, float p_177141_5_, float p_177141_6_, float p_177141_7_, float scale)
+    public void doRenderLayer(EntityLivingBase p_177141_1_, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
     {
-        this.renderLayer(entitylivingbaseIn, p_177141_2_, p_177141_3_, partialTicks, p_177141_5_, p_177141_6_, p_177141_7_, scale, 4);
-        this.renderLayer(entitylivingbaseIn, p_177141_2_, p_177141_3_, partialTicks, p_177141_5_, p_177141_6_, p_177141_7_, scale, 3);
-        this.renderLayer(entitylivingbaseIn, p_177141_2_, p_177141_3_, partialTicks, p_177141_5_, p_177141_6_, p_177141_7_, scale, 2);
-        this.renderLayer(entitylivingbaseIn, p_177141_2_, p_177141_3_, partialTicks, p_177141_5_, p_177141_6_, p_177141_7_, scale, 1);
+        this.func_177182_a(p_177141_1_, p_177141_2_, p_177141_3_, p_177141_4_, p_177141_5_, p_177141_6_, p_177141_7_, p_177141_8_, 4);
+        this.func_177182_a(p_177141_1_, p_177141_2_, p_177141_3_, p_177141_4_, p_177141_5_, p_177141_6_, p_177141_7_, p_177141_8_, 3);
+        this.func_177182_a(p_177141_1_, p_177141_2_, p_177141_3_, p_177141_4_, p_177141_5_, p_177141_6_, p_177141_7_, p_177141_8_, 2);
+        this.func_177182_a(p_177141_1_, p_177141_2_, p_177141_3_, p_177141_4_, p_177141_5_, p_177141_6_, p_177141_7_, p_177141_8_, 1);
     }
 
     public boolean shouldCombineTextures()
@@ -42,86 +43,86 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
         return false;
     }
 
-    private void renderLayer(EntityLivingBase entitylivingbaseIn, float p_177182_2_, float p_177182_3_, float p_177182_4_, float p_177182_5_, float p_177182_6_, float p_177182_7_, float p_177182_8_, int armorSlot)
+    private void func_177182_a(EntityLivingBase p_177182_1_, float p_177182_2_, float p_177182_3_, float p_177182_4_, float p_177182_5_, float p_177182_6_, float p_177182_7_, float p_177182_8_, int p_177182_9_)
     {
-        ItemStack itemstack = this.getCurrentArmor(entitylivingbaseIn, armorSlot);
+        ItemStack var10 = this.func_177176_a(p_177182_1_, p_177182_9_);
 
-        if (itemstack != null && itemstack.getItem() instanceof ItemArmor)
+        if (var10 != null && var10.getItem() instanceof ItemArmor)
         {
-            ItemArmor itemarmor = (ItemArmor)itemstack.getItem();
-            T t = this.func_177175_a(armorSlot);
-            t.setModelAttributes(this.renderer.getMainModel());
-            t.setLivingAnimations(entitylivingbaseIn, p_177182_2_, p_177182_3_, p_177182_4_);
-            this.func_177179_a(t, armorSlot);
-            boolean flag = this.isSlotForLeggings(armorSlot);
-            this.renderer.bindTexture(this.getArmorResource(itemarmor, flag));
+            ItemArmor var11 = (ItemArmor)var10.getItem();
+            ModelBase var12 = this.func_177175_a(p_177182_9_);
+            var12.setModelAttributes(this.field_177190_a.getMainModel());
+            var12.setLivingAnimations(p_177182_1_, p_177182_2_, p_177182_3_, p_177182_4_);
+            this.func_177179_a(var12, p_177182_9_);
+            boolean var13 = this.func_177180_b(p_177182_9_);
+            this.field_177190_a.bindTexture(this.func_177181_a(var11, var13));
 
-            switch (itemarmor.getArmorMaterial())
+            switch (LayerArmorBase.SwitchArmorMaterial.field_178747_a[var11.getArmorMaterial().ordinal()])
             {
-                case LEATHER:
-                    int i = itemarmor.getColor(itemstack);
-                    float f = (float)(i >> 16 & 255) / 255.0F;
-                    float f1 = (float)(i >> 8 & 255) / 255.0F;
-                    float f2 = (float)(i & 255) / 255.0F;
-                    GlStateManager.color(this.colorR * f, this.colorG * f1, this.colorB * f2, this.alpha);
-                    t.render(entitylivingbaseIn, p_177182_2_, p_177182_3_, p_177182_5_, p_177182_6_, p_177182_7_, p_177182_8_);
-                    this.renderer.bindTexture(this.getArmorResource(itemarmor, flag, "overlay"));
+                case 1:
+                    int var14 = var11.getColor(var10);
+                    float var15 = (float)(var14 >> 16 & 255) / 255.0F;
+                    float var16 = (float)(var14 >> 8 & 255) / 255.0F;
+                    float var17 = (float)(var14 & 255) / 255.0F;
+                    GlStateManager.color(this.field_177184_f * var15, this.field_177185_g * var16, this.field_177192_h * var17, this.field_177187_e);
+                    var12.render(p_177182_1_, p_177182_2_, p_177182_3_, p_177182_5_, p_177182_6_, p_177182_7_, p_177182_8_);
+                    this.field_177190_a.bindTexture(this.func_177178_a(var11, var13, "overlay"));
 
-                case CHAIN:
-                case IRON:
-                case GOLD:
-                case DIAMOND:
-                    GlStateManager.color(this.colorR, this.colorG, this.colorB, this.alpha);
-                    t.render(entitylivingbaseIn, p_177182_2_, p_177182_3_, p_177182_5_, p_177182_6_, p_177182_7_, p_177182_8_);
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    GlStateManager.color(this.field_177184_f, this.field_177185_g, this.field_177192_h, this.field_177187_e);
+                    var12.render(p_177182_1_, p_177182_2_, p_177182_3_, p_177182_5_, p_177182_6_, p_177182_7_, p_177182_8_);
 
                 default:
-                    if (!this.field_177193_i && itemstack.isItemEnchanted())
+                    if (!this.field_177193_i && var10.isItemEnchanted())
                     {
-                        this.func_177183_a(entitylivingbaseIn, t, p_177182_2_, p_177182_3_, p_177182_4_, p_177182_5_, p_177182_6_, p_177182_7_, p_177182_8_);
+                        this.func_177183_a(p_177182_1_, var12, p_177182_2_, p_177182_3_, p_177182_4_, p_177182_5_, p_177182_6_, p_177182_7_, p_177182_8_);
                     }
             }
         }
     }
 
-    public ItemStack getCurrentArmor(EntityLivingBase entitylivingbaseIn, int armorSlot)
+    public ItemStack func_177176_a(EntityLivingBase p_177176_1_, int p_177176_2_)
     {
-        return entitylivingbaseIn.getCurrentArmor(armorSlot - 1);
+        return p_177176_1_.getCurrentArmor(p_177176_2_ - 1);
     }
 
-    public T func_177175_a(int p_177175_1_)
+    public ModelBase func_177175_a(int p_177175_1_)
     {
-        return (T)(this.isSlotForLeggings(p_177175_1_) ? this.field_177189_c : this.field_177186_d);
+        return this.func_177180_b(p_177175_1_) ? this.field_177189_c : this.field_177186_d;
     }
 
-    private boolean isSlotForLeggings(int armorSlot)
+    private boolean func_177180_b(int p_177180_1_)
     {
-        return armorSlot == 2;
+        return p_177180_1_ == 2;
     }
 
-    private void func_177183_a(EntityLivingBase entitylivingbaseIn, T modelbaseIn, float p_177183_3_, float p_177183_4_, float p_177183_5_, float p_177183_6_, float p_177183_7_, float p_177183_8_, float p_177183_9_)
+    private void func_177183_a(EntityLivingBase p_177183_1_, ModelBase p_177183_2_, float p_177183_3_, float p_177183_4_, float p_177183_5_, float p_177183_6_, float p_177183_7_, float p_177183_8_, float p_177183_9_)
     {
-        float f = (float)entitylivingbaseIn.ticksExisted + p_177183_5_;
-        this.renderer.bindTexture(ENCHANTED_ITEM_GLINT_RES);
+        float var10 = (float)p_177183_1_.ticksExisted + p_177183_5_;
+        this.field_177190_a.bindTexture(field_177188_b);
         GlStateManager.enableBlend();
         GlStateManager.depthFunc(514);
         GlStateManager.depthMask(false);
-        float f1 = 0.5F;
-        GlStateManager.color(f1, f1, f1, 1.0F);
+        float var11 = 0.5F;
+        GlStateManager.color(var11, var11, var11, 1.0F);
 
-        for (int i = 0; i < 2; ++i)
+        for (int var12 = 0; var12 < 2; ++var12)
         {
             GlStateManager.disableLighting();
             GlStateManager.blendFunc(768, 1);
-            float f2 = 0.76F;
-            GlStateManager.color(0.5F * f2, 0.25F * f2, 0.8F * f2, 1.0F);
+            float var13 = 0.76F;
+            GlStateManager.color(0.5F * var13, 0.25F * var13, 0.8F * var13, 1.0F);
             GlStateManager.matrixMode(5890);
             GlStateManager.loadIdentity();
-            float f3 = 0.33333334F;
-            GlStateManager.scale(f3, f3, f3);
-            GlStateManager.rotate(30.0F - (float)i * 60.0F, 0.0F, 0.0F, 1.0F);
-            GlStateManager.translate(0.0F, f * (0.001F + (float)i * 0.003F) * 20.0F, 0.0F);
+            float var14 = 0.33333334F;
+            GlStateManager.scale(var14, var14, var14);
+            GlStateManager.rotate(30.0F - (float)var12 * 60.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.translate(0.0F, var10 * (0.001F + (float)var12 * 0.003F) * 20.0F, 0.0F);
             GlStateManager.matrixMode(5888);
-            modelbaseIn.render(entitylivingbaseIn, p_177183_3_, p_177183_4_, p_177183_6_, p_177183_7_, p_177183_8_, p_177183_9_);
+            p_177183_2_.render(p_177183_1_, p_177183_3_, p_177183_4_, p_177183_6_, p_177183_7_, p_177183_8_, p_177183_9_);
         }
 
         GlStateManager.matrixMode(5890);
@@ -133,26 +134,80 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
         GlStateManager.disableBlend();
     }
 
-    private ResourceLocation getArmorResource(ItemArmor p_177181_1_, boolean p_177181_2_)
+    private ResourceLocation func_177181_a(ItemArmor p_177181_1_, boolean p_177181_2_)
     {
-        return this.getArmorResource(p_177181_1_, p_177181_2_, (String)null);
+        return this.func_177178_a(p_177181_1_, p_177181_2_, (String)null);
     }
 
-    private ResourceLocation getArmorResource(ItemArmor p_177178_1_, boolean p_177178_2_, String p_177178_3_)
+    private ResourceLocation func_177178_a(ItemArmor p_177178_1_, boolean p_177178_2_, String p_177178_3_)
     {
-        String s = String.format("textures/models/armor/%s_layer_%d%s.png", new Object[] {p_177178_1_.getArmorMaterial().getName(), Integer.valueOf(p_177178_2_ ? 2 : 1), p_177178_3_ == null ? "" : String.format("_%s", new Object[]{p_177178_3_})});
-        ResourceLocation resourcelocation = (ResourceLocation)ARMOR_TEXTURE_RES_MAP.get(s);
+        String var4 = String.format("textures/models/armor/%s_layer_%d%s.png", new Object[] {p_177178_1_.getArmorMaterial().func_179242_c(), Integer.valueOf(p_177178_2_ ? 2 : 1), p_177178_3_ == null ? "" : String.format("_%s", new Object[]{p_177178_3_})});
+        ResourceLocation var5 = (ResourceLocation)field_177191_j.get(var4);
 
-        if (resourcelocation == null)
+        if (var5 == null)
         {
-            resourcelocation = new ResourceLocation(s);
-            ARMOR_TEXTURE_RES_MAP.put(s, resourcelocation);
+            var5 = new ResourceLocation(var4);
+            field_177191_j.put(var4, var5);
         }
 
-        return resourcelocation;
+        return var5;
     }
 
-    protected abstract void initArmor();
+    protected abstract void func_177177_a();
 
-    protected abstract void func_177179_a(T p_177179_1_, int p_177179_2_);
+    protected abstract void func_177179_a(ModelBase p_177179_1_, int p_177179_2_);
+
+    static final class SwitchArmorMaterial
+    {
+        static final int[] field_178747_a = new int[ItemArmor.ArmorMaterial.values().length];
+        private static final String __OBFID = "CL_00002427";
+
+        static
+        {
+            try
+            {
+                field_178747_a[ItemArmor.ArmorMaterial.LEATHER.ordinal()] = 1;
+            }
+            catch (NoSuchFieldError var5)
+            {
+                ;
+            }
+
+            try
+            {
+                field_178747_a[ItemArmor.ArmorMaterial.CHAIN.ordinal()] = 2;
+            }
+            catch (NoSuchFieldError var4)
+            {
+                ;
+            }
+
+            try
+            {
+                field_178747_a[ItemArmor.ArmorMaterial.IRON.ordinal()] = 3;
+            }
+            catch (NoSuchFieldError var3)
+            {
+                ;
+            }
+
+            try
+            {
+                field_178747_a[ItemArmor.ArmorMaterial.GOLD.ordinal()] = 4;
+            }
+            catch (NoSuchFieldError var2)
+            {
+                ;
+            }
+
+            try
+            {
+                field_178747_a[ItemArmor.ArmorMaterial.DIAMOND.ordinal()] = 5;
+            }
+            catch (NoSuchFieldError var1)
+            {
+                ;
+            }
+        }
+    }
 }

@@ -4,6 +4,8 @@ import net.minecraft.entity.EntityLivingBase;
 
 public class MetadataCombat extends Metadata
 {
+    private static final String __OBFID = "CL_00002377";
+
     public MetadataCombat(EntityLivingBase p_i46067_1_, EntityLivingBase p_i46067_2_)
     {
         super("player_combat");

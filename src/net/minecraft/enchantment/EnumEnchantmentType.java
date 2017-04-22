@@ -20,6 +20,7 @@ public enum EnumEnchantmentType
     FISHING_ROD,
     BREAKABLE,
     BOW;
+    private static final String __OBFID = "CL_00000106";
 
     /**
      * Return true if the item passed can be enchanted by a enchantment of this type.
@@ -42,8 +43,8 @@ public enum EnumEnchantmentType
             }
             else
             {
-                ItemArmor itemarmor = (ItemArmor)p_77557_1_;
-                return itemarmor.armorType == 0 ? this == ARMOR_HEAD : (itemarmor.armorType == 2 ? this == ARMOR_LEGS : (itemarmor.armorType == 1 ? this == ARMOR_TORSO : (itemarmor.armorType == 3 ? this == ARMOR_FEET : false)));
+                ItemArmor var2 = (ItemArmor)p_77557_1_;
+                return var2.armorType == 0 ? this == ARMOR_HEAD : (var2.armorType == 2 ? this == ARMOR_LEGS : (var2.armorType == 1 ? this == ARMOR_TORSO : (var2.armorType == 3 ? this == ARMOR_FEET : false)));
             }
         }
         else

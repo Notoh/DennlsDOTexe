@@ -9,6 +9,8 @@ import net.minecraft.world.World;
 
 public class EntityMagmaCube extends EntitySlime
 {
+    private static final String __OBFID = "CL_00001691";
+
     public EntityMagmaCube(World worldIn)
     {
         super(worldIn);
@@ -30,9 +32,9 @@ public class EntityMagmaCube extends EntitySlime
     }
 
     /**
-     * Checks that the entity is not colliding with any blocks / liquids
+     * Whether or not the current entity is in lava
      */
-    public boolean isNotColliding()
+    public boolean handleLavaMovement()
     {
         return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCollidingBoundingBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.isAnyLiquid(this.getEntityBoundingBox());
     }
@@ -45,7 +47,7 @@ public class EntityMagmaCube extends EntitySlime
         return this.getSlimeSize() * 3;
     }
 
-    public int getBrightnessForRender(float partialTicks)
+    public int getBrightnessForRender(float p_70070_1_)
     {
         return 15728880;
     }
@@ -53,12 +55,12 @@ public class EntityMagmaCube extends EntitySlime
     /**
      * Gets how bright this entity is.
      */
-    public float getBrightness(float partialTicks)
+    public float getBrightness(float p_70013_1_)
     {
         return 1.0F;
     }
 
-    protected EnumParticleTypes getParticleType()
+    protected EnumParticleTypes func_180487_n()
     {
         return EnumParticleTypes.FLAME;
     }
@@ -78,20 +80,20 @@ public class EntityMagmaCube extends EntitySlime
      */
     protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
     {
-        Item item = this.getDropItem();
+        Item var3 = this.getDropItem();
 
-        if (item != null && this.getSlimeSize() > 1)
+        if (var3 != null && this.getSlimeSize() > 1)
         {
-            int i = this.rand.nextInt(4) - 2;
+            int var4 = this.rand.nextInt(4) - 2;
 
             if (p_70628_2_ > 0)
             {
-                i += this.rand.nextInt(p_70628_2_ + 1);
+                var4 += this.rand.nextInt(p_70628_2_ + 1);
             }
 
-            for (int j = 0; j < i; ++j)
+            for (int var5 = 0; var5 < var4; ++var5)
             {
-                this.dropItem(item, 1);
+                this.dropItem(var3, 1);
             }
         }
     }
@@ -126,15 +128,13 @@ public class EntityMagmaCube extends EntitySlime
         this.isAirBorne = true;
     }
 
-    protected void handleJumpLava()
+    protected void func_180466_bG()
     {
         this.motionY = (double)(0.22F + (float)this.getSlimeSize() * 0.05F);
         this.isAirBorne = true;
     }
 
-    public void fall(float distance, float damageMultiplier)
-    {
-    }
+    public void fall(float distance, float damageMultiplier) {}
 
     /**
      * Indicates weather the slime is able to damage the player (based upon the slime's size)

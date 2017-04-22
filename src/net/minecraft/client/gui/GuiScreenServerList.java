@@ -10,6 +10,7 @@ public class GuiScreenServerList extends GuiScreen
     private final GuiScreen field_146303_a;
     private final ServerData field_146301_f;
     private GuiTextField field_146302_g;
+    private static final String __OBFID = "CL_00000692";
 
     public GuiScreenServerList(GuiScreen p_i1031_1_, ServerData p_i1031_2_)
     {
@@ -26,8 +27,7 @@ public class GuiScreenServerList extends GuiScreen
     }
 
     /**
-     * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
-     * window resizes, the buttonList is cleared beforehand.
+     * Adds the buttons (and other controls) to the screen in question.
      */
     public void initGui()
     {
@@ -52,9 +52,6 @@ public class GuiScreenServerList extends GuiScreen
         this.mc.gameSettings.saveOptions();
     }
 
-    /**
-     * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
-     */
     protected void actionPerformed(GuiButton button) throws IOException
     {
         if (button.enabled)
@@ -72,7 +69,7 @@ public class GuiScreenServerList extends GuiScreen
     }
 
     /**
-     * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
+     * Fired when a key is typed (except F11 who toggle full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
     protected void keyTyped(char typedChar, int keyCode) throws IOException

@@ -1,6 +1,7 @@
 package net.minecraft.client.renderer;
 
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 import java.util.List;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
@@ -8,81 +9,135 @@ import org.lwjgl.opengl.GL11;
 
 public class WorldVertexBufferUploader
 {
-    @SuppressWarnings("incomplete-switch")
-    public void func_181679_a(WorldRenderer p_181679_1_)
+    private static final String __OBFID = "CL_00002567";
+
+    public int draw(WorldRenderer p_178177_1_, int p_178177_2_)
     {
-        if (p_181679_1_.getVertexCount() > 0)
+        if (p_178177_2_ > 0)
         {
-            VertexFormat vertexformat = p_181679_1_.getVertexFormat();
-            int i = vertexformat.getNextOffset();
-            ByteBuffer bytebuffer = p_181679_1_.getByteBuffer();
-            List<VertexFormatElement> list = vertexformat.getElements();
+            VertexFormat var3 = p_178177_1_.func_178973_g();
+            int var4 = var3.func_177338_f();
+            ByteBuffer var5 = p_178177_1_.func_178966_f();
+            List var6 = var3.func_177343_g();
+            Iterator var7 = var6.iterator();
+            VertexFormatElement var8;
+            VertexFormatElement.EnumUseage var9;
+            int var10;
 
-            for (int j = 0; j < list.size(); ++j)
+            while (var7.hasNext())
             {
-                VertexFormatElement vertexformatelement = (VertexFormatElement)list.get(j);
-                VertexFormatElement.EnumUsage vertexformatelement$enumusage = vertexformatelement.getUsage();
-                int k = vertexformatelement.getType().getGlConstant();
-                int l = vertexformatelement.getIndex();
-                bytebuffer.position(vertexformat.func_181720_d(j));
+                var8 = (VertexFormatElement)var7.next();
+                var9 = var8.func_177375_c();
+                var10 = var8.func_177367_b().func_177397_c();
+                int var11 = var8.func_177369_e();
 
-                switch (vertexformatelement$enumusage)
+                switch (WorldVertexBufferUploader.SwitchEnumUseage.field_178958_a[var9.ordinal()])
                 {
-                    case POSITION:
-                        GL11.glVertexPointer(vertexformatelement.getElementCount(), k, i, bytebuffer);
+                    case 1:
+                        var5.position(var8.func_177373_a());
+                        GL11.glVertexPointer(var8.func_177370_d(), var10, var4, var5);
                         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
                         break;
 
-                    case UV:
-                        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit + l);
-                        GL11.glTexCoordPointer(vertexformatelement.getElementCount(), k, i, bytebuffer);
+                    case 2:
+                        var5.position(var8.func_177373_a());
+                        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit + var11);
+                        GL11.glTexCoordPointer(var8.func_177370_d(), var10, var4, var5);
                         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                         OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
                         break;
 
-                    case COLOR:
-                        GL11.glColorPointer(vertexformatelement.getElementCount(), k, i, bytebuffer);
+                    case 3:
+                        var5.position(var8.func_177373_a());
+                        GL11.glColorPointer(var8.func_177370_d(), var10, var4, var5);
                         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
                         break;
 
-                    case NORMAL:
-                        GL11.glNormalPointer(k, i, bytebuffer);
+                    case 4:
+                        var5.position(var8.func_177373_a());
+                        GL11.glNormalPointer(var10, var4, var5);
                         GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                 }
             }
 
-            GL11.glDrawArrays(p_181679_1_.getDrawMode(), 0, p_181679_1_.getVertexCount());
-            int i1 = 0;
+            GL11.glDrawArrays(p_178177_1_.getDrawMode(), 0, p_178177_1_.func_178989_h());
+            var7 = var6.iterator();
 
-            for (int j1 = list.size(); i1 < j1; ++i1)
+            while (var7.hasNext())
             {
-                VertexFormatElement vertexformatelement1 = (VertexFormatElement)list.get(i1);
-                VertexFormatElement.EnumUsage vertexformatelement$enumusage1 = vertexformatelement1.getUsage();
-                int k1 = vertexformatelement1.getIndex();
+                var8 = (VertexFormatElement)var7.next();
+                var9 = var8.func_177375_c();
+                var10 = var8.func_177369_e();
 
-                switch (vertexformatelement$enumusage1)
+                switch (WorldVertexBufferUploader.SwitchEnumUseage.field_178958_a[var9.ordinal()])
                 {
-                    case POSITION:
+                    case 1:
                         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
                         break;
 
-                    case UV:
-                        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit + k1);
+                    case 2:
+                        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit + var10);
                         GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                         OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
                         break;
 
-                    case COLOR:
+                    case 3:
                         GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-                        GlStateManager.resetColor();
+                        GlStateManager.func_179117_G();
                         break;
 
-                    case NORMAL:
+                    case 4:
                         GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
                 }
             }
         }
 
-        p_181679_1_.reset();
+        p_178177_1_.reset();
+        return p_178177_2_;
+    }
+
+    static final class SwitchEnumUseage
+    {
+        static final int[] field_178958_a = new int[VertexFormatElement.EnumUseage.values().length];
+        private static final String __OBFID = "CL_00002566";
+
+        static
+        {
+            try
+            {
+                field_178958_a[VertexFormatElement.EnumUseage.POSITION.ordinal()] = 1;
+            }
+            catch (NoSuchFieldError var4)
+            {
+                ;
+            }
+
+            try
+            {
+                field_178958_a[VertexFormatElement.EnumUseage.UV.ordinal()] = 2;
+            }
+            catch (NoSuchFieldError var3)
+            {
+                ;
+            }
+
+            try
+            {
+                field_178958_a[VertexFormatElement.EnumUseage.COLOR.ordinal()] = 3;
+            }
+            catch (NoSuchFieldError var2)
+            {
+                ;
+            }
+
+            try
+            {
+                field_178958_a[VertexFormatElement.EnumUseage.NORMAL.ordinal()] = 4;
+            }
+            catch (NoSuchFieldError var1)
+            {
+                ;
+            }
+        }
     }
 }

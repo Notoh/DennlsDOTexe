@@ -14,18 +14,15 @@ public interface IMerchant
 
     MerchantRecipeList getRecipes(EntityPlayer p_70934_1_);
 
-    void setRecipes(MerchantRecipeList recipeList);
+    void setRecipes(MerchantRecipeList p_70930_1_);
 
-    void useRecipe(MerchantRecipe recipe);
+    void useRecipe(MerchantRecipe p_70933_1_);
 
     /**
      * Notifies the merchant of a possible merchantrecipe being fulfilled or not. Usually, this is just a sound byte
      * being played depending if the suggested itemstack is not null.
      */
-    void verifySellingItem(ItemStack stack);
+    void verifySellingItem(ItemStack p_110297_1_);
 
-    /**
-     * Get the formatted ChatComponent that will be used for the sender's username in chat
-     */
     IChatComponent getDisplayName();
 }

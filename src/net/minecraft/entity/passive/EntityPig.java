@@ -28,12 +28,13 @@ public class EntityPig extends EntityAnimal
 {
     /** AI task for player control. */
     private final EntityAIControlledByPlayer aiControlledByPlayer;
+    private static final String __OBFID = "CL_00001647";
 
     public EntityPig(World worldIn)
     {
         super(worldIn);
         this.setSize(0.9F, 0.9F);
-        ((PathNavigateGround)this.getNavigator()).setAvoidsWater(true);
+        ((PathNavigateGround)this.getNavigator()).func_179690_a(true);
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 1.25D));
         this.tasks.addTask(2, this.aiControlledByPlayer = new EntityAIControlledByPlayer(this, 0.3F));
@@ -59,8 +60,8 @@ public class EntityPig extends EntityAnimal
      */
     public boolean canBeSteered()
     {
-        ItemStack itemstack = ((EntityPlayer)this.riddenByEntity).getHeldItem();
-        return itemstack != null && itemstack.getItem() == Items.carrot_on_a_stick;
+        ItemStack var1 = ((EntityPlayer)this.riddenByEntity).getHeldItem();
+        return var1 != null && var1.getItem() == Items.carrot_on_a_stick;
     }
 
     protected void entityInit()
@@ -111,7 +112,7 @@ public class EntityPig extends EntityAnimal
         return "mob.pig.death";
     }
 
-    protected void playStepSound(BlockPos pos, Block blockIn)
+    protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
     {
         this.playSound("mob.pig.step", 0.15F, 1.0F);
     }
@@ -119,20 +120,20 @@ public class EntityPig extends EntityAnimal
     /**
      * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
      */
-    public boolean interact(EntityPlayer player)
+    public boolean interact(EntityPlayer p_70085_1_)
     {
-        if (super.interact(player))
+        if (super.interact(p_70085_1_))
         {
             return true;
         }
-        else if (!this.getSaddled() || this.worldObj.isRemote || this.riddenByEntity != null && this.riddenByEntity != player)
+        else if (this.getSaddled() && !this.worldObj.isRemote && (this.riddenByEntity == null || this.riddenByEntity == p_70085_1_))
         {
-            return false;
+            p_70085_1_.mountEntity(this);
+            return true;
         }
         else
         {
-            player.mountEntity(this);
-            return true;
+            return false;
         }
     }
 
@@ -146,9 +147,9 @@ public class EntityPig extends EntityAnimal
      */
     protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
     {
-        int i = this.rand.nextInt(3) + 1 + this.rand.nextInt(1 + p_70628_2_);
+        int var3 = this.rand.nextInt(3) + 1 + this.rand.nextInt(1 + p_70628_2_);
 
-        for (int j = 0; j < i; ++j)
+        for (int var4 = 0; var4 < var3; ++var4)
         {
             if (this.isBurning())
             {
@@ -177,9 +178,9 @@ public class EntityPig extends EntityAnimal
     /**
      * Set or remove the saddle of the pig.
      */
-    public void setSaddled(boolean saddled)
+    public void setSaddled(boolean p_70900_1_)
     {
-        if (saddled)
+        if (p_70900_1_)
         {
             this.dataWatcher.updateObject(16, Byte.valueOf((byte)1));
         }
@@ -194,20 +195,12 @@ public class EntityPig extends EntityAnimal
      */
     public void onStruckByLightning(EntityLightningBolt lightningBolt)
     {
-        if (!this.worldObj.isRemote && !this.isDead)
+        if (!this.worldObj.isRemote)
         {
-            EntityPigZombie entitypigzombie = new EntityPigZombie(this.worldObj);
-            entitypigzombie.setCurrentItemOrArmor(0, new ItemStack(Items.golden_sword));
-            entitypigzombie.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
-            entitypigzombie.setNoAI(this.isAIDisabled());
-
-            if (this.hasCustomName())
-            {
-                entitypigzombie.setCustomNameTag(this.getCustomNameTag());
-                entitypigzombie.setAlwaysRenderNameTag(this.getAlwaysRenderNameTag());
-            }
-
-            this.worldObj.spawnEntityInWorld(entitypigzombie);
+            EntityPigZombie var2 = new EntityPigZombie(this.worldObj);
+            var2.setCurrentItemOrArmor(0, new ItemStack(Items.golden_sword));
+            var2.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
+            this.worldObj.spawnEntityInWorld(var2);
             this.setDead();
         }
     }
@@ -222,7 +215,7 @@ public class EntityPig extends EntityAnimal
         }
     }
 
-    public EntityPig createChild(EntityAgeable ageable)
+    public EntityPig createChild(EntityAgeable p_90011_1_)
     {
         return new EntityPig(this.worldObj);
     }
@@ -231,9 +224,9 @@ public class EntityPig extends EntityAnimal
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
-    public boolean isBreedingItem(ItemStack stack)
+    public boolean isBreedingItem(ItemStack p_70877_1_)
     {
-        return stack != null && stack.getItem() == Items.carrot;
+        return p_70877_1_ != null && p_70877_1_.getItem() == Items.carrot;
     }
 
     /**

@@ -5,16 +5,18 @@ import com.mojang.authlib.GameProfile;
 import java.util.Date;
 import java.util.UUID;
 
-public class UserListBansEntry extends BanEntry<GameProfile>
+public class UserListBansEntry extends BanEntry
 {
-    public UserListBansEntry(GameProfile profile)
+    private static final String __OBFID = "CL_00001872";
+
+    public UserListBansEntry(GameProfile p_i1134_1_)
     {
-        this(profile, (Date)null, (String)null, (Date)null, (String)null);
+        this(p_i1134_1_, (Date)null, (String)null, (Date)null, (String)null);
     }
 
-    public UserListBansEntry(GameProfile profile, Date startDate, String banner, Date endDate, String banReason)
+    public UserListBansEntry(GameProfile p_i1135_1_, Date p_i1135_2_, String p_i1135_3_, Date p_i1135_4_, String p_i1135_5_)
     {
-        super(profile, endDate, banner, endDate, banReason);
+        super(p_i1135_1_, p_i1135_4_, p_i1135_3_, p_i1135_4_, p_i1135_5_);
     }
 
     public UserListBansEntry(JsonObject p_i1136_1_)
@@ -36,19 +38,19 @@ public class UserListBansEntry extends BanEntry<GameProfile>
     {
         if (p_152648_0_.has("uuid") && p_152648_0_.has("name"))
         {
-            String s = p_152648_0_.get("uuid").getAsString();
-            UUID uuid;
+            String var1 = p_152648_0_.get("uuid").getAsString();
+            UUID var2;
 
             try
             {
-                uuid = UUID.fromString(s);
+                var2 = UUID.fromString(var1);
             }
             catch (Throwable var4)
             {
                 return null;
             }
 
-            return new GameProfile(uuid, p_152648_0_.get("name").getAsString());
+            return new GameProfile(var2, p_152648_0_.get("name").getAsString());
         }
         else
         {

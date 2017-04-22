@@ -8,7 +8,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerWorkbench;
-import net.minecraft.stats.StatList;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumFacing;
@@ -18,6 +17,8 @@ import net.minecraft.world.World;
 
 public class BlockWorkbench extends Block
 {
+    private static final String __OBFID = "CL_00000221";
+
     protected BlockWorkbench()
     {
         super(Material.wood);
@@ -33,7 +34,6 @@ public class BlockWorkbench extends Block
         else
         {
             playerIn.displayGui(new BlockWorkbench.InterfaceCraftingTable(worldIn, pos));
-            playerIn.triggerAchievement(StatList.field_181742_Z);
             return true;
         }
     }
@@ -42,11 +42,12 @@ public class BlockWorkbench extends Block
     {
         private final World world;
         private final BlockPos position;
+        private static final String __OBFID = "CL_00002127";
 
-        public InterfaceCraftingTable(World worldIn, BlockPos pos)
+        public InterfaceCraftingTable(World worldIn, BlockPos p_i45730_2_)
         {
             this.world = worldIn;
-            this.position = pos;
+            this.position = p_i45730_2_;
         }
 
         public String getName()
@@ -71,7 +72,7 @@ public class BlockWorkbench extends Block
 
         public String getGuiID()
         {
-            return "net.minecraft:crafting_table";
+            return "minecraft:crafting_table";
         }
     }
 }

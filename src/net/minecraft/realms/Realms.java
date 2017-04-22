@@ -1,6 +1,5 @@
 package net.minecraft.realms;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import com.mojang.authlib.GameProfile;
 import com.mojang.util.UUIDTypeAdapter;
 import java.net.Proxy;
@@ -10,6 +9,8 @@ import net.minecraft.world.WorldSettings;
 
 public class Realms
 {
+    private static final String __OBFID = "CL_00001892";
+
     public static boolean isTouchScreen()
     {
         return Minecraft.getMinecraft().gameSettings.touchscreen;
@@ -22,14 +23,14 @@ public class Realms
 
     public static String sessionId()
     {
-        Session session = Minecraft.getMinecraft().getSession();
-        return session == null ? null : session.getSessionID();
+        Session var0 = Minecraft.getMinecraft().getSession();
+        return var0 == null ? null : var0.getSessionID();
     }
 
     public static String userName()
     {
-        Session session = Minecraft.getMinecraft().getSession();
-        return session == null ? null : session.getUsername();
+        Session var0 = Minecraft.getMinecraft().getSession();
+        return var0 == null ? null : var0.getUsername();
     }
 
     public static long currentTimeMillis()
@@ -40,11 +41,6 @@ public class Realms
     public static String getSessionId()
     {
         return Minecraft.getMinecraft().getSession().getSessionID();
-    }
-
-    public static String getUUID()
-    {
-        return Minecraft.getMinecraft().getSession().getPlayerID();
     }
 
     public static String getName()
@@ -80,26 +76,5 @@ public class Realms
     public static int adventureId()
     {
         return WorldSettings.GameType.ADVENTURE.getID();
-    }
-
-    public static int spectatorId()
-    {
-        return WorldSettings.GameType.SPECTATOR.getID();
-    }
-
-    public static void setConnectedToRealms(boolean p_setConnectedToRealms_0_)
-    {
-        Minecraft.getMinecraft().func_181537_a(p_setConnectedToRealms_0_);
-    }
-
-    public static ListenableFuture<Object> downloadResourcePack(String p_downloadResourcePack_0_, String p_downloadResourcePack_1_)
-    {
-        ListenableFuture<Object> listenablefuture = Minecraft.getMinecraft().getResourcePackRepository().downloadResourcePack(p_downloadResourcePack_0_, p_downloadResourcePack_1_);
-        return listenablefuture;
-    }
-
-    public static void clearResourcePack()
-    {
-        Minecraft.getMinecraft().getResourcePackRepository().func_148529_f();
     }
 }

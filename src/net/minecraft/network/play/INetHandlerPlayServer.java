@@ -27,7 +27,7 @@ import net.minecraft.network.play.client.C19PacketResourcePackStatus;
 
 public interface INetHandlerPlayServer extends INetHandler
 {
-    void handleAnimation(C0APacketAnimation packetIn);
+    void func_175087_a(C0APacketAnimation p_175087_1_);
 
     /**
      * Process chat messages (broadcast back to clients) and commands (executes)
@@ -138,7 +138,7 @@ public interface INetHandlerPlayServer extends INetHandler
      */
     void processPlayerBlockPlacement(C08PacketPlayerBlockPlacement packetIn);
 
-    void handleSpectate(C18PacketSpectate packetIn);
+    void func_175088_a(C18PacketSpectate p_175088_1_);
 
-    void handleResourcePackStatus(C19PacketResourcePackStatus packetIn);
+    void func_175086_a(C19PacketResourcePackStatus p_175086_1_);
 }

@@ -11,7 +11,7 @@ public interface IProgressUpdate
      * this string, followed by "working..." and then the "% complete" are the 3 lines shown. This resets progress to 0,
      * and the WorkingString to "working...".
      */
-    void resetProgressAndMessage(String message);
+    void resetProgressAndMessage(String p_73721_1_);
 
     /**
      * Displays a string on the loading screen supposed to indicate what is being done currently.

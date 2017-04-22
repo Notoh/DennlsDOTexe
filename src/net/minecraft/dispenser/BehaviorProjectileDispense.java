@@ -9,17 +9,19 @@ import net.minecraft.world.World;
 
 public abstract class BehaviorProjectileDispense extends BehaviorDefaultDispenseItem
 {
+    private static final String __OBFID = "CL_00001394";
+
     /**
      * Dispense the specified stack, play the dispense sound and spawn particles.
      */
     public ItemStack dispenseStack(IBlockSource source, ItemStack stack)
     {
-        World world = source.getWorld();
-        IPosition iposition = BlockDispenser.getDispensePosition(source);
-        EnumFacing enumfacing = BlockDispenser.getFacing(source.getBlockMetadata());
-        IProjectile iprojectile = this.getProjectileEntity(world, iposition);
-        iprojectile.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + 0.1F), (double)enumfacing.getFrontOffsetZ(), this.func_82500_b(), this.func_82498_a());
-        world.spawnEntityInWorld((Entity)iprojectile);
+        World var3 = source.getWorld();
+        IPosition var4 = BlockDispenser.getDispensePosition(source);
+        EnumFacing var5 = BlockDispenser.getFacing(source.getBlockMetadata());
+        IProjectile var6 = this.getProjectileEntity(var3, var4);
+        var6.setThrowableHeading((double)var5.getFrontOffsetX(), (double)((float)var5.getFrontOffsetY() + 0.1F), (double)var5.getFrontOffsetZ(), this.func_82500_b(), this.func_82498_a());
+        var3.spawnEntityInWorld((Entity)var6);
         stack.splitStack(1);
         return stack;
     }

@@ -10,6 +10,8 @@ import net.minecraft.world.World;
 
 public class ItemShears extends Item
 {
+    private static final String __OBFID = "CL_00000062";
+
     public ItemShears()
     {
         this.setMaxStackSize(1);
@@ -41,8 +43,8 @@ public class ItemShears extends Item
         return blockIn == Blocks.web || blockIn == Blocks.redstone_wire || blockIn == Blocks.tripwire;
     }
 
-    public float getStrVsBlock(ItemStack stack, Block block)
+    public float getStrVsBlock(ItemStack stack, Block p_150893_2_)
     {
-        return block != Blocks.web && block.getMaterial() != Material.leaves ? (block == Blocks.wool ? 5.0F : super.getStrVsBlock(stack, block)) : 15.0F;
+        return p_150893_2_ != Blocks.web && p_150893_2_.getMaterial() != Material.leaves ? (p_150893_2_ == Blocks.wool ? 5.0F : super.getStrVsBlock(stack, p_150893_2_)) : 15.0F;
     }
 }

@@ -222,7 +222,7 @@ public class ResourcePackRepository
 
             final GuiScreenWorking var15 = new GuiScreenWorking();
             Map var6 = Minecraft.func_175596_ai();
-            final Minecraft var7 = Minecraft.getMinecraft();
+            final Minecraft var7 = Minecraft.getMC();
             Futures.getUnchecked(var7.addScheduledTask(new Runnable()
             {
                 private static final String __OBFID = "CL_00001089";
@@ -258,7 +258,7 @@ public class ResourcePackRepository
     public ListenableFuture func_177319_a(File p_177319_1_)
     {
         this.field_148532_f = new FileResourcePack(p_177319_1_);
-        return Minecraft.getMinecraft().func_175603_A();
+        return Minecraft.getMC().func_175603_A();
     }
 
     /**

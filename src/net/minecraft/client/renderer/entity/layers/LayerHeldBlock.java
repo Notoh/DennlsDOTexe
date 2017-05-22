@@ -27,7 +27,7 @@ public class LayerHeldBlock implements LayerRenderer
 
         if (var9.getBlock().getMaterial() != Material.air)
         {
-            BlockRendererDispatcher var10 = Minecraft.getMinecraft().getBlockRendererDispatcher();
+            BlockRendererDispatcher var10 = Minecraft.getMC().getBlockRendererDispatcher();
             GlStateManager.enableRescaleNormal();
             GlStateManager.pushMatrix();
             GlStateManager.translate(0.0F, 0.6875F, -0.75F);

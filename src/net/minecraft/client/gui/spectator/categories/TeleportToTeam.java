@@ -28,7 +28,7 @@ public class TeleportToTeam implements ISpectatorMenuView, ISpectatorMenuObject
 
     public TeleportToTeam()
     {
-        Minecraft var1 = Minecraft.getMinecraft();
+        Minecraft var1 = Minecraft.getMC();
         Iterator var2 = var1.theWorld.getScoreboard().getTeams().iterator();
 
         while (var2.hasNext())
@@ -60,7 +60,7 @@ public class TeleportToTeam implements ISpectatorMenuView, ISpectatorMenuObject
 
     public void func_178663_a(float p_178663_1_, int p_178663_2_)
     {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiSpectator.field_175269_a);
+        Minecraft.getMC().getTextureManager().bindTexture(GuiSpectator.field_175269_a);
         Gui.drawModalRectWithCustomSizedTexture(0, 0, 16.0F, 0.0F, 16, 16, 256.0F, 256.0F);
     }
 
@@ -99,7 +99,7 @@ public class TeleportToTeam implements ISpectatorMenuView, ISpectatorMenuObject
             while (var3.hasNext())
             {
                 String var4 = (String)var3.next();
-                NetworkPlayerInfo var5 = Minecraft.getMinecraft().getNetHandler().func_175104_a(var4);
+                NetworkPlayerInfo var5 = Minecraft.getMC().getNetHandler().func_175104_a(var4);
 
                 if (var5 != null)
                 {
@@ -136,7 +136,7 @@ public class TeleportToTeam implements ISpectatorMenuView, ISpectatorMenuObject
 
             if (var4.length() >= 2)
             {
-                var3 = Minecraft.getMinecraft().fontRendererObj.func_175064_b(var4.charAt(1));
+                var3 = Minecraft.getMC().fontRendererObj.func_175064_b(var4.charAt(1));
             }
 
             if (var3 >= 0)
@@ -147,7 +147,7 @@ public class TeleportToTeam implements ISpectatorMenuView, ISpectatorMenuObject
                 Gui.drawRect(1, 1, 15, 15, MathHelper.func_180183_b(var5 * p_178663_1_, var6 * p_178663_1_, var7 * p_178663_1_) | p_178663_2_ << 24);
             }
 
-            Minecraft.getMinecraft().getTextureManager().bindTexture(this.field_178677_c);
+            Minecraft.getMC().getTextureManager().bindTexture(this.field_178677_c);
             GlStateManager.color(p_178663_1_, p_178663_1_, p_178663_1_, (float)p_178663_2_ / 255.0F);
             Gui.drawScaledCustomSizeModalRect(2, 2, 8.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
             Gui.drawScaledCustomSizeModalRect(2, 2, 40.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);

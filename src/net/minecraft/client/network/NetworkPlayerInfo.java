@@ -101,7 +101,7 @@ public class NetworkPlayerInfo
 
     public ScorePlayerTeam func_178850_i()
     {
-        return Minecraft.getMinecraft().theWorld.getScoreboard().getPlayersTeam(this.func_178845_a().getName());
+        return Minecraft.getMC().theWorld.getScoreboard().getPlayersTeam(this.func_178845_a().getName());
     }
 
     protected void func_178841_j()
@@ -111,7 +111,7 @@ public class NetworkPlayerInfo
             if (!this.field_178864_d)
             {
                 this.field_178864_d = true;
-                Minecraft.getMinecraft().getSkinManager().func_152790_a(this.field_178867_a, new SkinManager.SkinAvailableCallback()
+                Minecraft.getMC().getSkinManager().func_152790_a(this.field_178867_a, new SkinManager.SkinAvailableCallback()
                 {
                     private static final String __OBFID = "CL_00002619";
                     public void func_180521_a(Type p_180521_1_, ResourceLocation p_180521_2_, MinecraftProfileTexture p_180521_3_)

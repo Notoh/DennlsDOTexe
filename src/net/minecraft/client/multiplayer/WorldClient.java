@@ -52,7 +52,7 @@ public class WorldClient extends World
      * spawn up to 10 pending entities with each subsequent tick until the spawn queue is empty.
      */
     private final Set entitySpawnQueue = Sets.newHashSet();
-    private final Minecraft mc = Minecraft.getMinecraft();
+    private final Minecraft mc = Minecraft.getMC();
     private final Set previousActiveChunkSet = Sets.newHashSet();
     private static final String __OBFID = "CL_00000882";
 

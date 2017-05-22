@@ -29,7 +29,7 @@ public class LayerSnowmanHead implements LayerRenderer
             GlStateManager.translate(0.0F, -0.34375F, 0.0F);
             GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
             GlStateManager.scale(var9, -var9, -var9);
-            Minecraft.getMinecraft().getItemRenderer().renderItem(p_177151_1_, new ItemStack(Blocks.pumpkin, 1), ItemCameraTransforms.TransformType.HEAD);
+            Minecraft.getMC().getItemRenderer().renderItem(p_177151_1_, new ItemStack(Blocks.pumpkin, 1), ItemCameraTransforms.TransformType.HEAD);
             GlStateManager.popMatrix();
         }
     }

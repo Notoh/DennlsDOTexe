@@ -38,7 +38,7 @@ public class TeleportToPlayer implements ISpectatorMenuView, ISpectatorMenuObjec
 
     public TeleportToPlayer()
     {
-        this(field_178674_a.sortedCopy(Minecraft.getMinecraft().getNetHandler().func_175106_d()));
+        this(field_178674_a.sortedCopy(Minecraft.getMC().getNetHandler().func_175106_d()));
     }
 
     public TeleportToPlayer(Collection p_i45493_1_)
@@ -79,7 +79,7 @@ public class TeleportToPlayer implements ISpectatorMenuView, ISpectatorMenuObjec
 
     public void func_178663_a(float p_178663_1_, int p_178663_2_)
     {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiSpectator.field_175269_a);
+        Minecraft.getMC().getTextureManager().bindTexture(GuiSpectator.field_175269_a);
         Gui.drawModalRectWithCustomSizedTexture(0, 0, 0.0F, 0.0F, 16, 16, 256.0F, 256.0F);
     }
 

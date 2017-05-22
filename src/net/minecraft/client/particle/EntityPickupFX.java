@@ -15,7 +15,7 @@ public class EntityPickupFX extends EntityFX
     private int age;
     private int maxAge;
     private float field_174841_aA;
-    private RenderManager field_174842_aB = Minecraft.getMinecraft().getRenderManager();
+    private RenderManager field_174842_aB = Minecraft.getMC().getRenderManager();
     private static final String __OBFID = "CL_00000930";
 
     public EntityPickupFX(World worldIn, Entity p_i1233_2_, Entity p_i1233_3_, float p_i1233_4_)

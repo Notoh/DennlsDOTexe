@@ -51,7 +51,7 @@ public class RenderFallingBlock extends Render
                     int var17 = var12.getY();
                     int var18 = var12.getZ();
                     var15.setTranslation((double)((float)(-var16) - 0.5F), (double)(-var17), (double)((float)(-var18) - 0.5F));
-                    BlockRendererDispatcher var19 = Minecraft.getMinecraft().getBlockRendererDispatcher();
+                    BlockRendererDispatcher var19 = Minecraft.getMC().getBlockRendererDispatcher();
                     IBakedModel var20 = var19.getModelFromBlockState(var10, var13, (BlockPos)null);
                     var19.func_175019_b().renderBlockModel(var13, var20, var10, var12, var15, false);
                     var15.setTranslation(0.0D, 0.0D, 0.0D);

@@ -93,7 +93,7 @@ public class ModelGuardian extends ModelBase
         }
 
         this.guardianEye.rotationPointZ = -8.25F;
-        Object var26 = Minecraft.getMinecraft().func_175606_aa();
+        Object var26 = Minecraft.getMC().func_175606_aa();
 
         if (var8.func_175474_cn())
         {

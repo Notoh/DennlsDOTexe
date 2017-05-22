@@ -102,7 +102,7 @@ public abstract class Render
     private void renderEntityOnFire(Entity p_76977_1_, double p_76977_2_, double p_76977_4_, double p_76977_6_, float p_76977_8_)
     {
         GlStateManager.disableLighting();
-        TextureMap var9 = Minecraft.getMinecraft().getTextureMapBlocks();
+        TextureMap var9 = Minecraft.getMC().getTextureMapBlocks();
         TextureAtlasSprite var10 = var9.getAtlasSprite("minecraft:blocks/fire_layer_0");
         TextureAtlasSprite var11 = var9.getAtlasSprite("minecraft:blocks/fire_layer_1");
         GlStateManager.pushMatrix();

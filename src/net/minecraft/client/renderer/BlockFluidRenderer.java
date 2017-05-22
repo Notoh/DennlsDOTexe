@@ -24,7 +24,7 @@ public class BlockFluidRenderer
 
     protected void func_178268_a()
     {
-        TextureMap var1 = Minecraft.getMinecraft().getTextureMapBlocks();
+        TextureMap var1 = Minecraft.getMC().getTextureMapBlocks();
         this.field_178272_a[0] = var1.getAtlasSprite("minecraft:blocks/lava_still");
         this.field_178272_a[1] = var1.getAtlasSprite("minecraft:blocks/lava_flow");
         this.field_178271_b[0] = var1.getAtlasSprite("minecraft:blocks/water_still");

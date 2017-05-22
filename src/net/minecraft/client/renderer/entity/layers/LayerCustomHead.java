@@ -36,7 +36,7 @@ public class LayerCustomHead implements LayerRenderer
         if (var9 != null && var9.getItem() != null)
         {
             Item var10 = var9.getItem();
-            Minecraft var11 = Minecraft.getMinecraft();
+            Minecraft var11 = Minecraft.getMC();
             GlStateManager.pushMatrix();
 
             if (p_177141_1_.isSneaking())

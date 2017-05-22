@@ -32,7 +32,7 @@ import org.lwjgl.opengl.GL11;
 public class RenderItemFrame extends Render
 {
     private static final ResourceLocation mapBackgroundTextures = new ResourceLocation("textures/map/map_background.png");
-    private final Minecraft field_147917_g = Minecraft.getMinecraft();
+    private final Minecraft field_147917_g = Minecraft.getMC();
     private final ModelResourceLocation field_177072_f = new ModelResourceLocation("item_frame", "normal");
     private final ModelResourceLocation field_177073_g = new ModelResourceLocation("item_frame", "map");
     private RenderItem field_177074_h;

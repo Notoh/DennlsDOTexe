@@ -22,7 +22,7 @@ public class RealmsBridge extends RealmsScreen
             Constructor var3 = var2.getDeclaredConstructor(new Class[] {RealmsScreen.class});
             var3.setAccessible(true);
             Object var4 = var3.newInstance(new Object[] {this});
-            Minecraft.getMinecraft().displayGuiScreen(((RealmsScreen)var4).getProxy());
+            Minecraft.getMC().displayGuiScreen(((RealmsScreen)var4).getProxy());
         }
         catch (Exception var5)
         {
@@ -32,6 +32,6 @@ public class RealmsBridge extends RealmsScreen
 
     public void init()
     {
-        Minecraft.getMinecraft().displayGuiScreen(this.previousScreen);
+        Minecraft.getMC().displayGuiScreen(this.previousScreen);
     }
 }

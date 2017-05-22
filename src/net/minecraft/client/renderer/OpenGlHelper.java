@@ -597,7 +597,7 @@ public class OpenGlHelper
 
     public static boolean func_176075_f()
     {
-        return field_176083_O && Minecraft.getMinecraft().gameSettings.field_178881_t;
+        return field_176083_O && Minecraft.getMC().gameSettings.field_178881_t;
     }
 
     public static void func_153171_g(int p_153171_0_, int p_153171_1_)
@@ -881,6 +881,6 @@ public class OpenGlHelper
 
     public static boolean isFramebufferEnabled()
     {
-        return framebufferSupported && Minecraft.getMinecraft().gameSettings.fboEnable;
+        return framebufferSupported && Minecraft.getMC().gameSettings.fboEnable;
     }
 }

@@ -50,7 +50,7 @@ public class RealmsConnect
                         return;
                     }
 
-                    RealmsConnect.this.connection.setNetHandler(new NetHandlerLoginClient(RealmsConnect.this.connection, Minecraft.getMinecraft(), RealmsConnect.this.onlineScreen.getProxy()));
+                    RealmsConnect.this.connection.setNetHandler(new NetHandlerLoginClient(RealmsConnect.this.connection, Minecraft.getMC(), RealmsConnect.this.onlineScreen.getProxy()));
 
                     if (RealmsConnect.this.aborted)
                     {
@@ -64,7 +64,7 @@ public class RealmsConnect
                         return;
                     }
 
-                    RealmsConnect.this.connection.sendPacket(new C00PacketLoginStart(Minecraft.getMinecraft().getSession().getProfile()));
+                    RealmsConnect.this.connection.sendPacket(new C00PacketLoginStart(Minecraft.getMC().getSession().getProfile()));
                 }
                 catch (UnknownHostException var5)
                 {

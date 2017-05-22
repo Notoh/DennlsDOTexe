@@ -28,7 +28,7 @@ public class RenderTNTPrimed extends Render
      */
     public void doRender(EntityTNTPrimed p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
     {
-        BlockRendererDispatcher var10 = Minecraft.getMinecraft().getBlockRendererDispatcher();
+        BlockRendererDispatcher var10 = Minecraft.getMC().getBlockRendererDispatcher();
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)p_76986_2_, (float)p_76986_4_ + 0.5F, (float)p_76986_6_);
         float var11;

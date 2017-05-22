@@ -667,6 +667,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
      */
     public void onLivingUpdate()
     {
+        //calls client tick update
+        Minecraft.getDennls().onUpdate();
         if (this.sprintingTicksLeft > 0)
         {
             --this.sprintingTicksLeft;

@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class TileEntityPistonRenderer extends TileEntitySpecialRenderer
 {
-    private final BlockRendererDispatcher field_178462_c = Minecraft.getMinecraft().getBlockRendererDispatcher();
+    private final BlockRendererDispatcher field_178462_c = Minecraft.getMC().getBlockRendererDispatcher();
     private static final String __OBFID = "CL_00002469";
 
     public void func_178461_a(TileEntityPiston p_178461_1_, double p_178461_2_, double p_178461_4_, double p_178461_6_, float p_178461_8_, int p_178461_9_)

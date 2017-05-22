@@ -4,13 +4,11 @@ import com.google.common.collect.*;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
-import com.mojang.authlib.Agent;
-import com.mojang.authlib.UserAuthentication;
-import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import io.notoh.dennls.ClientEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
@@ -142,7 +140,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     private CrashReport crashReporter;
     public int displayWidth;
     public int displayHeight;
-    private Timer timer = new Timer(20.0F);
+    public Timer timer = new Timer(20.0F);
 
     /** Instance of PlayerUsageSnooper. */
     private PlayerUsageSnooper usageSnooper = new PlayerUsageSnooper("client", this, MinecraftServer.getCurrentTimeMillis());
@@ -157,6 +155,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     public EffectRenderer effectRenderer;
     private final Session session;
     private boolean isGamePaused;
+
+    private static ClientEntry dennls;
 
     /** The font renderer used for displaying and measuring text */
     public FontRenderer fontRendererObj;
@@ -481,6 +481,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.checkGLError("Post startup");
         this.ingameGUI = new GuiIngame(this);
 
+        dennls = new ClientEntry(); //Initializes client
+
         if (this.serverName != null)
         {
             this.displayGuiScreen(new GuiConnecting(new GuiMainMenu(), this, this.serverName, this.serverPort));
@@ -676,7 +678,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     public void displayCrashReport(CrashReport crashReportIn)
     {
-        File var2 = new File(getMinecraft().mcDataDir, "crash-reports");
+        File var2 = new File(getMC().mcDataDir, "crash-reports");
         File var3 = new File(var2, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
         Bootstrap.func_179870_a(crashReportIn.getCompleteReport());
 
@@ -1844,9 +1846,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     if (this.currentScreen != null)
                     {
                         this.currentScreen.handleKeyboardInput();
-                    }
-                    else
-                    {
+                    } else {
+
+                        // calls dennls client code
+                        dennls.onKeyPress(var1);
+
                         if (var1 == 1)
                         {
                             this.displayInGameMenu();
@@ -2650,7 +2654,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     /**
      * Return the singleton Minecraft instance for the game
      */
-    public static Minecraft getMinecraft()
+    public static Minecraft getMC()
     {
         return theMinecraft;
     }
@@ -3142,8 +3146,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     public static Map func_175596_ai()
     {
         HashMap var0 = Maps.newHashMap();
-        var0.put("X-Minecraft-Username", getMinecraft().getSession().getUsername());
-        var0.put("X-Minecraft-UUID", getMinecraft().getSession().getPlayerID());
+        var0.put("X-Minecraft-Username", getMC().getSession().getUsername());
+        var0.put("X-Minecraft-UUID", getMC().getSession().getPlayerID());
         var0.put("X-Minecraft-Version", "1.8");
         return var0;
     }
@@ -3233,5 +3237,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         }
     }
 
+
+    /**
+     * Returns Client entry
+     */
+    public static ClientEntry getDennls() {
+        return dennls;
+    }
 
 }

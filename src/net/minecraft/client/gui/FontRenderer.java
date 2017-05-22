@@ -153,7 +153,7 @@ public class FontRenderer implements IResourceManagerReloadListener
 
         try
         {
-            var1 = TextureUtil.func_177053_a(Minecraft.getMinecraft().getResourceManager().getResource(this.locationFontTexture).getInputStream());
+            var1 = TextureUtil.func_177053_a(Minecraft.getMC().getResourceManager().getResource(this.locationFontTexture).getInputStream());
         }
         catch (IOException var17)
         {
@@ -220,7 +220,7 @@ public class FontRenderer implements IResourceManagerReloadListener
 
         try
         {
-            var1 = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("font/glyph_sizes.bin")).getInputStream();
+            var1 = Minecraft.getMC().getResourceManager().getResource(new ResourceLocation("font/glyph_sizes.bin")).getInputStream();
             var1.read(this.glyphWidth);
         }
         catch (IOException var6)

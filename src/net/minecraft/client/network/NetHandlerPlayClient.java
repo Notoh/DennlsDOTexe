@@ -1774,7 +1774,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
                             private static final String __OBFID = "CL_00002622";
                             public void confirmClicked(boolean result, int id)
                             {
-                                NetHandlerPlayClient.this.gameController = Minecraft.getMinecraft();
+                                NetHandlerPlayClient.this.gameController = Minecraft.getMC();
 
                                 if (result)
                                 {

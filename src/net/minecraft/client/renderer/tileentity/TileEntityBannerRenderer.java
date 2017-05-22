@@ -111,7 +111,7 @@ public class TileEntityBannerRenderer extends TileEntitySpecialRenderer
 
                         if (var4 - var8.field_178472_a > 60000L)
                         {
-                            Minecraft.getMinecraft().getTextureManager().deleteTexture(var8.field_178471_b);
+                            Minecraft.getMC().getTextureManager().deleteTexture(var8.field_178471_b);
                             var6.remove();
                         }
                     }
@@ -135,7 +135,7 @@ public class TileEntityBannerRenderer extends TileEntitySpecialRenderer
 
                 var3 = new TileEntityBannerRenderer.TimedBannerTexture(null);
                 var3.field_178471_b = new ResourceLocation(var2);
-                Minecraft.getMinecraft().getTextureManager().loadTexture(var3.field_178471_b, new LayeredColorMaskTexture(field_178464_d, var10, var5));
+                Minecraft.getMC().getTextureManager().loadTexture(var3.field_178471_b, new LayeredColorMaskTexture(field_178464_d, var10, var5));
                 field_178466_c.put(var2, var3);
             }
 

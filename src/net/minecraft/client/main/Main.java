@@ -27,7 +27,7 @@ public class Main
 {
     private static final String __OBFID = "CL_00001461";
 
-    public static void main(String[] p_main_0_)
+    public static void main(String[] args)
     {
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser var1 = new OptionParser();
@@ -56,7 +56,7 @@ public class Main
         ArgumentAcceptingOptionSpec username = var1.accepts("uname").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec password = var1.accepts("pword").withRequiredArg().ofType(String.class);
         NonOptionArgumentSpec var20 = var1.nonOptions();
-        OptionSet var21 = var1.parse(p_main_0_);
+        OptionSet var21 = var1.parse(args);
         List var22 = var21.valuesOf(var20);
 
         if (!var22.isEmpty())
@@ -132,7 +132,12 @@ public class Main
         return p_110121_0_ != null && !p_110121_0_.isEmpty();
     }
 
-
+    /**
+     * Authenticates a minecraft session
+     * @param username - Username entered
+     * @param password - Password entered
+     * @return Minecraft authentication session
+     */
     public static Session authenticate(String username, String password){
         YggdrasilAuthenticationService yService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
         UserAuthentication userAuth = yService.createUserAuthentication(Agent.MINECRAFT);

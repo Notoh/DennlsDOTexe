@@ -14,7 +14,7 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
 
     public GuiSimpleScrolledSelectionListProxy(RealmsSimpleScrolledSelectionList p_i45525_1_, int p_i45525_2_, int p_i45525_3_, int p_i45525_4_, int p_i45525_5_, int p_i45525_6_)
     {
-        super(Minecraft.getMinecraft(), p_i45525_2_, p_i45525_3_, p_i45525_4_, p_i45525_5_, p_i45525_6_);
+        super(Minecraft.getMC(), p_i45525_2_, p_i45525_3_, p_i45525_4_, p_i45525_5_, p_i45525_6_);
         this.field_178050_u = p_i45525_1_;
     }
 

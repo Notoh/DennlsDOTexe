@@ -49,7 +49,7 @@ public class MobAppearance extends EntityFX
     {
         if (this.field_174844_a != null)
         {
-            RenderManager var9 = Minecraft.getMinecraft().getRenderManager();
+            RenderManager var9 = Minecraft.getMC().getRenderManager();
             var9.func_178628_a(EntityFX.interpPosX, EntityFX.interpPosY, EntityFX.interpPosZ);
             float var10 = 0.42553192F;
             float var11 = ((float)this.particleAge + p_180434_3_) / (float)this.particleMaxAge;

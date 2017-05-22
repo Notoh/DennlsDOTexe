@@ -20,7 +20,7 @@ public class GuiChest extends GuiContainer
 
     public GuiChest(IInventory p_i46315_1_, IInventory p_i46315_2_)
     {
-        super(new ContainerChest(p_i46315_1_, p_i46315_2_, Minecraft.getMinecraft().thePlayer));
+        super(new ContainerChest(p_i46315_1_, p_i46315_2_, Minecraft.getMC().thePlayer));
         this.upperChestInventory = p_i46315_1_;
         this.lowerChestInventory = p_i46315_2_;
         this.allowUserInput = false;

@@ -24,7 +24,7 @@ public class LayerMooshroomMushroom implements LayerRenderer
     {
         if (!p_177204_1_.isChild() && !p_177204_1_.isInvisible())
         {
-            BlockRendererDispatcher var9 = Minecraft.getMinecraft().getBlockRendererDispatcher();
+            BlockRendererDispatcher var9 = Minecraft.getMC().getBlockRendererDispatcher();
             this.field_177205_a.bindTexture(TextureMap.locationBlocksTexture);
             GlStateManager.enableCull();
             GlStateManager.pushMatrix();

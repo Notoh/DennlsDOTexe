@@ -80,7 +80,7 @@ public class Shader
         this.manager.getShaderUniformOrDefault("InSize").set((float)this.framebufferIn.framebufferTextureWidth, (float)this.framebufferIn.framebufferTextureHeight);
         this.manager.getShaderUniformOrDefault("OutSize").set(var2, var3);
         this.manager.getShaderUniformOrDefault("Time").set(p_148042_1_);
-        Minecraft var9 = Minecraft.getMinecraft();
+        Minecraft var9 = Minecraft.getMC();
         this.manager.getShaderUniformOrDefault("ScreenSize").set((float)var9.displayWidth, (float)var9.displayHeight);
         this.manager.useShader();
         this.framebufferOut.framebufferClear();

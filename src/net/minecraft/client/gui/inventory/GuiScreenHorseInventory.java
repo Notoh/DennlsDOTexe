@@ -19,7 +19,7 @@ public class GuiScreenHorseInventory extends GuiContainer
 
     public GuiScreenHorseInventory(IInventory p_i1093_1_, IInventory p_i1093_2_, EntityHorse p_i1093_3_)
     {
-        super(new ContainerHorseInventory(p_i1093_1_, p_i1093_2_, p_i1093_3_, Minecraft.getMinecraft().thePlayer));
+        super(new ContainerHorseInventory(p_i1093_1_, p_i1093_2_, p_i1093_3_, Minecraft.getMC().thePlayer));
         this.field_147030_v = p_i1093_1_;
         this.field_147029_w = p_i1093_2_;
         this.field_147034_x = p_i1093_3_;

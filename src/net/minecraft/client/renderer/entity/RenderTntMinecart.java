@@ -36,7 +36,7 @@ public class RenderTntMinecart extends RenderMinecart
 
         if (var4 > -1 && var4 / 5 % 2 == 0)
         {
-            BlockRendererDispatcher var7 = Minecraft.getMinecraft().getBlockRendererDispatcher();
+            BlockRendererDispatcher var7 = Minecraft.getMC().getBlockRendererDispatcher();
             GlStateManager.func_179090_x();
             GlStateManager.disableLighting();
             GlStateManager.enableBlend();

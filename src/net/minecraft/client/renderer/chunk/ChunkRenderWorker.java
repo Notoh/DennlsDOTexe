@@ -4,9 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CancellationException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RegionRenderCacheBuilder;
 import net.minecraft.crash.CrashReport;
@@ -14,6 +11,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumWorldBlockLayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CancellationException;
 
 public class ChunkRenderWorker implements Runnable
 {
@@ -49,7 +50,7 @@ public class ChunkRenderWorker implements Runnable
         catch (Throwable var4)
         {
             CrashReport var2 = CrashReport.makeCrashReport(var4, "Batching chunks");
-            Minecraft.getMinecraft().crashed(Minecraft.getMinecraft().addGraphicsAndWorldToCrashReport(var2));
+            Minecraft.getMC().crashed(Minecraft.getMC().addGraphicsAndWorldToCrashReport(var2));
         }
     }
 
@@ -78,7 +79,7 @@ public class ChunkRenderWorker implements Runnable
 
             return;
         }
-        Entity var2 = Minecraft.getMinecraft().func_175606_aa();
+        Entity var2 = Minecraft.getMC().func_175606_aa();
 
         if (var2 == null)
         {
@@ -192,7 +193,7 @@ public class ChunkRenderWorker implements Runnable
 
                     if (!(p_onFailure_1_ instanceof CancellationException) && !(p_onFailure_1_ instanceof InterruptedException))
                     {
-                        Minecraft.getMinecraft().crashed(CrashReport.makeCrashReport(p_onFailure_1_, "Rendering chunk"));
+                        Minecraft.getMC().crashed(CrashReport.makeCrashReport(p_onFailure_1_, "Rendering chunk"));
                     }
                 }
                 public void onSuccess(Object p_onSuccess_1_)

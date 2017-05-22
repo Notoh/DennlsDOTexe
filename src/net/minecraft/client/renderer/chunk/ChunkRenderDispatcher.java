@@ -231,7 +231,7 @@ public class ChunkRenderDispatcher
 
     public ListenableFuture func_178503_a(final EnumWorldBlockLayer p_178503_1_, final WorldRenderer p_178503_2_, final RenderChunk p_178503_3_, final CompiledChunk p_178503_4_)
     {
-        if (Minecraft.getMinecraft().isCallingFromMinecraftThread())
+        if (Minecraft.getMC().isCallingFromMinecraftThread())
         {
             if (OpenGlHelper.func_176075_f())
             {

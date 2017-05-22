@@ -570,7 +570,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
 
     private TextureAtlasSprite func_175371_a(Block p_175371_1_)
     {
-        return Minecraft.getMinecraft().getBlockRendererDispatcher().func_175023_a().func_178122_a(p_175371_1_.getDefaultState());
+        return Minecraft.getMC().getBlockRendererDispatcher().func_175023_a().func_178122_a(p_175371_1_.getDefaultState());
     }
 
     /**

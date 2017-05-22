@@ -43,7 +43,7 @@ public class LayerHeldItemWitch implements LayerRenderer
             ((ModelWitch)this.field_177144_a.getMainModel()).villagerNose.postRender(0.0625F);
             GlStateManager.translate(-0.0625F, 0.53125F, 0.21875F);
             Item var13 = var9.getItem();
-            Minecraft var11 = Minecraft.getMinecraft();
+            Minecraft var11 = Minecraft.getMC();
             float var12;
 
             if (var13 instanceof ItemBlock && var11.getBlockRendererDispatcher().func_175021_a(Block.getBlockFromItem(var13), var9.getMetadata()))

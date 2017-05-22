@@ -48,7 +48,7 @@ public class LayerHeldItem implements LayerRenderer
             }
 
             Item var13 = var9.getItem();
-            Minecraft var11 = Minecraft.getMinecraft();
+            Minecraft var11 = Minecraft.getMC();
 
             if (var13 instanceof ItemBlock && Block.getBlockFromItem(var13).getRenderType() == 2)
             {

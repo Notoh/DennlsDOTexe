@@ -251,7 +251,7 @@ public abstract class RendererLivingEntity extends Render
     protected void renderModel(EntityLivingBase p_77036_1_, float p_77036_2_, float p_77036_3_, float p_77036_4_, float p_77036_5_, float p_77036_6_, float p_77036_7_)
     {
         boolean var8 = !p_77036_1_.isInvisible();
-        boolean var9 = !var8 && !p_77036_1_.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer);
+        boolean var9 = !var8 && !p_77036_1_.isInvisibleToPlayer(Minecraft.getMC().thePlayer);
 
         if (var8 || var9)
         {
@@ -559,7 +559,7 @@ public abstract class RendererLivingEntity extends Render
      */
     protected boolean canRenderName(EntityLivingBase targetEntity)
     {
-        EntityPlayerSP var2 = Minecraft.getMinecraft().thePlayer;
+        EntityPlayerSP var2 = Minecraft.getMC().thePlayer;
 
         if (targetEntity instanceof EntityPlayer && targetEntity != var2)
         {

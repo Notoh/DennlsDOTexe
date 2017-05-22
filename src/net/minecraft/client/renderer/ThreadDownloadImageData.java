@@ -116,7 +116,7 @@ public class ThreadDownloadImageData extends SimpleTexture
 
                 try
                 {
-                    var1 = (HttpURLConnection)(new URL(ThreadDownloadImageData.this.imageUrl)).openConnection(Minecraft.getMinecraft().getProxy());
+                    var1 = (HttpURLConnection)(new URL(ThreadDownloadImageData.this.imageUrl)).openConnection(Minecraft.getMC().getProxy());
                     var1.setDoInput(true);
                     var1.setDoOutput(false);
                     var1.connect();

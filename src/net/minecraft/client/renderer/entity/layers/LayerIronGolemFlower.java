@@ -25,7 +25,7 @@ public class LayerIronGolemFlower implements LayerRenderer
     {
         if (p_177153_1_.getHoldRoseTick() != 0)
         {
-            BlockRendererDispatcher var9 = Minecraft.getMinecraft().getBlockRendererDispatcher();
+            BlockRendererDispatcher var9 = Minecraft.getMC().getBlockRendererDispatcher();
             GlStateManager.enableRescaleNormal();
             GlStateManager.pushMatrix();
             GlStateManager.rotate(5.0F + 180.0F * ((ModelIronGolem)this.field_177154_a.getMainModel()).ironGolemRightArm.rotateAngleX / (float)Math.PI, 1.0F, 0.0F, 0.0F);

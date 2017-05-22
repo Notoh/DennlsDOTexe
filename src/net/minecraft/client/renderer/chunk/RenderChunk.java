@@ -170,7 +170,7 @@ public class RenderChunk
                         this.func_178573_a(var17, var7);
                     }
 
-                    if (Minecraft.getMinecraft().getBlockRendererDispatcher().func_175018_a(var13, var12, var9, var17))
+                    if (Minecraft.getMC().getBlockRendererDispatcher().func_175018_a(var13, var12, var9, var17))
                     {
                         var5.func_178486_a(var24);
                     }

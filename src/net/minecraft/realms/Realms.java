@@ -13,23 +13,23 @@ public class Realms
 
     public static boolean isTouchScreen()
     {
-        return Minecraft.getMinecraft().gameSettings.touchscreen;
+        return Minecraft.getMC().gameSettings.touchscreen;
     }
 
     public static Proxy getProxy()
     {
-        return Minecraft.getMinecraft().getProxy();
+        return Minecraft.getMC().getProxy();
     }
 
     public static String sessionId()
     {
-        Session var0 = Minecraft.getMinecraft().getSession();
+        Session var0 = Minecraft.getMC().getSession();
         return var0 == null ? null : var0.getSessionID();
     }
 
     public static String userName()
     {
-        Session var0 = Minecraft.getMinecraft().getSession();
+        Session var0 = Minecraft.getMC().getSession();
         return var0 == null ? null : var0.getUsername();
     }
 
@@ -40,27 +40,27 @@ public class Realms
 
     public static String getSessionId()
     {
-        return Minecraft.getMinecraft().getSession().getSessionID();
+        return Minecraft.getMC().getSession().getSessionID();
     }
 
     public static String getName()
     {
-        return Minecraft.getMinecraft().getSession().getUsername();
+        return Minecraft.getMC().getSession().getUsername();
     }
 
     public static String uuidToName(String p_uuidToName_0_)
     {
-        return Minecraft.getMinecraft().getSessionService().fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(p_uuidToName_0_), (String)null), false).getName();
+        return Minecraft.getMC().getSessionService().fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(p_uuidToName_0_), (String)null), false).getName();
     }
 
     public static void setScreen(RealmsScreen p_setScreen_0_)
     {
-        Minecraft.getMinecraft().displayGuiScreen(p_setScreen_0_.getProxy());
+        Minecraft.getMC().displayGuiScreen(p_setScreen_0_.getProxy());
     }
 
     public static String getGameDirectoryPath()
     {
-        return Minecraft.getMinecraft().mcDataDir.getAbsolutePath();
+        return Minecraft.getMC().mcDataDir.getAbsolutePath();
     }
 
     public static int survivalId()

@@ -157,7 +157,7 @@ public class IntegratedServer extends MinecraftServer
     public void tick()
     {
         boolean var1 = this.isGamePaused;
-        this.isGamePaused = Minecraft.getMinecraft().getNetHandler() != null && Minecraft.getMinecraft().isGamePaused();
+        this.isGamePaused = Minecraft.getMC().getNetHandler() != null && Minecraft.getMC().isGamePaused();
 
         if (!var1 && this.isGamePaused)
         {
@@ -325,7 +325,7 @@ public class IntegratedServer extends MinecraftServer
      */
     public boolean isSnooperEnabled()
     {
-        return Minecraft.getMinecraft().isSnooperEnabled();
+        return Minecraft.getMC().isSnooperEnabled();
     }
 
     /**

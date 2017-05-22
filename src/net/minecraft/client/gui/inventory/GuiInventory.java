@@ -115,7 +115,7 @@ public class GuiInventory extends InventoryEffectRenderer
         p_147046_5_.rotationYawHead = p_147046_5_.rotationYaw;
         p_147046_5_.prevRotationYawHead = p_147046_5_.rotationYaw;
         GlStateManager.translate(0.0F, 0.0F, 0.0F);
-        RenderManager var11 = Minecraft.getMinecraft().getRenderManager();
+        RenderManager var11 = Minecraft.getMC().getRenderManager();
         var11.func_178631_a(180.0F);
         var11.func_178633_a(false);
         var11.renderEntityWithPosYaw(p_147046_5_, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);

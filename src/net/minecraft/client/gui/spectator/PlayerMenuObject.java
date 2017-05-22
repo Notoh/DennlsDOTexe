@@ -25,7 +25,7 @@ public class PlayerMenuObject implements ISpectatorMenuObject
 
     public void func_178661_a(SpectatorMenu p_178661_1_)
     {
-        Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C18PacketSpectate(this.field_178668_a.getId()));
+        Minecraft.getMC().getNetHandler().addToSendQueue(new C18PacketSpectate(this.field_178668_a.getId()));
     }
 
     public IChatComponent func_178664_z_()
@@ -35,7 +35,7 @@ public class PlayerMenuObject implements ISpectatorMenuObject
 
     public void func_178663_a(float p_178663_1_, int p_178663_2_)
     {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(this.field_178667_b);
+        Minecraft.getMC().getTextureManager().bindTexture(this.field_178667_b);
         GlStateManager.color(1.0F, 1.0F, 1.0F, (float)p_178663_2_ / 255.0F);
         Gui.drawScaledCustomSizeModalRect(2, 2, 8.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
         Gui.drawScaledCustomSizeModalRect(2, 2, 40.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);

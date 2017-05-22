@@ -991,7 +991,7 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
         float var4 = (float)((double)p_174962_1_.prevRotationPitch + (double)(p_174962_1_.rotationPitch - p_174962_1_.prevRotationPitch) * p_174962_2_);
         float var5 = (float)((double)p_174962_1_.prevRotationYaw + (double)(p_174962_1_.rotationYaw - p_174962_1_.prevRotationYaw) * p_174962_2_);
 
-        if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 2)
+        if (Minecraft.getMC().gameSettings.thirdPersonView == 2)
         {
             var4 += 180.0F;
         }

@@ -116,13 +116,13 @@ public class RealmsScreen
         }
 
         AbstractClientPlayer.getDownloadImageSkin(var2, p_bindFace_1_);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(var2);
+        Minecraft.getMC().getTextureManager().bindTexture(var2);
     }
 
     public static void bind(String p_bind_0_)
     {
         ResourceLocation var1 = new ResourceLocation(p_bind_0_);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(var1);
+        Minecraft.getMC().getTextureManager().bindTexture(var1);
     }
 
     public void tick() {}
@@ -220,7 +220,7 @@ public class RealmsScreen
 
     public RealmsAnvilLevelStorageSource getLevelStorageSource()
     {
-        return new RealmsAnvilLevelStorageSource(Minecraft.getMinecraft().getSaveLoader());
+        return new RealmsAnvilLevelStorageSource(Minecraft.getMC().getSaveLoader());
     }
 
     public void removed() {}

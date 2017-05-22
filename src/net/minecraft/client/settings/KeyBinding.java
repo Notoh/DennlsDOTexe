@@ -2,11 +2,12 @@ package net.minecraft.client.settings;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.IntHashMap;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.IntHashMap;
 
 public class KeyBinding implements Comparable
 {
@@ -19,7 +20,7 @@ public class KeyBinding implements Comparable
     private int keyCode;
 
     /** because _303 wanted me to call it that(Caironater) */
-    private boolean pressed;
+    public boolean pressed;
     private int pressTime;
     private static final String __OBFID = "CL_00000628";
 

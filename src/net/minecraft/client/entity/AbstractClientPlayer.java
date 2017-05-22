@@ -30,7 +30,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
     public boolean func_175149_v()
     {
-        NetworkPlayerInfo var1 = Minecraft.getMinecraft().getNetHandler().func_175102_a(this.getGameProfile().getId());
+        NetworkPlayerInfo var1 = Minecraft.getMC().getNetHandler().func_175102_a(this.getGameProfile().getId());
         return var1 != null && var1.getGameType() == WorldSettings.GameType.SPECTATOR;
     }
 
@@ -43,7 +43,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     {
         if (this.field_175157_a == null)
         {
-            this.field_175157_a = Minecraft.getMinecraft().getNetHandler().func_175102_a(this.getUniqueID());
+            this.field_175157_a = Minecraft.getMC().getNetHandler().func_175102_a(this.getUniqueID());
         }
 
         return this.field_175157_a;
@@ -69,7 +69,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
     public static ThreadDownloadImageData getDownloadImageSkin(ResourceLocation resourceLocationIn, String username)
     {
-        TextureManager var2 = Minecraft.getMinecraft().getTextureManager();
+        TextureManager var2 = Minecraft.getMC().getTextureManager();
         Object var3 = var2.getTexture(resourceLocationIn);
 
         if (var3 == null)

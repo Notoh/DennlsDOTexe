@@ -17,7 +17,7 @@ public class GuiHopper extends GuiContainer
 
     public GuiHopper(InventoryPlayer p_i1092_1_, IInventory p_i1092_2_)
     {
-        super(new ContainerHopper(p_i1092_1_, p_i1092_2_, Minecraft.getMinecraft().thePlayer));
+        super(new ContainerHopper(p_i1092_1_, p_i1092_2_, Minecraft.getMC().thePlayer));
         this.field_147084_v = p_i1092_1_;
         this.field_147083_w = p_i1092_2_;
         this.allowUserInput = false;

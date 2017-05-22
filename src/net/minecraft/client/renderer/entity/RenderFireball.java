@@ -36,7 +36,7 @@ public class RenderFireball extends Render
         GlStateManager.enableRescaleNormal();
         float var10 = this.scale;
         GlStateManager.scale(var10 / 1.0F, var10 / 1.0F, var10 / 1.0F);
-        TextureAtlasSprite var11 = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getParticleIcon(Items.fire_charge);
+        TextureAtlasSprite var11 = Minecraft.getMC().getRenderItem().getItemModelMesher().getParticleIcon(Items.fire_charge);
         Tessellator var12 = Tessellator.getInstance();
         WorldRenderer var13 = var12.getWorldRenderer();
         float var14 = var11.getMinU();

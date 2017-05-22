@@ -81,7 +81,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         try
         {
             ArrayList var2 = Lists.newArrayList();
-            var1 = new BufferedReader(new InputStreamReader(Minecraft.getMinecraft().getResourceManager().getResource(splashTexts).getInputStream(), Charsets.UTF_8));
+            var1 = new BufferedReader(new InputStreamReader(Minecraft.getMC().getResourceManager().getResource(splashTexts).getInputStream(), Charsets.UTF_8));
             String var3;
 
             while ((var3 = var1.readLine()) != null)

@@ -4,7 +4,6 @@ the meme
 side note: I don't encourage hacks, this client was made solely for the meme.
 
 Features
-tab gui
 click gui
 lots of hacks
 some of them will bypass

@@ -29,7 +29,6 @@ public class ExtendedBlockStorage
 
     /** The NibbleArray containing a block of Sky-light data. */
     private NibbleArray skylightArray;
-    private static final String __OBFID = "CL_00000375";
 
     public ExtendedBlockStorage(int y, boolean storeSkylight)
     {
@@ -45,31 +44,31 @@ public class ExtendedBlockStorage
 
     public IBlockState get(int x, int y, int z)
     {
-        IBlockState var4 = (IBlockState)Block.BLOCK_STATE_IDS.getByValue(this.data[y << 8 | z << 4 | x]);
-        return var4 != null ? var4 : Blocks.air.getDefaultState();
+        IBlockState iblockstate = (IBlockState)Block.BLOCK_STATE_IDS.getByValue(this.data[y << 8 | z << 4 | x]);
+        return iblockstate != null ? iblockstate : Blocks.air.getDefaultState();
     }
 
     public void set(int x, int y, int z, IBlockState state)
     {
-        IBlockState var5 = this.get(x, y, z);
-        Block var6 = var5.getBlock();
-        Block var7 = state.getBlock();
+        IBlockState iblockstate = this.get(x, y, z);
+        Block block = iblockstate.getBlock();
+        Block block1 = state.getBlock();
 
-        if (var6 != Blocks.air)
+        if (block != Blocks.air)
         {
             --this.blockRefCount;
 
-            if (var6.getTickRandomly())
+            if (block.getTickRandomly())
             {
                 --this.tickRefCount;
             }
         }
 
-        if (var7 != Blocks.air)
+        if (block1 != Blocks.air)
         {
             ++this.blockRefCount;
 
-            if (var7.getTickRandomly())
+            if (block1.getTickRandomly())
             {
                 ++this.tickRefCount;
             }
@@ -92,8 +91,8 @@ public class ExtendedBlockStorage
      */
     public int getExtBlockMetadata(int x, int y, int z)
     {
-        IBlockState var4 = this.get(x, y, z);
-        return var4.getBlock().getMetaFromState(var4);
+        IBlockState iblockstate = this.get(x, y, z);
+        return iblockstate.getBlock().getMetaFromState(iblockstate);
     }
 
     /**
@@ -158,19 +157,19 @@ public class ExtendedBlockStorage
         this.blockRefCount = 0;
         this.tickRefCount = 0;
 
-        for (int var1 = 0; var1 < 16; ++var1)
+        for (int i = 0; i < 16; ++i)
         {
-            for (int var2 = 0; var2 < 16; ++var2)
+            for (int j = 0; j < 16; ++j)
             {
-                for (int var3 = 0; var3 < 16; ++var3)
+                for (int k = 0; k < 16; ++k)
                 {
-                    Block var4 = this.getBlockByExtId(var1, var2, var3);
+                    Block block = this.getBlockByExtId(i, j, k);
 
-                    if (var4 != Blocks.air)
+                    if (block != Blocks.air)
                     {
                         ++this.blockRefCount;
 
-                        if (var4.getTickRandomly())
+                        if (block.getTickRandomly())
                         {
                             ++this.tickRefCount;
                         }

@@ -4,12 +4,12 @@ public class NBTSizeTracker
 {
     public static final NBTSizeTracker INFINITE = new NBTSizeTracker(0L)
     {
-        private static final String __OBFID = "CL_00001902";
-        public void read(long bits) {}
+        public void read(long bits)
+        {
+        }
     };
     private final long max;
     private long read;
-    private static final String __OBFID = "CL_00001903";
 
     public NBTSizeTracker(long max)
     {

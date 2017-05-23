@@ -18,11 +18,9 @@ import net.minecraft.world.World;
 
 public class BlockEndPortal extends BlockContainer
 {
-    private static final String __OBFID = "CL_00000236";
-
-    protected BlockEndPortal(Material p_i45404_1_)
+    protected BlockEndPortal(Material materialIn)
     {
-        super(p_i45404_1_);
+        super(materialIn);
         this.setLightLevel(1.0F);
     }
 
@@ -34,10 +32,10 @@ public class BlockEndPortal extends BlockContainer
         return new TileEntityEndPortal();
     }
 
-    public void setBlockBoundsBasedOnState(IBlockAccess access, BlockPos pos)
+    public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
     {
-        float var3 = 0.0625F;
-        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, var3, 1.0F);
+        float f = 0.0625F;
+        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, f, 1.0F);
     }
 
     public boolean shouldSideBeRendered(IBlockAccess worldIn, BlockPos pos, EnumFacing side)
@@ -47,11 +45,14 @@ public class BlockEndPortal extends BlockContainer
 
     /**
      * Add all collision boxes of this Block to the list that intersect with the given mask.
-     *  
-     * @param collidingEntity the Entity colliding with this Block
      */
-    public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List list, Entity collidingEntity) {}
+    public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
+    {
+    }
 
+    /**
+     * Used to determine ambient occlusion and culling when rebuilding chunks for render
+     */
     public boolean isOpaqueCube()
     {
         return false;
@@ -83,13 +84,13 @@ public class BlockEndPortal extends BlockContainer
 
     public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        double var5 = (double)((float)pos.getX() + rand.nextFloat());
-        double var7 = (double)((float)pos.getY() + 0.8F);
-        double var9 = (double)((float)pos.getZ() + rand.nextFloat());
-        double var11 = 0.0D;
-        double var13 = 0.0D;
-        double var15 = 0.0D;
-        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, var5, var7, var9, var11, var13, var15, new int[0]);
+        double d0 = (double)((float)pos.getX() + rand.nextFloat());
+        double d1 = (double)((float)pos.getY() + 0.8F);
+        double d2 = (double)((float)pos.getZ() + rand.nextFloat());
+        double d3 = 0.0D;
+        double d4 = 0.0D;
+        double d5 = 0.0D;
+        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5, new int[0]);
     }
 
     public Item getItem(World worldIn, BlockPos pos)
@@ -102,6 +103,6 @@ public class BlockEndPortal extends BlockContainer
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return MapColor.obsidianColor;
+        return MapColor.blackColor;
     }
 }

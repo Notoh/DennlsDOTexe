@@ -21,13 +21,11 @@ import net.minecraft.world.World;
 
 public class EntityCow extends EntityAnimal
 {
-    private static final String __OBFID = "CL_00001640";
-
     public EntityCow(World worldIn)
     {
         super(worldIn);
         this.setSize(0.9F, 1.3F);
-        ((PathNavigateGround)this.getNavigator()).func_179690_a(true);
+        ((PathNavigateGround)this.getNavigator()).setAvoidsWater(true);
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 2.0D));
         this.tasks.addTask(2, new EntityAIMate(this, 1.0D));
@@ -69,7 +67,7 @@ public class EntityCow extends EntityAnimal
         return "mob.cow.hurt";
     }
 
-    protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
+    protected void playStepSound(BlockPos pos, Block blockIn)
     {
         this.playSound("mob.cow.step", 0.15F, 1.0F);
     }
@@ -92,17 +90,16 @@ public class EntityCow extends EntityAnimal
      */
     protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
     {
-        int var3 = this.rand.nextInt(3) + this.rand.nextInt(1 + p_70628_2_);
-        int var4;
+        int i = this.rand.nextInt(3) + this.rand.nextInt(1 + p_70628_2_);
 
-        for (var4 = 0; var4 < var3; ++var4)
+        for (int j = 0; j < i; ++j)
         {
             this.dropItem(Items.leather, 1);
         }
 
-        var3 = this.rand.nextInt(3) + 1 + this.rand.nextInt(1 + p_70628_2_);
+        i = this.rand.nextInt(3) + 1 + this.rand.nextInt(1 + p_70628_2_);
 
-        for (var4 = 0; var4 < var3; ++var4)
+        for (int k = 0; k < i; ++k)
         {
             if (this.isBurning())
             {
@@ -118,30 +115,30 @@ public class EntityCow extends EntityAnimal
     /**
      * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
      */
-    public boolean interact(EntityPlayer p_70085_1_)
+    public boolean interact(EntityPlayer player)
     {
-        ItemStack var2 = p_70085_1_.inventory.getCurrentItem();
+        ItemStack itemstack = player.inventory.getCurrentItem();
 
-        if (var2 != null && var2.getItem() == Items.bucket && !p_70085_1_.capabilities.isCreativeMode)
+        if (itemstack != null && itemstack.getItem() == Items.bucket && !player.capabilities.isCreativeMode && !this.isChild())
         {
-            if (var2.stackSize-- == 1)
+            if (itemstack.stackSize-- == 1)
             {
-                p_70085_1_.inventory.setInventorySlotContents(p_70085_1_.inventory.currentItem, new ItemStack(Items.milk_bucket));
+                player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(Items.milk_bucket));
             }
-            else if (!p_70085_1_.inventory.addItemStackToInventory(new ItemStack(Items.milk_bucket)))
+            else if (!player.inventory.addItemStackToInventory(new ItemStack(Items.milk_bucket)))
             {
-                p_70085_1_.dropPlayerItemWithRandomChoice(new ItemStack(Items.milk_bucket, 1, 0), false);
+                player.dropPlayerItemWithRandomChoice(new ItemStack(Items.milk_bucket, 1, 0), false);
             }
 
             return true;
         }
         else
         {
-            return super.interact(p_70085_1_);
+            return super.interact(player);
         }
     }
 
-    public EntityCow createChild(EntityAgeable p_90011_1_)
+    public EntityCow createChild(EntityAgeable ageable)
     {
         return new EntityCow(this.worldObj);
     }

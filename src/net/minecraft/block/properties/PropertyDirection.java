@@ -7,11 +7,9 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import net.minecraft.util.EnumFacing;
 
-public class PropertyDirection extends PropertyEnum
+public class PropertyDirection extends PropertyEnum<EnumFacing>
 {
-    private static final String __OBFID = "CL_00002016";
-
-    protected PropertyDirection(String name, Collection values)
+    protected PropertyDirection(String name, Collection<EnumFacing> values)
     {
         super(name, EnumFacing.class, values);
     }
@@ -21,21 +19,21 @@ public class PropertyDirection extends PropertyEnum
      */
     public static PropertyDirection create(String name)
     {
-        return create(name, Predicates.alwaysTrue());
+        return create(name, Predicates.<EnumFacing>alwaysTrue());
     }
 
     /**
      * Create a new PropertyDirection with all directions that match the given Predicate
      */
-    public static PropertyDirection create(String name, Predicate filter)
+    public static PropertyDirection create(String name, Predicate<EnumFacing> filter)
     {
-        return create(name, Collections2.filter(Lists.newArrayList(EnumFacing.values()), filter));
+        return create(name, Collections2.<EnumFacing>filter(Lists.newArrayList(EnumFacing.values()), filter));
     }
 
     /**
      * Create a new PropertyDirection for the given direction values
      */
-    public static PropertyDirection create(String name, Collection values)
+    public static PropertyDirection create(String name, Collection<EnumFacing> values)
     {
         return new PropertyDirection(name, values);
     }

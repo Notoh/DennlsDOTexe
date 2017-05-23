@@ -11,11 +11,11 @@ public interface ISidedInventory extends IInventory
      * Returns true if automation can insert the given item in the given slot from the given side. Args: slot, item,
      * side
      */
-    boolean canInsertItem(int slotIn, ItemStack itemStackIn, EnumFacing direction);
+    boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction);
 
     /**
      * Returns true if automation can extract the given item in the given slot from the given side. Args: slot, item,
      * side
      */
-    boolean canExtractItem(int slotId, ItemStack stack, EnumFacing direction);
+    boolean canExtractItem(int index, ItemStack stack, EnumFacing direction);
 }

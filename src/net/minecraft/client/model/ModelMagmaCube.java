@@ -8,28 +8,27 @@ public class ModelMagmaCube extends ModelBase
 {
     ModelRenderer[] segments = new ModelRenderer[8];
     ModelRenderer core;
-    private static final String __OBFID = "CL_00000842";
 
     public ModelMagmaCube()
     {
-        for (int var1 = 0; var1 < this.segments.length; ++var1)
+        for (int i = 0; i < this.segments.length; ++i)
         {
-            byte var2 = 0;
-            int var3 = var1;
+            int j = 0;
+            int k = i;
 
-            if (var1 == 2)
+            if (i == 2)
             {
-                var2 = 24;
-                var3 = 10;
+                j = 24;
+                k = 10;
             }
-            else if (var1 == 3)
+            else if (i == 3)
             {
-                var2 = 24;
-                var3 = 19;
+                j = 24;
+                k = 19;
             }
 
-            this.segments[var1] = new ModelRenderer(this, var2, var3);
-            this.segments[var1].addBox(-4.0F, (float)(16 + var1), -4.0F, 8, 1, 8);
+            this.segments[i] = new ModelRenderer(this, j, k);
+            this.segments[i].addBox(-4.0F, (float)(16 + i), -4.0F, 8, 1, 8);
         }
 
         this.core = new ModelRenderer(this, 0, 16);
@@ -40,33 +39,33 @@ public class ModelMagmaCube extends ModelBase
      * Used for easily adding entity-dependent animations. The second and third float params here are the same second
      * and third as in the setRotationAngles method.
      */
-    public void setLivingAnimations(EntityLivingBase p_78086_1_, float p_78086_2_, float p_78086_3_, float p_78086_4_)
+    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float p_78086_2_, float p_78086_3_, float partialTickTime)
     {
-        EntityMagmaCube var5 = (EntityMagmaCube)p_78086_1_;
-        float var6 = var5.prevSquishFactor + (var5.squishFactor - var5.prevSquishFactor) * p_78086_4_;
+        EntityMagmaCube entitymagmacube = (EntityMagmaCube)entitylivingbaseIn;
+        float f = entitymagmacube.prevSquishFactor + (entitymagmacube.squishFactor - entitymagmacube.prevSquishFactor) * partialTickTime;
 
-        if (var6 < 0.0F)
+        if (f < 0.0F)
         {
-            var6 = 0.0F;
+            f = 0.0F;
         }
 
-        for (int var7 = 0; var7 < this.segments.length; ++var7)
+        for (int i = 0; i < this.segments.length; ++i)
         {
-            this.segments[var7].rotationPointY = (float)(-(4 - var7)) * var6 * 1.7F;
+            this.segments[i].rotationPointY = (float)(-(4 - i)) * f * 1.7F;
         }
     }
 
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float p_78088_7_)
+    public void render(Entity entityIn, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float scale)
     {
-        this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_, p_78088_1_);
-        this.core.render(p_78088_7_);
+        this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, scale, entityIn);
+        this.core.render(scale);
 
-        for (int var8 = 0; var8 < this.segments.length; ++var8)
+        for (int i = 0; i < this.segments.length; ++i)
         {
-            this.segments[var8].render(p_78088_7_);
+            this.segments[i].render(scale);
         }
     }
 }

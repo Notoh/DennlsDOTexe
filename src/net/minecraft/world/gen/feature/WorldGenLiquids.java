@@ -9,78 +9,77 @@ import net.minecraft.world.World;
 
 public class WorldGenLiquids extends WorldGenerator
 {
-    private Block field_150521_a;
-    private static final String __OBFID = "CL_00000434";
+    private Block block;
 
     public WorldGenLiquids(Block p_i45465_1_)
     {
-        this.field_150521_a = p_i45465_1_;
+        this.block = p_i45465_1_;
     }
 
-    public boolean generate(World worldIn, Random p_180709_2_, BlockPos p_180709_3_)
+    public boolean generate(World worldIn, Random rand, BlockPos position)
     {
-        if (worldIn.getBlockState(p_180709_3_.offsetUp()).getBlock() != Blocks.stone)
+        if (worldIn.getBlockState(position.up()).getBlock() != Blocks.stone)
         {
             return false;
         }
-        else if (worldIn.getBlockState(p_180709_3_.offsetDown()).getBlock() != Blocks.stone)
+        else if (worldIn.getBlockState(position.down()).getBlock() != Blocks.stone)
         {
             return false;
         }
-        else if (worldIn.getBlockState(p_180709_3_).getBlock().getMaterial() != Material.air && worldIn.getBlockState(p_180709_3_).getBlock() != Blocks.stone)
+        else if (worldIn.getBlockState(position).getBlock().getMaterial() != Material.air && worldIn.getBlockState(position).getBlock() != Blocks.stone)
         {
             return false;
         }
         else
         {
-            int var4 = 0;
+            int i = 0;
 
-            if (worldIn.getBlockState(p_180709_3_.offsetWest()).getBlock() == Blocks.stone)
+            if (worldIn.getBlockState(position.west()).getBlock() == Blocks.stone)
             {
-                ++var4;
+                ++i;
             }
 
-            if (worldIn.getBlockState(p_180709_3_.offsetEast()).getBlock() == Blocks.stone)
+            if (worldIn.getBlockState(position.east()).getBlock() == Blocks.stone)
             {
-                ++var4;
+                ++i;
             }
 
-            if (worldIn.getBlockState(p_180709_3_.offsetNorth()).getBlock() == Blocks.stone)
+            if (worldIn.getBlockState(position.north()).getBlock() == Blocks.stone)
             {
-                ++var4;
+                ++i;
             }
 
-            if (worldIn.getBlockState(p_180709_3_.offsetSouth()).getBlock() == Blocks.stone)
+            if (worldIn.getBlockState(position.south()).getBlock() == Blocks.stone)
             {
-                ++var4;
+                ++i;
             }
 
-            int var5 = 0;
+            int j = 0;
 
-            if (worldIn.isAirBlock(p_180709_3_.offsetWest()))
+            if (worldIn.isAirBlock(position.west()))
             {
-                ++var5;
+                ++j;
             }
 
-            if (worldIn.isAirBlock(p_180709_3_.offsetEast()))
+            if (worldIn.isAirBlock(position.east()))
             {
-                ++var5;
+                ++j;
             }
 
-            if (worldIn.isAirBlock(p_180709_3_.offsetNorth()))
+            if (worldIn.isAirBlock(position.north()))
             {
-                ++var5;
+                ++j;
             }
 
-            if (worldIn.isAirBlock(p_180709_3_.offsetSouth()))
+            if (worldIn.isAirBlock(position.south()))
             {
-                ++var5;
+                ++j;
             }
 
-            if (var4 == 3 && var5 == 1)
+            if (i == 3 && j == 1)
             {
-                worldIn.setBlockState(p_180709_3_, this.field_150521_a.getDefaultState(), 2);
-                worldIn.func_175637_a(this.field_150521_a, p_180709_3_, p_180709_2_);
+                worldIn.setBlockState(position, this.block.getDefaultState(), 2);
+                worldIn.forceBlockUpdateTick(this.block, position, rand);
             }
 
             return true;

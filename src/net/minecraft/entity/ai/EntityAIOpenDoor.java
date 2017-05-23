@@ -11,13 +11,12 @@ public class EntityAIOpenDoor extends EntityAIDoorInteract
      * The temporisation before the entity close the door (in ticks, always 20 = 1 second)
      */
     int closeDoorTemporisation;
-    private static final String __OBFID = "CL_00001603";
 
-    public EntityAIOpenDoor(EntityLiving p_i1644_1_, boolean p_i1644_2_)
+    public EntityAIOpenDoor(EntityLiving entitylivingIn, boolean shouldClose)
     {
-        super(p_i1644_1_);
-        this.theEntity = p_i1644_1_;
-        this.closeDoor = p_i1644_2_;
+        super(entitylivingIn);
+        this.theEntity = entitylivingIn;
+        this.closeDoor = shouldClose;
     }
 
     /**
@@ -34,7 +33,7 @@ public class EntityAIOpenDoor extends EntityAIDoorInteract
     public void startExecuting()
     {
         this.closeDoorTemporisation = 20;
-        this.doorBlock.func_176512_a(this.theEntity.worldObj, this.field_179507_b, true);
+        this.doorBlock.toggleDoor(this.theEntity.worldObj, this.doorPosition, true);
     }
 
     /**
@@ -44,7 +43,7 @@ public class EntityAIOpenDoor extends EntityAIDoorInteract
     {
         if (this.closeDoor)
         {
-            this.doorBlock.func_176512_a(this.theEntity.worldObj, this.field_179507_b, false);
+            this.doorBlock.toggleDoor(this.theEntity.worldObj, this.doorPosition, false);
         }
     }
 

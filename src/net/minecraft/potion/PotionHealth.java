@@ -4,11 +4,9 @@ import net.minecraft.util.ResourceLocation;
 
 public class PotionHealth extends Potion
 {
-    private static final String __OBFID = "CL_00001527";
-
-    public PotionHealth(int p_i45898_1_, ResourceLocation p_i45898_2_, boolean p_i45898_3_, int p_i45898_4_)
+    public PotionHealth(int potionID, ResourceLocation location, boolean badEffect, int potionColor)
     {
-        super(p_i45898_1_, p_i45898_2_, p_i45898_3_, p_i45898_4_);
+        super(potionID, location, badEffect, potionColor);
     }
 
     /**

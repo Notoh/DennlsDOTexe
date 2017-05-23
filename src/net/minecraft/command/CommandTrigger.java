@@ -1,8 +1,6 @@
 package net.minecraft.command;
 
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,8 +13,9 @@ import net.minecraft.util.BlockPos;
 
 public class CommandTrigger extends CommandBase
 {
-    private static final String __OBFID = "CL_00002337";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "trigger";
@@ -30,11 +29,17 @@ public class CommandTrigger extends CommandBase
         return 0;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.trigger.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length < 3)
@@ -43,40 +48,40 @@ public class CommandTrigger extends CommandBase
         }
         else
         {
-            EntityPlayerMP var3;
+            EntityPlayerMP entityplayermp;
 
             if (sender instanceof EntityPlayerMP)
             {
-                var3 = (EntityPlayerMP)sender;
+                entityplayermp = (EntityPlayerMP)sender;
             }
             else
             {
-                Entity var4 = sender.getCommandSenderEntity();
+                Entity entity = sender.getCommandSenderEntity();
 
-                if (!(var4 instanceof EntityPlayerMP))
+                if (!(entity instanceof EntityPlayerMP))
                 {
                     throw new CommandException("commands.trigger.invalidPlayer", new Object[0]);
                 }
 
-                var3 = (EntityPlayerMP)var4;
+                entityplayermp = (EntityPlayerMP)entity;
             }
 
-            Scoreboard var8 = MinecraftServer.getServer().worldServerForDimension(0).getScoreboard();
-            ScoreObjective var5 = var8.getObjective(args[0]);
+            Scoreboard scoreboard = MinecraftServer.getServer().worldServerForDimension(0).getScoreboard();
+            ScoreObjective scoreobjective = scoreboard.getObjective(args[0]);
 
-            if (var5 != null && var5.getCriteria() == IScoreObjectiveCriteria.field_178791_c)
+            if (scoreobjective != null && scoreobjective.getCriteria() == IScoreObjectiveCriteria.TRIGGER)
             {
-                int var6 = parseInt(args[2]);
+                int i = parseInt(args[2]);
 
-                if (!var8.func_178819_b(var3.getName(), var5))
+                if (!scoreboard.entityHasObjective(entityplayermp.getName(), scoreobjective))
                 {
                     throw new CommandException("commands.trigger.invalidObjective", new Object[] {args[0]});
                 }
                 else
                 {
-                    Score var7 = var8.getValueFromObjective(var3.getName(), var5);
+                    Score score = scoreboard.getValueFromObjective(entityplayermp.getName(), scoreobjective);
 
-                    if (var7.func_178816_g())
+                    if (score.isLocked())
                     {
                         throw new CommandException("commands.trigger.disabled", new Object[] {args[0]});
                     }
@@ -84,7 +89,7 @@ public class CommandTrigger extends CommandBase
                     {
                         if ("set".equals(args[1]))
                         {
-                            var7.setScorePoints(var6);
+                            score.setScorePoints(i);
                         }
                         else
                         {
@@ -93,12 +98,12 @@ public class CommandTrigger extends CommandBase
                                 throw new CommandException("commands.trigger.invalidMode", new Object[] {args[1]});
                             }
 
-                            var7.increseScore(var6);
+                            score.increseScore(i);
                         }
 
-                        var7.func_178815_a(true);
+                        score.setLocked(true);
 
-                        if (var3.theItemInWorldManager.isCreative())
+                        if (entityplayermp.theItemInWorldManager.isCreative())
                         {
                             notifyOperators(sender, this, "commands.trigger.success", new Object[] {args[0], args[1], args[2]});
                         }
@@ -112,25 +117,22 @@ public class CommandTrigger extends CommandBase
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
         if (args.length == 1)
         {
-            Scoreboard var4 = MinecraftServer.getServer().worldServerForDimension(0).getScoreboard();
-            ArrayList var5 = Lists.newArrayList();
-            Iterator var6 = var4.getScoreObjectives().iterator();
+            Scoreboard scoreboard = MinecraftServer.getServer().worldServerForDimension(0).getScoreboard();
+            List<String> list = Lists.<String>newArrayList();
 
-            while (var6.hasNext())
+            for (ScoreObjective scoreobjective : scoreboard.getScoreObjectives())
             {
-                ScoreObjective var7 = (ScoreObjective)var6.next();
-
-                if (var7.getCriteria() == IScoreObjectiveCriteria.field_178791_c)
+                if (scoreobjective.getCriteria() == IScoreObjectiveCriteria.TRIGGER)
                 {
-                    var5.add(var7.getName());
+                    list.add(scoreobjective.getName());
                 }
             }
 
-            return getListOfStringsMatchingLastWord(args, (String[])var5.toArray(new String[var5.size()]));
+            return getListOfStringsMatchingLastWord(args, (String[])list.toArray(new String[list.size()]));
         }
         else
         {

@@ -1,7 +1,6 @@
 package net.minecraft.entity.passive;
 
 import java.util.UUID;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.ai.EntityAISit;
@@ -16,12 +15,11 @@ import net.minecraft.world.World;
 public abstract class EntityTameable extends EntityAnimal implements IEntityOwnable
 {
     protected EntityAISit aiSit = new EntityAISit(this);
-    private static final String __OBFID = "CL_00001561";
 
     public EntityTameable(World worldIn)
     {
         super(worldIn);
-        this.func_175544_ck();
+        this.setupTamedAI();
     }
 
     protected void entityInit()
@@ -38,13 +36,13 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
     {
         super.writeEntityToNBT(tagCompound);
 
-        if (this.func_152113_b() == null)
+        if (this.getOwnerId() == null)
         {
             tagCompound.setString("OwnerUUID", "");
         }
         else
         {
-            tagCompound.setString("OwnerUUID", this.func_152113_b());
+            tagCompound.setString("OwnerUUID", this.getOwnerId());
         }
 
         tagCompound.setBoolean("Sitting", this.isSitting());
@@ -56,21 +54,21 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
     public void readEntityFromNBT(NBTTagCompound tagCompund)
     {
         super.readEntityFromNBT(tagCompund);
-        String var2 = "";
+        String s = "";
 
         if (tagCompund.hasKey("OwnerUUID", 8))
         {
-            var2 = tagCompund.getString("OwnerUUID");
+            s = tagCompund.getString("OwnerUUID");
         }
         else
         {
-            String var3 = tagCompund.getString("Owner");
-            var2 = PreYggdrasilConverter.func_152719_a(var3);
+            String s1 = tagCompund.getString("Owner");
+            s = PreYggdrasilConverter.getStringUUIDFromName(s1);
         }
 
-        if (var2.length() > 0)
+        if (s.length() > 0)
         {
-            this.func_152115_b(var2);
+            this.setOwnerId(s);
             this.setTamed(true);
         }
 
@@ -81,37 +79,37 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
     /**
      * Play the taming effect, will either be hearts or smoke depending on status
      */
-    protected void playTameEffect(boolean p_70908_1_)
+    protected void playTameEffect(boolean play)
     {
-        EnumParticleTypes var2 = EnumParticleTypes.HEART;
+        EnumParticleTypes enumparticletypes = EnumParticleTypes.HEART;
 
-        if (!p_70908_1_)
+        if (!play)
         {
-            var2 = EnumParticleTypes.SMOKE_NORMAL;
+            enumparticletypes = EnumParticleTypes.SMOKE_NORMAL;
         }
 
-        for (int var3 = 0; var3 < 7; ++var3)
+        for (int i = 0; i < 7; ++i)
         {
-            double var4 = this.rand.nextGaussian() * 0.02D;
-            double var6 = this.rand.nextGaussian() * 0.02D;
-            double var8 = this.rand.nextGaussian() * 0.02D;
-            this.worldObj.spawnParticle(var2, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, var4, var6, var8, new int[0]);
+            double d0 = this.rand.nextGaussian() * 0.02D;
+            double d1 = this.rand.nextGaussian() * 0.02D;
+            double d2 = this.rand.nextGaussian() * 0.02D;
+            this.worldObj.spawnParticle(enumparticletypes, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d0, d1, d2, new int[0]);
         }
     }
 
-    public void handleHealthUpdate(byte p_70103_1_)
+    public void handleStatusUpdate(byte id)
     {
-        if (p_70103_1_ == 7)
+        if (id == 7)
         {
             this.playTameEffect(true);
         }
-        else if (p_70103_1_ == 6)
+        else if (id == 6)
         {
             this.playTameEffect(false);
         }
         else
         {
-            super.handleHealthUpdate(p_70103_1_);
+            super.handleStatusUpdate(id);
         }
     }
 
@@ -120,59 +118,61 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
         return (this.dataWatcher.getWatchableObjectByte(16) & 4) != 0;
     }
 
-    public void setTamed(boolean p_70903_1_)
+    public void setTamed(boolean tamed)
     {
-        byte var2 = this.dataWatcher.getWatchableObjectByte(16);
+        byte b0 = this.dataWatcher.getWatchableObjectByte(16);
 
-        if (p_70903_1_)
+        if (tamed)
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(var2 | 4)));
+            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 | 4)));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(var2 & -5)));
+            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 & -5)));
         }
 
-        this.func_175544_ck();
+        this.setupTamedAI();
     }
 
-    protected void func_175544_ck() {}
+    protected void setupTamedAI()
+    {
+    }
 
     public boolean isSitting()
     {
         return (this.dataWatcher.getWatchableObjectByte(16) & 1) != 0;
     }
 
-    public void setSitting(boolean p_70904_1_)
+    public void setSitting(boolean sitting)
     {
-        byte var2 = this.dataWatcher.getWatchableObjectByte(16);
+        byte b0 = this.dataWatcher.getWatchableObjectByte(16);
 
-        if (p_70904_1_)
+        if (sitting)
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(var2 | 1)));
+            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 | 1)));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(var2 & -2)));
+            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 & -2)));
         }
     }
 
-    public String func_152113_b()
+    public String getOwnerId()
     {
         return this.dataWatcher.getWatchableObjectString(17);
     }
 
-    public void func_152115_b(String p_152115_1_)
+    public void setOwnerId(String ownerUuid)
     {
-        this.dataWatcher.updateObject(17, p_152115_1_);
+        this.dataWatcher.updateObject(17, ownerUuid);
     }
 
-    public EntityLivingBase func_180492_cm()
+    public EntityLivingBase getOwner()
     {
         try
         {
-            UUID var1 = UUID.fromString(this.func_152113_b());
-            return var1 == null ? null : this.worldObj.getPlayerEntityByUUID(var1);
+            UUID uuid = UUID.fromString(this.getOwnerId());
+            return uuid == null ? null : this.worldObj.getPlayerEntityByUUID(uuid);
         }
         catch (IllegalArgumentException var2)
         {
@@ -180,9 +180,9 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
         }
     }
 
-    public boolean func_152114_e(EntityLivingBase p_152114_1_)
+    public boolean isOwner(EntityLivingBase entityIn)
     {
-        return p_152114_1_ == this.func_180492_cm();
+        return entityIn == this.getOwner();
     }
 
     /**
@@ -193,7 +193,7 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
         return this.aiSit;
     }
 
-    public boolean func_142018_a(EntityLivingBase p_142018_1_, EntityLivingBase p_142018_2_)
+    public boolean shouldAttackEntity(EntityLivingBase p_142018_1_, EntityLivingBase p_142018_2_)
     {
         return true;
     }
@@ -202,35 +202,35 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
     {
         if (this.isTamed())
         {
-            EntityLivingBase var1 = this.func_180492_cm();
+            EntityLivingBase entitylivingbase = this.getOwner();
 
-            if (var1 != null)
+            if (entitylivingbase != null)
             {
-                return var1.getTeam();
+                return entitylivingbase.getTeam();
             }
         }
 
         return super.getTeam();
     }
 
-    public boolean isOnSameTeam(EntityLivingBase p_142014_1_)
+    public boolean isOnSameTeam(EntityLivingBase otherEntity)
     {
         if (this.isTamed())
         {
-            EntityLivingBase var2 = this.func_180492_cm();
+            EntityLivingBase entitylivingbase = this.getOwner();
 
-            if (p_142014_1_ == var2)
+            if (otherEntity == entitylivingbase)
             {
                 return true;
             }
 
-            if (var2 != null)
+            if (entitylivingbase != null)
             {
-                return var2.isOnSameTeam(p_142014_1_);
+                return entitylivingbase.isOnSameTeam(otherEntity);
             }
         }
 
-        return super.isOnSameTeam(p_142014_1_);
+        return super.isOnSameTeam(otherEntity);
     }
 
     /**
@@ -238,16 +238,11 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
      */
     public void onDeath(DamageSource cause)
     {
-        if (!this.worldObj.isRemote && this.worldObj.getGameRules().getGameRuleBooleanValue("showDeathMessages") && this.hasCustomName() && this.func_180492_cm() instanceof EntityPlayerMP)
+        if (!this.worldObj.isRemote && this.worldObj.getGameRules().getBoolean("showDeathMessages") && this.hasCustomName() && this.getOwner() instanceof EntityPlayerMP)
         {
-            ((EntityPlayerMP)this.func_180492_cm()).addChatMessage(this.getCombatTracker().func_151521_b());
+            ((EntityPlayerMP)this.getOwner()).addChatMessage(this.getCombatTracker().getDeathMessage());
         }
 
         super.onDeath(cause);
-    }
-
-    public Entity getOwner()
-    {
-        return this.func_180492_cm();
     }
 }

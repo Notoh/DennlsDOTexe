@@ -2,11 +2,11 @@ package net.minecraft.client.shader;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import javax.vecmath.Matrix4f;
 import net.minecraft.client.renderer.OpenGlHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.util.vector.Matrix4f;
 
 public class ShaderUniform
 {
@@ -17,9 +17,8 @@ public class ShaderUniform
     private final IntBuffer uniformIntBuffer;
     private final FloatBuffer uniformFloatBuffer;
     private final String shaderName;
-    private boolean field_148105_h;
+    private boolean dirty;
     private final ShaderManager shaderManager;
-    private static final String __OBFID = "CL_00001046";
 
     public ShaderUniform(String name, int type, int count, ShaderManager manager)
     {
@@ -45,7 +44,7 @@ public class ShaderUniform
 
     private void markDirty()
     {
-        this.field_148105_h = true;
+        this.dirty = true;
 
         if (this.shaderManager != null)
         {
@@ -55,33 +54,33 @@ public class ShaderUniform
 
     public static int parseType(String p_148085_0_)
     {
-        byte var1 = -1;
+        int i = -1;
 
         if (p_148085_0_.equals("int"))
         {
-            var1 = 0;
+            i = 0;
         }
         else if (p_148085_0_.equals("float"))
         {
-            var1 = 4;
+            i = 4;
         }
         else if (p_148085_0_.startsWith("matrix"))
         {
             if (p_148085_0_.endsWith("2x2"))
             {
-                var1 = 8;
+                i = 8;
             }
             else if (p_148085_0_.endsWith("3x3"))
             {
-                var1 = 9;
+                i = 9;
             }
             else if (p_148085_0_.endsWith("4x4"))
             {
-                var1 = 10;
+                i = 10;
             }
         }
 
-        return var1;
+        return i;
     }
 
     public void setUniformLocation(int p_148084_1_)
@@ -227,12 +226,12 @@ public class ShaderUniform
 
     public void upload()
     {
-        if (!this.field_148105_h)
+        if (!this.dirty)
         {
             ;
         }
 
-        this.field_148105_h = false;
+        this.dirty = false;
 
         if (this.uniformType <= 3)
         {

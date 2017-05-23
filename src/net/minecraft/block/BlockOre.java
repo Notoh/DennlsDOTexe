@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -14,18 +15,19 @@ import net.minecraft.world.World;
 
 public class BlockOre extends Block
 {
-    private static final String __OBFID = "CL_00000282";
-
     public BlockOre()
     {
-        super(Material.rock);
+        this(Material.rock.getMaterialMapColor());
+    }
+
+    public BlockOre(MapColor p_i46390_1_)
+    {
+        super(Material.rock, p_i46390_1_);
         this.setCreativeTab(CreativeTabs.tabBlock);
     }
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
@@ -47,14 +49,14 @@ public class BlockOre extends Block
     {
         if (fortune > 0 && Item.getItemFromBlock(this) != this.getItemDropped((IBlockState)this.getBlockState().getValidStates().iterator().next(), random, fortune))
         {
-            int var3 = random.nextInt(fortune + 2) - 1;
+            int i = random.nextInt(fortune + 2) - 1;
 
-            if (var3 < 0)
+            if (i < 0)
             {
-                var3 = 0;
+                i = 0;
             }
 
-            return this.quantityDropped(random) * (var3 + 1);
+            return this.quantityDropped(random) * (i + 1);
         }
         else
         {
@@ -64,9 +66,6 @@ public class BlockOre extends Block
 
     /**
      * Spawns this Block's drops into the World as EntityItems.
-     *  
-     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
-     * @param fortune The player's fortune level
      */
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
     {
@@ -74,30 +73,30 @@ public class BlockOre extends Block
 
         if (this.getItemDropped(state, worldIn.rand, fortune) != Item.getItemFromBlock(this))
         {
-            int var6 = 0;
+            int i = 0;
 
             if (this == Blocks.coal_ore)
             {
-                var6 = MathHelper.getRandomIntegerInRange(worldIn.rand, 0, 2);
+                i = MathHelper.getRandomIntegerInRange(worldIn.rand, 0, 2);
             }
             else if (this == Blocks.diamond_ore)
             {
-                var6 = MathHelper.getRandomIntegerInRange(worldIn.rand, 3, 7);
+                i = MathHelper.getRandomIntegerInRange(worldIn.rand, 3, 7);
             }
             else if (this == Blocks.emerald_ore)
             {
-                var6 = MathHelper.getRandomIntegerInRange(worldIn.rand, 3, 7);
+                i = MathHelper.getRandomIntegerInRange(worldIn.rand, 3, 7);
             }
             else if (this == Blocks.lapis_ore)
             {
-                var6 = MathHelper.getRandomIntegerInRange(worldIn.rand, 2, 5);
+                i = MathHelper.getRandomIntegerInRange(worldIn.rand, 2, 5);
             }
             else if (this == Blocks.quartz_ore)
             {
-                var6 = MathHelper.getRandomIntegerInRange(worldIn.rand, 2, 5);
+                i = MathHelper.getRandomIntegerInRange(worldIn.rand, 2, 5);
             }
 
-            this.dropXpOnBlockBreak(worldIn, pos, var6);
+            this.dropXpOnBlockBreak(worldIn, pos, i);
         }
     }
 
@@ -107,10 +106,11 @@ public class BlockOre extends Block
     }
 
     /**
-     * Get the damage value that this Block should drop
+     * Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It
+     * returns the metadata of the dropped item based on the old metadata of the block.
      */
     public int damageDropped(IBlockState state)
     {
-        return this == Blocks.lapis_ore ? EnumDyeColor.BLUE.getDyeColorDamage() : 0;
+        return this == Blocks.lapis_ore ? EnumDyeColor.BLUE.getDyeDamage() : 0;
     }
 }

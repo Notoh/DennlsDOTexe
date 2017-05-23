@@ -9,8 +9,6 @@ import net.minecraft.world.World;
 
 public class BlockPotato extends BlockCrops
 {
-    private static final String __OBFID = "CL_00000286";
-
     protected Item getSeed()
     {
         return Items.potato;
@@ -23,9 +21,6 @@ public class BlockPotato extends BlockCrops
 
     /**
      * Spawns this Block's drops into the World as EntityItems.
-     *  
-     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
-     * @param fortune The player's fortune level
      */
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
     {

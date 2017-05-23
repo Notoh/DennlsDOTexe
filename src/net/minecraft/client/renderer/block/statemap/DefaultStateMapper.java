@@ -7,10 +7,8 @@ import net.minecraft.util.ResourceLocation;
 
 public class DefaultStateMapper extends StateMapperBase
 {
-    private static final String __OBFID = "CL_00002477";
-
-    protected ModelResourceLocation func_178132_a(IBlockState p_178132_1_)
+    protected ModelResourceLocation getModelResourceLocation(IBlockState state)
     {
-        return new ModelResourceLocation((ResourceLocation)Block.blockRegistry.getNameForObject(p_178132_1_.getBlock()), this.func_178131_a(p_178132_1_.getProperties()));
+        return new ModelResourceLocation((ResourceLocation)Block.blockRegistry.getNameForObject(state.getBlock()), this.getPropertyString(state.getProperties()));
     }
 }

@@ -26,7 +26,7 @@ public interface IWorldAccess
      */
     void playSoundToNearExcept(EntityPlayer except, String soundName, double x, double y, double z, float volume, float pitch);
 
-    void func_180442_a(int var1, boolean var2, double var3, double var5, double var7, double var9, double var11, double var13, int ... var15);
+    void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xOffset, double yOffset, double zOffset, int... p_180442_15_);
 
     /**
      * Called on all IWorldAccesses when an entity is created or loaded. On client worlds, starts downloading any
@@ -40,11 +40,11 @@ public interface IWorldAccess
      */
     void onEntityRemoved(Entity entityIn);
 
-    void func_174961_a(String p_174961_1_, BlockPos p_174961_2_);
+    void playRecord(String recordName, BlockPos blockPosIn);
 
-    void func_180440_a(int p_180440_1_, BlockPos p_180440_2_, int p_180440_3_);
+    void broadcastSound(int p_180440_1_, BlockPos p_180440_2_, int p_180440_3_);
 
-    void func_180439_a(EntityPlayer p_180439_1_, int p_180439_2_, BlockPos p_180439_3_, int p_180439_4_);
+    void playAuxSFX(EntityPlayer player, int sfxType, BlockPos blockPosIn, int p_180439_4_);
 
     void sendBlockBreakProgress(int breakerId, BlockPos pos, int progress);
 }

@@ -7,31 +7,30 @@ public class RangedAttribute extends BaseAttribute
     private final double minimumValue;
     private final double maximumValue;
     private String description;
-    private static final String __OBFID = "CL_00001568";
 
-    public RangedAttribute(IAttribute p_i45891_1_, String p_i45891_2_, double p_i45891_3_, double p_i45891_5_, double p_i45891_7_)
+    public RangedAttribute(IAttribute p_i45891_1_, String unlocalizedNameIn, double defaultValue, double minimumValueIn, double maximumValueIn)
     {
-        super(p_i45891_1_, p_i45891_2_, p_i45891_3_);
-        this.minimumValue = p_i45891_5_;
-        this.maximumValue = p_i45891_7_;
+        super(p_i45891_1_, unlocalizedNameIn, defaultValue);
+        this.minimumValue = minimumValueIn;
+        this.maximumValue = maximumValueIn;
 
-        if (p_i45891_5_ > p_i45891_7_)
+        if (minimumValueIn > maximumValueIn)
         {
             throw new IllegalArgumentException("Minimum value cannot be bigger than maximum value!");
         }
-        else if (p_i45891_3_ < p_i45891_5_)
+        else if (defaultValue < minimumValueIn)
         {
             throw new IllegalArgumentException("Default value cannot be lower than minimum value!");
         }
-        else if (p_i45891_3_ > p_i45891_7_)
+        else if (defaultValue > maximumValueIn)
         {
             throw new IllegalArgumentException("Default value cannot be bigger than maximum value!");
         }
     }
 
-    public RangedAttribute setDescription(String p_111117_1_)
+    public RangedAttribute setDescription(String descriptionIn)
     {
-        this.description = p_111117_1_;
+        this.description = descriptionIn;
         return this;
     }
 

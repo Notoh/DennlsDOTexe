@@ -11,11 +11,9 @@ import net.minecraft.util.MathHelper;
 
 public class BlockSeaLantern extends Block
 {
-    private static final String __OBFID = "CL_00002066";
-
-    public BlockSeaLantern(Material p_i45685_1_)
+    public BlockSeaLantern(Material materialIn)
     {
-        super(p_i45685_1_);
+        super(materialIn);
         this.setCreativeTab(CreativeTabs.tabBlock);
     }
 
@@ -37,8 +35,6 @@ public class BlockSeaLantern extends Block
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {

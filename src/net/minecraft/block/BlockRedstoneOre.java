@@ -17,18 +17,17 @@ import net.minecraft.world.World;
 public class BlockRedstoneOre extends Block
 {
     private final boolean isOn;
-    private static final String __OBFID = "CL_00000294";
 
-    public BlockRedstoneOre(boolean p_i45420_1_)
+    public BlockRedstoneOre(boolean isOn)
     {
         super(Material.rock);
 
-        if (p_i45420_1_)
+        if (isOn)
         {
             this.setTickRandomly(true);
         }
 
-        this.isOn = p_i45420_1_;
+        this.isOn = isOn;
     }
 
     /**
@@ -41,7 +40,7 @@ public class BlockRedstoneOre extends Block
 
     public void onBlockClicked(World worldIn, BlockPos pos, EntityPlayer playerIn)
     {
-        this.setOn(worldIn, pos);
+        this.activate(worldIn, pos);
         super.onBlockClicked(worldIn, pos, playerIn);
     }
 
@@ -50,23 +49,23 @@ public class BlockRedstoneOre extends Block
      */
     public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, Entity entityIn)
     {
-        this.setOn(worldIn, pos);
+        this.activate(worldIn, pos);
         super.onEntityCollidedWithBlock(worldIn, pos, entityIn);
     }
 
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        this.setOn(worldIn, pos);
+        this.activate(worldIn, pos);
         return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ);
     }
 
-    private void setOn(World worldIn, BlockPos p_176352_2_)
+    private void activate(World worldIn, BlockPos pos)
     {
-        this.spawnRedstoneParticles(worldIn, p_176352_2_);
+        this.spawnParticles(worldIn, pos);
 
         if (this == Blocks.redstone_ore)
         {
-            worldIn.setBlockState(p_176352_2_, Blocks.lit_redstone_ore.getDefaultState());
+            worldIn.setBlockState(pos, Blocks.lit_redstone_ore.getDefaultState());
         }
     }
 
@@ -80,8 +79,6 @@ public class BlockRedstoneOre extends Block
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
@@ -106,9 +103,6 @@ public class BlockRedstoneOre extends Block
 
     /**
      * Spawns this Block's drops into the World as EntityItems.
-     *  
-     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
-     * @param fortune The player's fortune level
      */
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
     {
@@ -116,8 +110,8 @@ public class BlockRedstoneOre extends Block
 
         if (this.getItemDropped(state, worldIn.rand, fortune) != Item.getItemFromBlock(this))
         {
-            int var6 = 1 + worldIn.rand.nextInt(5);
-            this.dropXpOnBlockBreak(worldIn, pos, var6);
+            int i = 1 + worldIn.rand.nextInt(5);
+            this.dropXpOnBlockBreak(worldIn, pos, i);
         }
     }
 
@@ -125,54 +119,54 @@ public class BlockRedstoneOre extends Block
     {
         if (this.isOn)
         {
-            this.spawnRedstoneParticles(worldIn, pos);
+            this.spawnParticles(worldIn, pos);
         }
     }
 
-    private void spawnRedstoneParticles(World worldIn, BlockPos p_180691_2_)
+    private void spawnParticles(World worldIn, BlockPos pos)
     {
-        Random var3 = worldIn.rand;
-        double var4 = 0.0625D;
+        Random random = worldIn.rand;
+        double d0 = 0.0625D;
 
-        for (int var6 = 0; var6 < 6; ++var6)
+        for (int i = 0; i < 6; ++i)
         {
-            double var7 = (double)((float)p_180691_2_.getX() + var3.nextFloat());
-            double var9 = (double)((float)p_180691_2_.getY() + var3.nextFloat());
-            double var11 = (double)((float)p_180691_2_.getZ() + var3.nextFloat());
+            double d1 = (double)((float)pos.getX() + random.nextFloat());
+            double d2 = (double)((float)pos.getY() + random.nextFloat());
+            double d3 = (double)((float)pos.getZ() + random.nextFloat());
 
-            if (var6 == 0 && !worldIn.getBlockState(p_180691_2_.offsetUp()).getBlock().isOpaqueCube())
+            if (i == 0 && !worldIn.getBlockState(pos.up()).getBlock().isOpaqueCube())
             {
-                var9 = (double)p_180691_2_.getY() + var4 + 1.0D;
+                d2 = (double)pos.getY() + d0 + 1.0D;
             }
 
-            if (var6 == 1 && !worldIn.getBlockState(p_180691_2_.offsetDown()).getBlock().isOpaqueCube())
+            if (i == 1 && !worldIn.getBlockState(pos.down()).getBlock().isOpaqueCube())
             {
-                var9 = (double)p_180691_2_.getY() - var4;
+                d2 = (double)pos.getY() - d0;
             }
 
-            if (var6 == 2 && !worldIn.getBlockState(p_180691_2_.offsetSouth()).getBlock().isOpaqueCube())
+            if (i == 2 && !worldIn.getBlockState(pos.south()).getBlock().isOpaqueCube())
             {
-                var11 = (double)p_180691_2_.getZ() + var4 + 1.0D;
+                d3 = (double)pos.getZ() + d0 + 1.0D;
             }
 
-            if (var6 == 3 && !worldIn.getBlockState(p_180691_2_.offsetNorth()).getBlock().isOpaqueCube())
+            if (i == 3 && !worldIn.getBlockState(pos.north()).getBlock().isOpaqueCube())
             {
-                var11 = (double)p_180691_2_.getZ() - var4;
+                d3 = (double)pos.getZ() - d0;
             }
 
-            if (var6 == 4 && !worldIn.getBlockState(p_180691_2_.offsetEast()).getBlock().isOpaqueCube())
+            if (i == 4 && !worldIn.getBlockState(pos.east()).getBlock().isOpaqueCube())
             {
-                var7 = (double)p_180691_2_.getX() + var4 + 1.0D;
+                d1 = (double)pos.getX() + d0 + 1.0D;
             }
 
-            if (var6 == 5 && !worldIn.getBlockState(p_180691_2_.offsetWest()).getBlock().isOpaqueCube())
+            if (i == 5 && !worldIn.getBlockState(pos.west()).getBlock().isOpaqueCube())
             {
-                var7 = (double)p_180691_2_.getX() - var4;
+                d1 = (double)pos.getX() - d0;
             }
 
-            if (var7 < (double)p_180691_2_.getX() || var7 > (double)(p_180691_2_.getX() + 1) || var9 < 0.0D || var9 > (double)(p_180691_2_.getY() + 1) || var11 < (double)p_180691_2_.getZ() || var11 > (double)(p_180691_2_.getZ() + 1))
+            if (d1 < (double)pos.getX() || d1 > (double)(pos.getX() + 1) || d2 < 0.0D || d2 > (double)(pos.getY() + 1) || d3 < (double)pos.getZ() || d3 > (double)(pos.getZ() + 1))
             {
-                worldIn.spawnParticle(EnumParticleTypes.REDSTONE, var7, var9, var11, 0.0D, 0.0D, 0.0D, new int[0]);
+                worldIn.spawnParticle(EnumParticleTypes.REDSTONE, d1, d2, d3, 0.0D, 0.0D, 0.0D, new int[0]);
             }
         }
     }

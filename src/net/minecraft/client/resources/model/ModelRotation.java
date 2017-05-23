@@ -2,10 +2,10 @@ package net.minecraft.client.resources.model;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import javax.vecmath.AxisAngle4d;
-import javax.vecmath.Matrix4d;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 public enum ModelRotation
 {
@@ -25,96 +25,91 @@ public enum ModelRotation
     X270_Y90(270, 90),
     X270_Y180(270, 180),
     X270_Y270(270, 270);
-    private static final Map field_177546_q = Maps.newHashMap();
-    private final int field_177545_r;
-    private final Matrix4d field_177544_s;
-    private final int field_177543_t;
-    private final int field_177542_u;
-    private static final String __OBFID = "CL_00002393";
 
-    private static int func_177521_b(int p_177521_0_, int p_177521_1_)
+    private static final Map<Integer, ModelRotation> mapRotations = Maps.<Integer, ModelRotation>newHashMap();
+    private final int combinedXY;
+    private final Matrix4f matrix4d;
+    private final int quartersX;
+    private final int quartersY;
+
+    private static int combineXY(int p_177521_0_, int p_177521_1_)
     {
         return p_177521_0_ * 360 + p_177521_1_;
     }
 
     private ModelRotation(int p_i46087_3_, int p_i46087_4_)
     {
-        this.field_177545_r = func_177521_b(p_i46087_3_, p_i46087_4_);
-        this.field_177544_s = new Matrix4d();
-        Matrix4d var5 = new Matrix4d();
-        var5.setIdentity();
-        var5.setRotation(new AxisAngle4d(1.0D, 0.0D, 0.0D, (double)((float)(-p_i46087_3_) * 0.017453292F)));
-        this.field_177543_t = MathHelper.abs_int(p_i46087_3_ / 90);
-        Matrix4d var6 = new Matrix4d();
-        var6.setIdentity();
-        var6.setRotation(new AxisAngle4d(0.0D, 1.0D, 0.0D, (double)((float)(-p_i46087_4_) * 0.017453292F)));
-        this.field_177542_u = MathHelper.abs_int(p_i46087_4_ / 90);
-        this.field_177544_s.mul(var6, var5);
+        this.combinedXY = combineXY(p_i46087_3_, p_i46087_4_);
+        this.matrix4d = new Matrix4f();
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.setIdentity();
+        Matrix4f.rotate((float)(-p_i46087_3_) * 0.017453292F, new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
+        this.quartersX = MathHelper.abs_int(p_i46087_3_ / 90);
+        Matrix4f matrix4f1 = new Matrix4f();
+        matrix4f1.setIdentity();
+        Matrix4f.rotate((float)(-p_i46087_4_) * 0.017453292F, new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
+        this.quartersY = MathHelper.abs_int(p_i46087_4_ / 90);
+        Matrix4f.mul(matrix4f1, matrix4f, this.matrix4d);
     }
 
-    public Matrix4d func_177525_a()
+    public Matrix4f getMatrix4d()
     {
-        return this.field_177544_s;
+        return this.matrix4d;
     }
 
-    public EnumFacing func_177523_a(EnumFacing p_177523_1_)
+    public EnumFacing rotateFace(EnumFacing p_177523_1_)
     {
-        EnumFacing var2 = p_177523_1_;
-        int var3;
+        EnumFacing enumfacing = p_177523_1_;
 
-        for (var3 = 0; var3 < this.field_177543_t; ++var3)
+        for (int i = 0; i < this.quartersX; ++i)
         {
-            var2 = var2.rotateAround(EnumFacing.Axis.X);
+            enumfacing = enumfacing.rotateAround(EnumFacing.Axis.X);
         }
 
-        if (var2.getAxis() != EnumFacing.Axis.Y)
+        if (enumfacing.getAxis() != EnumFacing.Axis.Y)
         {
-            for (var3 = 0; var3 < this.field_177542_u; ++var3)
+            for (int j = 0; j < this.quartersY; ++j)
             {
-                var2 = var2.rotateAround(EnumFacing.Axis.Y);
+                enumfacing = enumfacing.rotateAround(EnumFacing.Axis.Y);
             }
         }
 
-        return var2;
+        return enumfacing;
     }
 
-    public int func_177520_a(EnumFacing p_177520_1_, int p_177520_2_)
+    public int rotateVertex(EnumFacing facing, int vertexIndex)
     {
-        int var3 = p_177520_2_;
+        int i = vertexIndex;
 
-        if (p_177520_1_.getAxis() == EnumFacing.Axis.X)
+        if (facing.getAxis() == EnumFacing.Axis.X)
         {
-            var3 = (p_177520_2_ + this.field_177543_t) % 4;
+            i = (vertexIndex + this.quartersX) % 4;
         }
 
-        EnumFacing var4 = p_177520_1_;
+        EnumFacing enumfacing = facing;
 
-        for (int var5 = 0; var5 < this.field_177543_t; ++var5)
+        for (int j = 0; j < this.quartersX; ++j)
         {
-            var4 = var4.rotateAround(EnumFacing.Axis.X);
+            enumfacing = enumfacing.rotateAround(EnumFacing.Axis.X);
         }
 
-        if (var4.getAxis() == EnumFacing.Axis.Y)
+        if (enumfacing.getAxis() == EnumFacing.Axis.Y)
         {
-            var3 = (var3 + this.field_177542_u) % 4;
+            i = (i + this.quartersY) % 4;
         }
 
-        return var3;
+        return i;
     }
 
-    public static ModelRotation func_177524_a(int p_177524_0_, int p_177524_1_)
+    public static ModelRotation getModelRotation(int p_177524_0_, int p_177524_1_)
     {
-        return (ModelRotation)field_177546_q.get(Integer.valueOf(func_177521_b(MathHelper.func_180184_b(p_177524_0_, 360), MathHelper.func_180184_b(p_177524_1_, 360))));
+        return (ModelRotation)mapRotations.get(Integer.valueOf(combineXY(MathHelper.normalizeAngle(p_177524_0_, 360), MathHelper.normalizeAngle(p_177524_1_, 360))));
     }
 
     static {
-        ModelRotation[] var0 = values();
-        int var1 = var0.length;
-
-        for (int var2 = 0; var2 < var1; ++var2)
+        for (ModelRotation modelrotation : values())
         {
-            ModelRotation var3 = var0[var2];
-            field_177546_q.put(Integer.valueOf(var3.field_177545_r), var3);
+            mapRotations.put(Integer.valueOf(modelrotation.combinedXY), modelrotation);
         }
     }
 }

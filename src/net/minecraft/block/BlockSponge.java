@@ -2,9 +2,8 @@ package net.minecraft.block;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -18,104 +17,109 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.World;
 
 public class BlockSponge extends Block
 {
-    public static final PropertyBool WET_PROP = PropertyBool.create("wet");
-    private static final String __OBFID = "CL_00000311";
+    public static final PropertyBool WET = PropertyBool.create("wet");
 
     protected BlockSponge()
     {
         super(Material.sponge);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(WET_PROP, Boolean.valueOf(false)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(WET, Boolean.valueOf(false)));
         this.setCreativeTab(CreativeTabs.tabBlock);
     }
 
     /**
-     * Get the damage value that this Block should drop
+     * Gets the localized name of this block. Used for the statistics page.
+     */
+    public String getLocalizedName()
+    {
+        return StatCollector.translateToLocal(this.getUnlocalizedName() + ".dry.name");
+    }
+
+    /**
+     * Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It
+     * returns the metadata of the dropped item based on the old metadata of the block.
      */
     public int damageDropped(IBlockState state)
     {
-        return ((Boolean)state.getValue(WET_PROP)).booleanValue() ? 1 : 0;
+        return ((Boolean)state.getValue(WET)).booleanValue() ? 1 : 0;
     }
 
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
-        this.setWet(worldIn, pos, state);
+        this.tryAbsorb(worldIn, pos, state);
     }
 
+    /**
+     * Called when a neighboring block changes.
+     */
     public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
     {
-        this.setWet(worldIn, pos, state);
+        this.tryAbsorb(worldIn, pos, state);
         super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
     }
 
-    protected void setWet(World worldIn, BlockPos p_176311_2_, IBlockState p_176311_3_)
+    protected void tryAbsorb(World worldIn, BlockPos pos, IBlockState state)
     {
-        if (!((Boolean)p_176311_3_.getValue(WET_PROP)).booleanValue() && this.absorbWater(worldIn, p_176311_2_))
+        if (!((Boolean)state.getValue(WET)).booleanValue() && this.absorb(worldIn, pos))
         {
-            worldIn.setBlockState(p_176311_2_, p_176311_3_.withProperty(WET_PROP, Boolean.valueOf(true)), 2);
-            worldIn.playAuxSFX(2001, p_176311_2_, Block.getIdFromBlock(Blocks.water));
+            worldIn.setBlockState(pos, state.withProperty(WET, Boolean.valueOf(true)), 2);
+            worldIn.playAuxSFX(2001, pos, Block.getIdFromBlock(Blocks.water));
         }
     }
 
-    private boolean absorbWater(World worldIn, BlockPos p_176312_2_)
+    private boolean absorb(World worldIn, BlockPos pos)
     {
-        LinkedList var3 = Lists.newLinkedList();
-        ArrayList var4 = Lists.newArrayList();
-        var3.add(new Tuple(p_176312_2_, Integer.valueOf(0)));
-        int var5 = 0;
-        BlockPos var7;
+        Queue<Tuple<BlockPos, Integer>> queue = Lists.<Tuple<BlockPos, Integer>>newLinkedList();
+        ArrayList<BlockPos> arraylist = Lists.<BlockPos>newArrayList();
+        queue.add(new Tuple(pos, Integer.valueOf(0)));
+        int i = 0;
 
-        while (!var3.isEmpty())
+        while (!((Queue)queue).isEmpty())
         {
-            Tuple var6 = (Tuple)var3.poll();
-            var7 = (BlockPos)var6.getFirst();
-            int var8 = ((Integer)var6.getSecond()).intValue();
-            EnumFacing[] var9 = EnumFacing.values();
-            int var10 = var9.length;
+            Tuple<BlockPos, Integer> tuple = (Tuple)queue.poll();
+            BlockPos blockpos = (BlockPos)tuple.getFirst();
+            int j = ((Integer)tuple.getSecond()).intValue();
 
-            for (int var11 = 0; var11 < var10; ++var11)
+            for (EnumFacing enumfacing : EnumFacing.values())
             {
-                EnumFacing var12 = var9[var11];
-                BlockPos var13 = var7.offset(var12);
+                BlockPos blockpos1 = blockpos.offset(enumfacing);
 
-                if (worldIn.getBlockState(var13).getBlock().getMaterial() == Material.water)
+                if (worldIn.getBlockState(blockpos1).getBlock().getMaterial() == Material.water)
                 {
-                    worldIn.setBlockState(var13, Blocks.air.getDefaultState(), 2);
-                    var4.add(var13);
-                    ++var5;
+                    worldIn.setBlockState(blockpos1, Blocks.air.getDefaultState(), 2);
+                    arraylist.add(blockpos1);
+                    ++i;
 
-                    if (var8 < 6)
+                    if (j < 6)
                     {
-                        var3.add(new Tuple(var13, Integer.valueOf(var8 + 1)));
+                        queue.add(new Tuple(blockpos1, Integer.valueOf(j + 1)));
                     }
                 }
             }
 
-            if (var5 > 64)
+            if (i > 64)
             {
                 break;
             }
         }
 
-        Iterator var14 = var4.iterator();
-
-        while (var14.hasNext())
+        for (BlockPos blockpos2 : arraylist)
         {
-            var7 = (BlockPos)var14.next();
-            worldIn.notifyNeighborsOfStateChange(var7, Blocks.air);
+            worldIn.notifyNeighborsOfStateChange(blockpos2, Blocks.air);
         }
 
-        return var5 > 0;
+        return i > 0;
     }
 
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
     {
         list.add(new ItemStack(itemIn, 1, 0));
         list.add(new ItemStack(itemIn, 1, 1));
@@ -126,7 +130,7 @@ public class BlockSponge extends Block
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(WET_PROP, Boolean.valueOf((meta & 1) == 1));
+        return this.getDefaultState().withProperty(WET, Boolean.valueOf((meta & 1) == 1));
     }
 
     /**
@@ -134,65 +138,65 @@ public class BlockSponge extends Block
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((Boolean)state.getValue(WET_PROP)).booleanValue() ? 1 : 0;
+        return ((Boolean)state.getValue(WET)).booleanValue() ? 1 : 0;
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {WET_PROP});
+        return new BlockState(this, new IProperty[] {WET});
     }
 
     public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (((Boolean)state.getValue(WET_PROP)).booleanValue())
+        if (((Boolean)state.getValue(WET)).booleanValue())
         {
-            EnumFacing var5 = EnumFacing.random(rand);
+            EnumFacing enumfacing = EnumFacing.random(rand);
 
-            if (var5 != EnumFacing.UP && !World.doesBlockHaveSolidTopSurface(worldIn, pos.offset(var5)))
+            if (enumfacing != EnumFacing.UP && !World.doesBlockHaveSolidTopSurface(worldIn, pos.offset(enumfacing)))
             {
-                double var6 = (double)pos.getX();
-                double var8 = (double)pos.getY();
-                double var10 = (double)pos.getZ();
+                double d0 = (double)pos.getX();
+                double d1 = (double)pos.getY();
+                double d2 = (double)pos.getZ();
 
-                if (var5 == EnumFacing.DOWN)
+                if (enumfacing == EnumFacing.DOWN)
                 {
-                    var8 -= 0.05D;
-                    var6 += rand.nextDouble();
-                    var10 += rand.nextDouble();
+                    d1 = d1 - 0.05D;
+                    d0 += rand.nextDouble();
+                    d2 += rand.nextDouble();
                 }
                 else
                 {
-                    var8 += rand.nextDouble() * 0.8D;
+                    d1 = d1 + rand.nextDouble() * 0.8D;
 
-                    if (var5.getAxis() == EnumFacing.Axis.X)
+                    if (enumfacing.getAxis() == EnumFacing.Axis.X)
                     {
-                        var10 += rand.nextDouble();
+                        d2 += rand.nextDouble();
 
-                        if (var5 == EnumFacing.EAST)
+                        if (enumfacing == EnumFacing.EAST)
                         {
-                            ++var6;
+                            ++d0;
                         }
                         else
                         {
-                            var6 += 0.05D;
+                            d0 += 0.05D;
                         }
                     }
                     else
                     {
-                        var6 += rand.nextDouble();
+                        d0 += rand.nextDouble();
 
-                        if (var5 == EnumFacing.SOUTH)
+                        if (enumfacing == EnumFacing.SOUTH)
                         {
-                            ++var10;
+                            ++d2;
                         }
                         else
                         {
-                            var10 += 0.05D;
+                            d2 += 0.05D;
                         }
                     }
                 }
 
-                worldIn.spawnParticle(EnumParticleTypes.DRIP_WATER, var6, var8, var10, 0.0D, 0.0D, 0.0D, new int[0]);
+                worldIn.spawnParticle(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
             }
         }
     }

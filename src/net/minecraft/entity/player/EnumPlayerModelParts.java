@@ -12,33 +12,33 @@ public enum EnumPlayerModelParts
     LEFT_PANTS_LEG(4, "left_pants_leg"),
     RIGHT_PANTS_LEG(5, "right_pants_leg"),
     HAT(6, "hat");
-    private final int field_179340_h;
-    private final int field_179341_i;
-    private final String field_179338_j;
+
+    private final int partId;
+    private final int partMask;
+    private final String partName;
     private final IChatComponent field_179339_k;
-    private static final String __OBFID = "CL_00002187";
 
-    private EnumPlayerModelParts(int p_i45809_3_, String p_i45809_4_)
+    private EnumPlayerModelParts(int partIdIn, String partNameIn)
     {
-        this.field_179340_h = p_i45809_3_;
-        this.field_179341_i = 1 << p_i45809_3_;
-        this.field_179338_j = p_i45809_4_;
-        this.field_179339_k = new ChatComponentTranslation("options.modelPart." + p_i45809_4_, new Object[0]);
+        this.partId = partIdIn;
+        this.partMask = 1 << partIdIn;
+        this.partName = partNameIn;
+        this.field_179339_k = new ChatComponentTranslation("options.modelPart." + partNameIn, new Object[0]);
     }
 
-    public int func_179327_a()
+    public int getPartMask()
     {
-        return this.field_179341_i;
+        return this.partMask;
     }
 
-    public int func_179328_b()
+    public int getPartId()
     {
-        return this.field_179340_h;
+        return this.partId;
     }
 
-    public String func_179329_c()
+    public String getPartName()
     {
-        return this.field_179338_j;
+        return this.partName;
     }
 
     public IChatComponent func_179326_d()

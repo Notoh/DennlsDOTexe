@@ -2,8 +2,6 @@ package net.minecraft.world.gen.layer;
 
 public class GenLayerAddSnow extends GenLayer
 {
-    private static final String __OBFID = "CL_00000553";
-
     public GenLayerAddSnow(long p_i2121_1_, GenLayer p_i2121_3_)
     {
         super(p_i2121_1_);
@@ -16,47 +14,46 @@ public class GenLayerAddSnow extends GenLayer
      */
     public int[] getInts(int areaX, int areaY, int areaWidth, int areaHeight)
     {
-        int var5 = areaX - 1;
-        int var6 = areaY - 1;
-        int var7 = areaWidth + 2;
-        int var8 = areaHeight + 2;
-        int[] var9 = this.parent.getInts(var5, var6, var7, var8);
-        int[] var10 = IntCache.getIntCache(areaWidth * areaHeight);
+        int i = areaX - 1;
+        int j = areaY - 1;
+        int k = areaWidth + 2;
+        int l = areaHeight + 2;
+        int[] aint = this.parent.getInts(i, j, k, l);
+        int[] aint1 = IntCache.getIntCache(areaWidth * areaHeight);
 
-        for (int var11 = 0; var11 < areaHeight; ++var11)
+        for (int i1 = 0; i1 < areaHeight; ++i1)
         {
-            for (int var12 = 0; var12 < areaWidth; ++var12)
+            for (int j1 = 0; j1 < areaWidth; ++j1)
             {
-                int var13 = var9[var12 + 1 + (var11 + 1) * var7];
-                this.initChunkSeed((long)(var12 + areaX), (long)(var11 + areaY));
+                int k1 = aint[j1 + 1 + (i1 + 1) * k];
+                this.initChunkSeed((long)(j1 + areaX), (long)(i1 + areaY));
 
-                if (var13 == 0)
+                if (k1 == 0)
                 {
-                    var10[var12 + var11 * areaWidth] = 0;
+                    aint1[j1 + i1 * areaWidth] = 0;
                 }
                 else
                 {
-                    int var14 = this.nextInt(6);
-                    byte var15;
+                    int l1 = this.nextInt(6);
 
-                    if (var14 == 0)
+                    if (l1 == 0)
                     {
-                        var15 = 4;
+                        l1 = 4;
                     }
-                    else if (var14 <= 1)
+                    else if (l1 <= 1)
                     {
-                        var15 = 3;
+                        l1 = 3;
                     }
                     else
                     {
-                        var15 = 1;
+                        l1 = 1;
                     }
 
-                    var10[var12 + var11 * areaWidth] = var15;
+                    aint1[j1 + i1 * areaWidth] = l1;
                 }
             }
         }
 
-        return var10;
+        return aint1;
     }
 }

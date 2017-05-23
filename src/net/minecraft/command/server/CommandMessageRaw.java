@@ -7,7 +7,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.SyntaxErrorException;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentProcessor;
@@ -16,8 +16,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class CommandMessageRaw extends CommandBase
 {
-    private static final String __OBFID = "CL_00000667";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "tellraw";
@@ -31,11 +32,17 @@ public class CommandMessageRaw extends CommandBase
         return 2;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.tellraw.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length < 2)
@@ -44,23 +51,23 @@ public class CommandMessageRaw extends CommandBase
         }
         else
         {
-            EntityPlayerMP var3 = getPlayer(sender, args[0]);
-            String var4 = func_180529_a(args, 1);
+            EntityPlayer entityplayer = getPlayer(sender, args[0]);
+            String s = buildString(args, 1);
 
             try
             {
-                IChatComponent var5 = IChatComponent.Serializer.jsonToComponent(var4);
-                var3.addChatMessage(ChatComponentProcessor.func_179985_a(sender, var5, var3));
+                IChatComponent ichatcomponent = IChatComponent.Serializer.jsonToComponent(s);
+                entityplayer.addChatMessage(ChatComponentProcessor.processComponent(sender, ichatcomponent, entityplayer));
             }
-            catch (JsonParseException var7)
+            catch (JsonParseException jsonparseexception)
             {
-                Throwable var6 = ExceptionUtils.getRootCause(var7);
-                throw new SyntaxErrorException("commands.tellraw.jsonException", new Object[] {var6 == null ? "" : var6.getMessage()});
+                Throwable throwable = ExceptionUtils.getRootCause(jsonparseexception);
+                throw new SyntaxErrorException("commands.tellraw.jsonException", new Object[] {throwable == null ? "" : throwable.getMessage()});
             }
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : null;
     }

@@ -8,28 +8,22 @@ import net.minecraft.util.EnumChatFormatting;
 public class ScorePlayerTeam extends Team
 {
     private final Scoreboard theScoreboard;
-    private final String field_96675_b;
-
-    /** A set of all team member usernames. */
-    private final Set membershipSet = Sets.newHashSet();
+    private final String registeredName;
+    private final Set<String> membershipSet = Sets.<String>newHashSet();
     private String teamNameSPT;
     private String namePrefixSPT = "";
     private String colorSuffix = "";
     private boolean allowFriendlyFire = true;
     private boolean canSeeFriendlyInvisibles = true;
-    private Team.EnumVisible field_178778_i;
-    private Team.EnumVisible field_178776_j;
-    private EnumChatFormatting field_178777_k;
-    private static final String __OBFID = "CL_00000616";
+    private Team.EnumVisible nameTagVisibility = Team.EnumVisible.ALWAYS;
+    private Team.EnumVisible deathMessageVisibility = Team.EnumVisible.ALWAYS;
+    private EnumChatFormatting chatFormat = EnumChatFormatting.RESET;
 
-    public ScorePlayerTeam(Scoreboard p_i2308_1_, String p_i2308_2_)
+    public ScorePlayerTeam(Scoreboard theScoreboardIn, String name)
     {
-        this.field_178778_i = Team.EnumVisible.ALWAYS;
-        this.field_178776_j = Team.EnumVisible.ALWAYS;
-        this.field_178777_k = EnumChatFormatting.RESET;
-        this.theScoreboard = p_i2308_1_;
-        this.field_96675_b = p_i2308_2_;
-        this.teamNameSPT = p_i2308_2_;
+        this.theScoreboard = theScoreboardIn;
+        this.registeredName = name;
+        this.teamNameSPT = name;
     }
 
     /**
@@ -37,28 +31,28 @@ public class ScorePlayerTeam extends Team
      */
     public String getRegisteredName()
     {
-        return this.field_96675_b;
+        return this.registeredName;
     }
 
-    public String func_96669_c()
+    public String getTeamName()
     {
         return this.teamNameSPT;
     }
 
-    public void setTeamName(String p_96664_1_)
+    public void setTeamName(String name)
     {
-        if (p_96664_1_ == null)
+        if (name == null)
         {
             throw new IllegalArgumentException("Name cannot be null");
         }
         else
         {
-            this.teamNameSPT = p_96664_1_;
-            this.theScoreboard.broadcastTeamRemoved(this);
+            this.teamNameSPT = name;
+            this.theScoreboard.sendTeamUpdate(this);
         }
     }
 
-    public Collection getMembershipCollection()
+    public Collection<String> getMembershipCollection()
     {
         return this.membershipSet;
     }
@@ -71,16 +65,16 @@ public class ScorePlayerTeam extends Team
         return this.namePrefixSPT;
     }
 
-    public void setNamePrefix(String p_96666_1_)
+    public void setNamePrefix(String prefix)
     {
-        if (p_96666_1_ == null)
+        if (prefix == null)
         {
             throw new IllegalArgumentException("Prefix cannot be null");
         }
         else
         {
-            this.namePrefixSPT = p_96666_1_;
-            this.theScoreboard.broadcastTeamRemoved(this);
+            this.namePrefixSPT = prefix;
+            this.theScoreboard.sendTeamUpdate(this);
         }
     }
 
@@ -92,10 +86,10 @@ public class ScorePlayerTeam extends Team
         return this.colorSuffix;
     }
 
-    public void setNameSuffix(String p_96662_1_)
+    public void setNameSuffix(String suffix)
     {
-        this.colorSuffix = p_96662_1_;
-        this.theScoreboard.broadcastTeamRemoved(this);
+        this.colorSuffix = suffix;
+        this.theScoreboard.sendTeamUpdate(this);
     }
 
     public String formatString(String input)
@@ -116,60 +110,60 @@ public class ScorePlayerTeam extends Team
         return this.allowFriendlyFire;
     }
 
-    public void setAllowFriendlyFire(boolean p_96660_1_)
+    public void setAllowFriendlyFire(boolean friendlyFire)
     {
-        this.allowFriendlyFire = p_96660_1_;
-        this.theScoreboard.broadcastTeamRemoved(this);
+        this.allowFriendlyFire = friendlyFire;
+        this.theScoreboard.sendTeamUpdate(this);
     }
 
-    public boolean func_98297_h()
+    public boolean getSeeFriendlyInvisiblesEnabled()
     {
         return this.canSeeFriendlyInvisibles;
     }
 
-    public void setSeeFriendlyInvisiblesEnabled(boolean p_98300_1_)
+    public void setSeeFriendlyInvisiblesEnabled(boolean friendlyInvisibles)
     {
-        this.canSeeFriendlyInvisibles = p_98300_1_;
-        this.theScoreboard.broadcastTeamRemoved(this);
+        this.canSeeFriendlyInvisibles = friendlyInvisibles;
+        this.theScoreboard.sendTeamUpdate(this);
     }
 
-    public Team.EnumVisible func_178770_i()
+    public Team.EnumVisible getNameTagVisibility()
     {
-        return this.field_178778_i;
+        return this.nameTagVisibility;
     }
 
-    public Team.EnumVisible func_178771_j()
+    public Team.EnumVisible getDeathMessageVisibility()
     {
-        return this.field_178776_j;
+        return this.deathMessageVisibility;
     }
 
-    public void func_178772_a(Team.EnumVisible p_178772_1_)
+    public void setNameTagVisibility(Team.EnumVisible p_178772_1_)
     {
-        this.field_178778_i = p_178772_1_;
-        this.theScoreboard.broadcastTeamRemoved(this);
+        this.nameTagVisibility = p_178772_1_;
+        this.theScoreboard.sendTeamUpdate(this);
     }
 
-    public void func_178773_b(Team.EnumVisible p_178773_1_)
+    public void setDeathMessageVisibility(Team.EnumVisible p_178773_1_)
     {
-        this.field_178776_j = p_178773_1_;
-        this.theScoreboard.broadcastTeamRemoved(this);
+        this.deathMessageVisibility = p_178773_1_;
+        this.theScoreboard.sendTeamUpdate(this);
     }
 
     public int func_98299_i()
     {
-        int var1 = 0;
+        int i = 0;
 
         if (this.getAllowFriendlyFire())
         {
-            var1 |= 1;
+            i |= 1;
         }
 
-        if (this.func_98297_h())
+        if (this.getSeeFriendlyInvisiblesEnabled())
         {
-            var1 |= 2;
+            i |= 2;
         }
 
-        return var1;
+        return i;
     }
 
     public void func_98298_a(int p_98298_1_)
@@ -178,13 +172,13 @@ public class ScorePlayerTeam extends Team
         this.setSeeFriendlyInvisiblesEnabled((p_98298_1_ & 2) > 0);
     }
 
-    public void func_178774_a(EnumChatFormatting p_178774_1_)
+    public void setChatFormat(EnumChatFormatting p_178774_1_)
     {
-        this.field_178777_k = p_178774_1_;
+        this.chatFormat = p_178774_1_;
     }
 
-    public EnumChatFormatting func_178775_l()
+    public EnumChatFormatting getChatFormat()
     {
-        return this.field_178777_k;
+        return this.chatFormat;
     }
 }

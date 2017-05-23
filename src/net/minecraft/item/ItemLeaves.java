@@ -4,13 +4,12 @@ import net.minecraft.block.BlockLeaves;
 
 public class ItemLeaves extends ItemBlock
 {
-    private final BlockLeaves field_150940_b;
-    private static final String __OBFID = "CL_00000046";
+    private final BlockLeaves leaves;
 
-    public ItemLeaves(BlockLeaves p_i45344_1_)
+    public ItemLeaves(BlockLeaves block)
     {
-        super(p_i45344_1_);
-        this.field_150940_b = p_i45344_1_;
+        super(block);
+        this.leaves = block;
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
     }
@@ -26,7 +25,7 @@ public class ItemLeaves extends ItemBlock
 
     public int getColorFromItemStack(ItemStack stack, int renderPass)
     {
-        return this.field_150940_b.getRenderColor(this.field_150940_b.getStateFromMeta(stack.getMetadata()));
+        return this.leaves.getRenderColor(this.leaves.getStateFromMeta(stack.getMetadata()));
     }
 
     /**
@@ -35,6 +34,6 @@ public class ItemLeaves extends ItemBlock
      */
     public String getUnlocalizedName(ItemStack stack)
     {
-        return super.getUnlocalizedName() + "." + this.field_150940_b.func_176233_b(stack.getMetadata()).func_176840_c();
+        return super.getUnlocalizedName() + "." + this.leaves.getWoodType(stack.getMetadata()).getUnlocalizedName();
     }
 }

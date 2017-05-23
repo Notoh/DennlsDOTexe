@@ -30,17 +30,16 @@ public class EntitySlime extends EntityLiving implements IMob
     public float squishAmount;
     public float squishFactor;
     public float prevSquishFactor;
-    private boolean field_175452_bi;
-    private static final String __OBFID = "CL_00001698";
+    private boolean wasOnGround;
 
     public EntitySlime(World worldIn)
     {
         super(worldIn);
-        this.moveHelper = new EntitySlime.SlimeMoveHelper();
-        this.tasks.addTask(1, new EntitySlime.AISlimeFloat());
-        this.tasks.addTask(2, new EntitySlime.AISlimeAttack());
-        this.tasks.addTask(3, new EntitySlime.AISlimeFaceRandom());
-        this.tasks.addTask(5, new EntitySlime.AISlimeHop());
+        this.moveHelper = new EntitySlime.SlimeMoveHelper(this);
+        this.tasks.addTask(1, new EntitySlime.AISlimeFloat(this));
+        this.tasks.addTask(2, new EntitySlime.AISlimeAttack(this));
+        this.tasks.addTask(3, new EntitySlime.AISlimeFaceRandom(this));
+        this.tasks.addTask(5, new EntitySlime.AISlimeHop(this));
         this.targetTasks.addTask(1, new EntityAIFindEntityNearestPlayer(this));
         this.targetTasks.addTask(3, new EntityAIFindEntityNearest(this, EntityIronGolem.class));
     }
@@ -51,15 +50,15 @@ public class EntitySlime extends EntityLiving implements IMob
         this.dataWatcher.addObject(16, Byte.valueOf((byte)1));
     }
 
-    protected void setSlimeSize(int p_70799_1_)
+    protected void setSlimeSize(int size)
     {
-        this.dataWatcher.updateObject(16, Byte.valueOf((byte)p_70799_1_));
-        this.setSize(0.51000005F * (float)p_70799_1_, 0.51000005F * (float)p_70799_1_);
+        this.dataWatcher.updateObject(16, Byte.valueOf((byte)size));
+        this.setSize(0.51000005F * (float)size, 0.51000005F * (float)size);
         this.setPosition(this.posX, this.posY, this.posZ);
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue((double)(p_70799_1_ * p_70799_1_));
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)(0.2F + 0.1F * (float)p_70799_1_));
+        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue((double)(size * size));
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)(0.2F + 0.1F * (float)size));
         this.setHealth(this.getMaxHealth());
-        this.experienceValue = p_70799_1_;
+        this.experienceValue = size;
     }
 
     /**
@@ -77,7 +76,7 @@ public class EntitySlime extends EntityLiving implements IMob
     {
         super.writeEntityToNBT(tagCompound);
         tagCompound.setInteger("Size", this.getSlimeSize() - 1);
-        tagCompound.setBoolean("wasOnGround", this.field_175452_bi);
+        tagCompound.setBoolean("wasOnGround", this.wasOnGround);
     }
 
     /**
@@ -86,18 +85,18 @@ public class EntitySlime extends EntityLiving implements IMob
     public void readEntityFromNBT(NBTTagCompound tagCompund)
     {
         super.readEntityFromNBT(tagCompund);
-        int var2 = tagCompund.getInteger("Size");
+        int i = tagCompund.getInteger("Size");
 
-        if (var2 < 0)
+        if (i < 0)
         {
-            var2 = 0;
+            i = 0;
         }
 
-        this.setSlimeSize(var2 + 1);
-        this.field_175452_bi = tagCompund.getBoolean("wasOnGround");
+        this.setSlimeSize(i + 1);
+        this.wasOnGround = tagCompund.getBoolean("wasOnGround");
     }
 
-    protected EnumParticleTypes func_180487_n()
+    protected EnumParticleTypes getParticleType()
     {
         return EnumParticleTypes.SLIME;
     }
@@ -124,21 +123,21 @@ public class EntitySlime extends EntityLiving implements IMob
         this.prevSquishFactor = this.squishFactor;
         super.onUpdate();
 
-        if (this.onGround && !this.field_175452_bi)
+        if (this.onGround && !this.wasOnGround)
         {
-            int var1 = this.getSlimeSize();
+            int i = this.getSlimeSize();
 
-            for (int var2 = 0; var2 < var1 * 8; ++var2)
+            for (int j = 0; j < i * 8; ++j)
             {
-                float var3 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
-                float var4 = this.rand.nextFloat() * 0.5F + 0.5F;
-                float var5 = MathHelper.sin(var3) * (float)var1 * 0.5F * var4;
-                float var6 = MathHelper.cos(var3) * (float)var1 * 0.5F * var4;
-                World var10000 = this.worldObj;
-                EnumParticleTypes var10001 = this.func_180487_n();
-                double var10002 = this.posX + (double)var5;
-                double var10004 = this.posZ + (double)var6;
-                var10000.spawnParticle(var10001, var10002, this.getEntityBoundingBox().minY, var10004, 0.0D, 0.0D, 0.0D, new int[0]);
+                float f = this.rand.nextFloat() * (float)Math.PI * 2.0F;
+                float f1 = this.rand.nextFloat() * 0.5F + 0.5F;
+                float f2 = MathHelper.sin(f) * (float)i * 0.5F * f1;
+                float f3 = MathHelper.cos(f) * (float)i * 0.5F * f1;
+                World world = this.worldObj;
+                EnumParticleTypes enumparticletypes = this.getParticleType();
+                double d0 = this.posX + (double)f2;
+                double d1 = this.posZ + (double)f3;
+                world.spawnParticle(enumparticletypes, d0, this.getEntityBoundingBox().minY, d1, 0.0D, 0.0D, 0.0D, new int[0]);
             }
 
             if (this.makesSoundOnLand())
@@ -148,12 +147,12 @@ public class EntitySlime extends EntityLiving implements IMob
 
             this.squishAmount = -0.5F;
         }
-        else if (!this.onGround && this.field_175452_bi)
+        else if (!this.onGround && this.wasOnGround)
         {
             this.squishAmount = 1.0F;
         }
 
-        this.field_175452_bi = this.onGround;
+        this.wasOnGround = this.onGround;
         this.alterSquishAmount();
     }
 
@@ -175,12 +174,12 @@ public class EntitySlime extends EntityLiving implements IMob
         return new EntitySlime(this.worldObj);
     }
 
-    public void func_145781_i(int p_145781_1_)
+    public void onDataWatcherUpdate(int dataID)
     {
-        if (p_145781_1_ == 16)
+        if (dataID == 16)
         {
-            int var2 = this.getSlimeSize();
-            this.setSize(0.51000005F * (float)var2, 0.51000005F * (float)var2);
+            int i = this.getSlimeSize();
+            this.setSize(0.51000005F * (float)i, 0.51000005F * (float)i);
             this.rotationYaw = this.rotationYawHead;
             this.renderYawOffset = this.rotationYawHead;
 
@@ -190,7 +189,7 @@ public class EntitySlime extends EntityLiving implements IMob
             }
         }
 
-        super.func_145781_i(p_145781_1_);
+        super.onDataWatcherUpdate(dataID);
     }
 
     /**
@@ -198,31 +197,31 @@ public class EntitySlime extends EntityLiving implements IMob
      */
     public void setDead()
     {
-        int var1 = this.getSlimeSize();
+        int i = this.getSlimeSize();
 
-        if (!this.worldObj.isRemote && var1 > 1 && this.getHealth() <= 0.0F)
+        if (!this.worldObj.isRemote && i > 1 && this.getHealth() <= 0.0F)
         {
-            int var2 = 2 + this.rand.nextInt(3);
+            int j = 2 + this.rand.nextInt(3);
 
-            for (int var3 = 0; var3 < var2; ++var3)
+            for (int k = 0; k < j; ++k)
             {
-                float var4 = ((float)(var3 % 2) - 0.5F) * (float)var1 / 4.0F;
-                float var5 = ((float)(var3 / 2) - 0.5F) * (float)var1 / 4.0F;
-                EntitySlime var6 = this.createInstance();
+                float f = ((float)(k % 2) - 0.5F) * (float)i / 4.0F;
+                float f1 = ((float)(k / 2) - 0.5F) * (float)i / 4.0F;
+                EntitySlime entityslime = this.createInstance();
 
                 if (this.hasCustomName())
                 {
-                    var6.setCustomNameTag(this.getCustomNameTag());
+                    entityslime.setCustomNameTag(this.getCustomNameTag());
                 }
 
                 if (this.isNoDespawnRequired())
                 {
-                    var6.enablePersistence();
+                    entityslime.enablePersistence();
                 }
 
-                var6.setSlimeSize(var1 / 2);
-                var6.setLocationAndAngles(this.posX + (double)var4, this.posY + 0.5D, this.posZ + (double)var5, this.rand.nextFloat() * 360.0F, 0.0F);
-                this.worldObj.spawnEntityInWorld(var6);
+                entityslime.setSlimeSize(i / 2);
+                entityslime.setLocationAndAngles(this.posX + (double)f, this.posY + 0.5D, this.posZ + (double)f1, this.rand.nextFloat() * 360.0F, 0.0F);
+                this.worldObj.spawnEntityInWorld(entityslime);
             }
         }
 
@@ -255,12 +254,12 @@ public class EntitySlime extends EntityLiving implements IMob
 
     protected void func_175451_e(EntityLivingBase p_175451_1_)
     {
-        int var2 = this.getSlimeSize();
+        int i = this.getSlimeSize();
 
-        if (this.canEntityBeSeen(p_175451_1_) && this.getDistanceSqToEntity(p_175451_1_) < 0.6D * (double)var2 * 0.6D * (double)var2 && p_175451_1_.attackEntityFrom(DamageSource.causeMobDamage(this), (float)this.getAttackStrength()))
+        if (this.canEntityBeSeen(p_175451_1_) && this.getDistanceSqToEntity(p_175451_1_) < 0.6D * (double)i * 0.6D * (double)i && p_175451_1_.attackEntityFrom(DamageSource.causeMobDamage(this), (float)this.getAttackStrength()))
         {
             this.playSound("mob.attack", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-            this.func_174815_a(this, p_175451_1_);
+            this.applyEnchantments(this, p_175451_1_);
         }
     }
 
@@ -311,7 +310,8 @@ public class EntitySlime extends EntityLiving implements IMob
      */
     public boolean getCanSpawnHere()
     {
-        Chunk var1 = this.worldObj.getChunkFromBlockCoords(new BlockPos(MathHelper.floor_double(this.posX), 0, MathHelper.floor_double(this.posZ)));
+        BlockPos blockpos = new BlockPos(MathHelper.floor_double(this.posX), 0, MathHelper.floor_double(this.posZ));
+        Chunk chunk = this.worldObj.getChunkFromBlockCoords(blockpos);
 
         if (this.worldObj.getWorldInfo().getTerrainType() == WorldType.FLAT && this.rand.nextInt(4) != 1)
         {
@@ -321,14 +321,14 @@ public class EntitySlime extends EntityLiving implements IMob
         {
             if (this.worldObj.getDifficulty() != EnumDifficulty.PEACEFUL)
             {
-                BiomeGenBase var2 = this.worldObj.getBiomeGenForCoords(new BlockPos(MathHelper.floor_double(this.posX), 0, MathHelper.floor_double(this.posZ)));
+                BiomeGenBase biomegenbase = this.worldObj.getBiomeGenForCoords(blockpos);
 
-                if (var2 == BiomeGenBase.swampland && this.posY > 50.0D && this.posY < 70.0D && this.rand.nextFloat() < 0.5F && this.rand.nextFloat() < this.worldObj.getCurrentMoonPhaseFactor() && this.worldObj.getLightFromNeighbors(new BlockPos(this)) <= this.rand.nextInt(8))
+                if (biomegenbase == BiomeGenBase.swampland && this.posY > 50.0D && this.posY < 70.0D && this.rand.nextFloat() < 0.5F && this.rand.nextFloat() < this.worldObj.getCurrentMoonPhaseFactor() && this.worldObj.getLightFromNeighbors(new BlockPos(this)) <= this.rand.nextInt(8))
                 {
                     return super.getCanSpawnHere();
                 }
 
-                if (this.rand.nextInt(10) == 0 && var1.getRandomWithSeed(987234911L).nextInt(10) == 0 && this.posY < 40.0D)
+                if (this.rand.nextInt(10) == 0 && chunk.getRandomWithSeed(987234911L).nextInt(10) == 0 && this.posY < 40.0D)
                 {
                     return super.getCanSpawnHere();
                 }
@@ -380,35 +380,39 @@ public class EntitySlime extends EntityLiving implements IMob
         this.isAirBorne = true;
     }
 
-    public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, IEntityLivingData p_180482_2_)
+    /**
+     * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
+     * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
+     */
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata)
     {
-        int var3 = this.rand.nextInt(3);
+        int i = this.rand.nextInt(3);
 
-        if (var3 < 2 && this.rand.nextFloat() < 0.5F * p_180482_1_.func_180170_c())
+        if (i < 2 && this.rand.nextFloat() < 0.5F * difficulty.getClampedAdditionalDifficulty())
         {
-            ++var3;
+            ++i;
         }
 
-        int var4 = 1 << var3;
-        this.setSlimeSize(var4);
-        return super.func_180482_a(p_180482_1_, p_180482_2_);
+        int j = 1 << i;
+        this.setSlimeSize(j);
+        return super.onInitialSpawn(difficulty, livingdata);
     }
 
-    class AISlimeAttack extends EntityAIBase
+    static class AISlimeAttack extends EntityAIBase
     {
-        private EntitySlime field_179466_a = EntitySlime.this;
+        private EntitySlime slime;
         private int field_179465_b;
-        private static final String __OBFID = "CL_00002202";
 
-        public AISlimeAttack()
+        public AISlimeAttack(EntitySlime p_i45824_1_)
         {
+            this.slime = p_i45824_1_;
             this.setMutexBits(2);
         }
 
         public boolean shouldExecute()
         {
-            EntityLivingBase var1 = this.field_179466_a.getAttackTarget();
-            return var1 == null ? false : var1.isEntityAlive();
+            EntityLivingBase entitylivingbase = this.slime.getAttackTarget();
+            return entitylivingbase == null ? false : (!entitylivingbase.isEntityAlive() ? false : !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).capabilities.disableDamage);
         }
 
         public void startExecuting()
@@ -419,80 +423,80 @@ public class EntitySlime extends EntityLiving implements IMob
 
         public boolean continueExecuting()
         {
-            EntityLivingBase var1 = this.field_179466_a.getAttackTarget();
-            return var1 == null ? false : (!var1.isEntityAlive() ? false : --this.field_179465_b > 0);
+            EntityLivingBase entitylivingbase = this.slime.getAttackTarget();
+            return entitylivingbase == null ? false : (!entitylivingbase.isEntityAlive() ? false : (entitylivingbase instanceof EntityPlayer && ((EntityPlayer)entitylivingbase).capabilities.disableDamage ? false : --this.field_179465_b > 0));
         }
 
         public void updateTask()
         {
-            this.field_179466_a.faceEntity(this.field_179466_a.getAttackTarget(), 10.0F, 10.0F);
-            ((EntitySlime.SlimeMoveHelper)this.field_179466_a.getMoveHelper()).func_179920_a(this.field_179466_a.rotationYaw, this.field_179466_a.canDamagePlayer());
+            this.slime.faceEntity(this.slime.getAttackTarget(), 10.0F, 10.0F);
+            ((EntitySlime.SlimeMoveHelper)this.slime.getMoveHelper()).func_179920_a(this.slime.rotationYaw, this.slime.canDamagePlayer());
         }
     }
 
-    class AISlimeFaceRandom extends EntityAIBase
+    static class AISlimeFaceRandom extends EntityAIBase
     {
-        private EntitySlime field_179461_a = EntitySlime.this;
+        private EntitySlime slime;
         private float field_179459_b;
         private int field_179460_c;
-        private static final String __OBFID = "CL_00002198";
 
-        public AISlimeFaceRandom()
+        public AISlimeFaceRandom(EntitySlime p_i45820_1_)
         {
+            this.slime = p_i45820_1_;
             this.setMutexBits(2);
         }
 
         public boolean shouldExecute()
         {
-            return this.field_179461_a.getAttackTarget() == null && (this.field_179461_a.onGround || this.field_179461_a.isInWater() || this.field_179461_a.func_180799_ab());
+            return this.slime.getAttackTarget() == null && (this.slime.onGround || this.slime.isInWater() || this.slime.isInLava());
         }
 
         public void updateTask()
         {
             if (--this.field_179460_c <= 0)
             {
-                this.field_179460_c = 40 + this.field_179461_a.getRNG().nextInt(60);
-                this.field_179459_b = (float)this.field_179461_a.getRNG().nextInt(360);
+                this.field_179460_c = 40 + this.slime.getRNG().nextInt(60);
+                this.field_179459_b = (float)this.slime.getRNG().nextInt(360);
             }
 
-            ((EntitySlime.SlimeMoveHelper)this.field_179461_a.getMoveHelper()).func_179920_a(this.field_179459_b, false);
+            ((EntitySlime.SlimeMoveHelper)this.slime.getMoveHelper()).func_179920_a(this.field_179459_b, false);
         }
     }
 
-    class AISlimeFloat extends EntityAIBase
+    static class AISlimeFloat extends EntityAIBase
     {
-        private EntitySlime field_179457_a = EntitySlime.this;
-        private static final String __OBFID = "CL_00002201";
+        private EntitySlime slime;
 
-        public AISlimeFloat()
+        public AISlimeFloat(EntitySlime p_i45823_1_)
         {
+            this.slime = p_i45823_1_;
             this.setMutexBits(5);
-            ((PathNavigateGround)EntitySlime.this.getNavigator()).func_179693_d(true);
+            ((PathNavigateGround)p_i45823_1_.getNavigator()).setCanSwim(true);
         }
 
         public boolean shouldExecute()
         {
-            return this.field_179457_a.isInWater() || this.field_179457_a.func_180799_ab();
+            return this.slime.isInWater() || this.slime.isInLava();
         }
 
         public void updateTask()
         {
-            if (this.field_179457_a.getRNG().nextFloat() < 0.8F)
+            if (this.slime.getRNG().nextFloat() < 0.8F)
             {
-                this.field_179457_a.getJumpHelper().setJumping();
+                this.slime.getJumpHelper().setJumping();
             }
 
-            ((EntitySlime.SlimeMoveHelper)this.field_179457_a.getMoveHelper()).func_179921_a(1.2D);
+            ((EntitySlime.SlimeMoveHelper)this.slime.getMoveHelper()).setSpeed(1.2D);
         }
     }
 
-    class AISlimeHop extends EntityAIBase
+    static class AISlimeHop extends EntityAIBase
     {
-        private EntitySlime field_179458_a = EntitySlime.this;
-        private static final String __OBFID = "CL_00002200";
+        private EntitySlime slime;
 
-        public AISlimeHop()
+        public AISlimeHop(EntitySlime p_i45822_1_)
         {
+            this.slime = p_i45822_1_;
             this.setMutexBits(5);
         }
 
@@ -503,21 +507,21 @@ public class EntitySlime extends EntityLiving implements IMob
 
         public void updateTask()
         {
-            ((EntitySlime.SlimeMoveHelper)this.field_179458_a.getMoveHelper()).func_179921_a(1.0D);
+            ((EntitySlime.SlimeMoveHelper)this.slime.getMoveHelper()).setSpeed(1.0D);
         }
     }
 
-    class SlimeMoveHelper extends EntityMoveHelper
+    static class SlimeMoveHelper extends EntityMoveHelper
     {
         private float field_179922_g;
         private int field_179924_h;
-        private EntitySlime field_179925_i = EntitySlime.this;
+        private EntitySlime slime;
         private boolean field_179923_j;
-        private static final String __OBFID = "CL_00002199";
 
-        public SlimeMoveHelper()
+        public SlimeMoveHelper(EntitySlime p_i45821_1_)
         {
-            super(EntitySlime.this);
+            super(p_i45821_1_);
+            this.slime = p_i45821_1_;
         }
 
         public void func_179920_a(float p_179920_1_, boolean p_179920_2_)
@@ -526,9 +530,9 @@ public class EntitySlime extends EntityLiving implements IMob
             this.field_179923_j = p_179920_2_;
         }
 
-        public void func_179921_a(double p_179921_1_)
+        public void setSpeed(double speedIn)
         {
-            this.speed = p_179921_1_;
+            this.speed = speedIn;
             this.update = true;
         }
 
@@ -552,23 +556,23 @@ public class EntitySlime extends EntityLiving implements IMob
 
                     if (this.field_179924_h-- <= 0)
                     {
-                        this.field_179924_h = this.field_179925_i.getJumpDelay();
+                        this.field_179924_h = this.slime.getJumpDelay();
 
                         if (this.field_179923_j)
                         {
                             this.field_179924_h /= 3;
                         }
 
-                        this.field_179925_i.getJumpHelper().setJumping();
+                        this.slime.getJumpHelper().setJumping();
 
-                        if (this.field_179925_i.makesSoundOnJump())
+                        if (this.slime.makesSoundOnJump())
                         {
-                            this.field_179925_i.playSound(this.field_179925_i.getJumpSound(), this.field_179925_i.getSoundVolume(), ((this.field_179925_i.getRNG().nextFloat() - this.field_179925_i.getRNG().nextFloat()) * 0.2F + 1.0F) * 0.8F);
+                            this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), ((this.slime.getRNG().nextFloat() - this.slime.getRNG().nextFloat()) * 0.2F + 1.0F) * 0.8F);
                         }
                     }
                     else
                     {
-                        this.field_179925_i.moveStrafing = this.field_179925_i.moveForward = 0.0F;
+                        this.slime.moveStrafing = this.slime.moveForward = 0.0F;
                         this.entity.setAIMoveSpeed(0.0F);
                     }
                 }

@@ -12,10 +12,9 @@ import net.minecraft.nbt.NBTTagList;
 
 public class TileEntityDispenser extends TileEntityLockable implements IInventory
 {
-    private static final Random field_174913_f = new Random();
-    private ItemStack[] field_146022_i = new ItemStack[9];
-    protected String field_146020_a;
-    private static final String __OBFID = "CL_00000352";
+    private static final Random RNG = new Random();
+    private ItemStack[] stacks = new ItemStack[9];
+    protected String customName;
 
     /**
      * Returns the number of slots in the inventory.
@@ -26,41 +25,38 @@ public class TileEntityDispenser extends TileEntityLockable implements IInventor
     }
 
     /**
-     * Returns the stack in slot i
+     * Returns the stack in the given slot.
      */
-    public ItemStack getStackInSlot(int slotIn)
+    public ItemStack getStackInSlot(int index)
     {
-        return this.field_146022_i[slotIn];
+        return this.stacks[index];
     }
 
     /**
-     * Removes from an inventory slot (first arg) up to a specified number (second arg) of items and returns them in a
-     * new stack.
+     * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
     public ItemStack decrStackSize(int index, int count)
     {
-        if (this.field_146022_i[index] != null)
+        if (this.stacks[index] != null)
         {
-            ItemStack var3;
-
-            if (this.field_146022_i[index].stackSize <= count)
+            if (this.stacks[index].stackSize <= count)
             {
-                var3 = this.field_146022_i[index];
-                this.field_146022_i[index] = null;
+                ItemStack itemstack1 = this.stacks[index];
+                this.stacks[index] = null;
                 this.markDirty();
-                return var3;
+                return itemstack1;
             }
             else
             {
-                var3 = this.field_146022_i[index].splitStack(count);
+                ItemStack itemstack = this.stacks[index].splitStack(count);
 
-                if (this.field_146022_i[index].stackSize == 0)
+                if (this.stacks[index].stackSize == 0)
                 {
-                    this.field_146022_i[index] = null;
+                    this.stacks[index] = null;
                 }
 
                 this.markDirty();
-                return var3;
+                return itemstack;
             }
         }
         else
@@ -70,16 +66,15 @@ public class TileEntityDispenser extends TileEntityLockable implements IInventor
     }
 
     /**
-     * When some containers are closed they call this on each slot, then drop whatever it returns as an EntityItem -
-     * like when you close a workbench GUI.
+     * Removes a stack from the given slot and returns it.
      */
-    public ItemStack getStackInSlotOnClosing(int index)
+    public ItemStack removeStackFromSlot(int index)
     {
-        if (this.field_146022_i[index] != null)
+        if (this.stacks[index] != null)
         {
-            ItemStack var2 = this.field_146022_i[index];
-            this.field_146022_i[index] = null;
-            return var2;
+            ItemStack itemstack = this.stacks[index];
+            this.stacks[index] = null;
+            return itemstack;
         }
         else
         {
@@ -87,20 +82,20 @@ public class TileEntityDispenser extends TileEntityLockable implements IInventor
         }
     }
 
-    public int func_146017_i()
+    public int getDispenseSlot()
     {
-        int var1 = -1;
-        int var2 = 1;
+        int i = -1;
+        int j = 1;
 
-        for (int var3 = 0; var3 < this.field_146022_i.length; ++var3)
+        for (int k = 0; k < this.stacks.length; ++k)
         {
-            if (this.field_146022_i[var3] != null && field_174913_f.nextInt(var2++) == 0)
+            if (this.stacks[k] != null && RNG.nextInt(j++) == 0)
             {
-                var1 = var3;
+                i = k;
             }
         }
 
-        return var1;
+        return i;
     }
 
     /**
@@ -108,7 +103,7 @@ public class TileEntityDispenser extends TileEntityLockable implements IInventor
      */
     public void setInventorySlotContents(int index, ItemStack stack)
     {
-        this.field_146022_i[index] = stack;
+        this.stacks[index] = stack;
 
         if (stack != null && stack.stackSize > this.getInventoryStackLimit())
         {
@@ -118,14 +113,18 @@ public class TileEntityDispenser extends TileEntityLockable implements IInventor
         this.markDirty();
     }
 
-    public int func_146019_a(ItemStack p_146019_1_)
+    /**
+     * Add the given ItemStack to this Dispenser. Return the Slot the Item was placed in or -1 if no free slot is
+     * available.
+     */
+    public int addItemStack(ItemStack stack)
     {
-        for (int var2 = 0; var2 < this.field_146022_i.length; ++var2)
+        for (int i = 0; i < this.stacks.length; ++i)
         {
-            if (this.field_146022_i[var2] == null || this.field_146022_i[var2].getItem() == null)
+            if (this.stacks[i] == null || this.stacks[i].getItem() == null)
             {
-                this.setInventorySlotContents(var2, p_146019_1_);
-                return var2;
+                this.setInventorySlotContents(i, stack);
+                return i;
             }
         }
 
@@ -137,12 +136,12 @@ public class TileEntityDispenser extends TileEntityLockable implements IInventor
      */
     public String getName()
     {
-        return this.hasCustomName() ? this.field_146020_a : "container.dispenser";
+        return this.hasCustomName() ? this.customName : "container.dispenser";
     }
 
-    public void func_146018_a(String p_146018_1_)
+    public void setCustomName(String customName)
     {
-        this.field_146020_a = p_146018_1_;
+        this.customName = customName;
     }
 
     /**
@@ -150,59 +149,58 @@ public class TileEntityDispenser extends TileEntityLockable implements IInventor
      */
     public boolean hasCustomName()
     {
-        return this.field_146020_a != null;
+        return this.customName != null;
     }
 
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        NBTTagList var2 = compound.getTagList("Items", 10);
-        this.field_146022_i = new ItemStack[this.getSizeInventory()];
+        NBTTagList nbttaglist = compound.getTagList("Items", 10);
+        this.stacks = new ItemStack[this.getSizeInventory()];
 
-        for (int var3 = 0; var3 < var2.tagCount(); ++var3)
+        for (int i = 0; i < nbttaglist.tagCount(); ++i)
         {
-            NBTTagCompound var4 = var2.getCompoundTagAt(var3);
-            int var5 = var4.getByte("Slot") & 255;
+            NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+            int j = nbttagcompound.getByte("Slot") & 255;
 
-            if (var5 >= 0 && var5 < this.field_146022_i.length)
+            if (j >= 0 && j < this.stacks.length)
             {
-                this.field_146022_i[var5] = ItemStack.loadItemStackFromNBT(var4);
+                this.stacks[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
             }
         }
 
         if (compound.hasKey("CustomName", 8))
         {
-            this.field_146020_a = compound.getString("CustomName");
+            this.customName = compound.getString("CustomName");
         }
     }
 
     public void writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
-        NBTTagList var2 = new NBTTagList();
+        NBTTagList nbttaglist = new NBTTagList();
 
-        for (int var3 = 0; var3 < this.field_146022_i.length; ++var3)
+        for (int i = 0; i < this.stacks.length; ++i)
         {
-            if (this.field_146022_i[var3] != null)
+            if (this.stacks[i] != null)
             {
-                NBTTagCompound var4 = new NBTTagCompound();
-                var4.setByte("Slot", (byte)var3);
-                this.field_146022_i[var3].writeToNBT(var4);
-                var2.appendTag(var4);
+                NBTTagCompound nbttagcompound = new NBTTagCompound();
+                nbttagcompound.setByte("Slot", (byte)i);
+                this.stacks[i].writeToNBT(nbttagcompound);
+                nbttaglist.appendTag(nbttagcompound);
             }
         }
 
-        compound.setTag("Items", var2);
+        compound.setTag("Items", nbttaglist);
 
         if (this.hasCustomName())
         {
-            compound.setString("CustomName", this.field_146020_a);
+            compound.setString("CustomName", this.customName);
         }
     }
 
     /**
-     * Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be extended. *Isn't
-     * this more of a set than a get?*
+     * Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be extended.
      */
     public int getInventoryStackLimit()
     {
@@ -212,14 +210,18 @@ public class TileEntityDispenser extends TileEntityLockable implements IInventor
     /**
      * Do not make give this method the name canInteractWith because it clashes with Container
      */
-    public boolean isUseableByPlayer(EntityPlayer playerIn)
+    public boolean isUseableByPlayer(EntityPlayer player)
     {
-        return this.worldObj.getTileEntity(this.pos) != this ? false : playerIn.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+        return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
     }
 
-    public void openInventory(EntityPlayer playerIn) {}
+    public void openInventory(EntityPlayer player)
+    {
+    }
 
-    public void closeInventory(EntityPlayer playerIn) {}
+    public void closeInventory(EntityPlayer player)
+    {
+    }
 
     /**
      * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot.
@@ -244,18 +246,20 @@ public class TileEntityDispenser extends TileEntityLockable implements IInventor
         return 0;
     }
 
-    public void setField(int id, int value) {}
+    public void setField(int id, int value)
+    {
+    }
 
     public int getFieldCount()
     {
         return 0;
     }
 
-    public void clearInventory()
+    public void clear()
     {
-        for (int var1 = 0; var1 < this.field_146022_i.length; ++var1)
+        for (int i = 0; i < this.stacks.length; ++i)
         {
-            this.field_146022_i[var1] = null;
+            this.stacks[i] = null;
         }
     }
 }

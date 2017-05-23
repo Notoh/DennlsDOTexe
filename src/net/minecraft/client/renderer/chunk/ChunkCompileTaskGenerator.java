@@ -1,151 +1,141 @@
 package net.minecraft.client.renderer.chunk;
 
 import com.google.common.collect.Lists;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import net.minecraft.client.renderer.RegionRenderCacheBuilder;
 
 public class ChunkCompileTaskGenerator
 {
-    private final RenderChunk field_178553_a;
-    private final ReentrantLock field_178551_b = new ReentrantLock();
-    private final List field_178552_c = Lists.newArrayList();
-    private final ChunkCompileTaskGenerator.Type field_178549_d;
-    private RegionRenderCacheBuilder field_178550_e;
-    private CompiledChunk field_178547_f;
-    private ChunkCompileTaskGenerator.Status field_178548_g;
-    private boolean field_178554_h;
-    private static final String __OBFID = "CL_00002466";
+    private final RenderChunk renderChunk;
+    private final ReentrantLock lock = new ReentrantLock();
+    private final List<Runnable> listFinishRunnables = Lists.<Runnable>newArrayList();
+    private final ChunkCompileTaskGenerator.Type type;
+    private RegionRenderCacheBuilder regionRenderCacheBuilder;
+    private CompiledChunk compiledChunk;
+    private ChunkCompileTaskGenerator.Status status = ChunkCompileTaskGenerator.Status.PENDING;
+    private boolean finished;
 
-    public ChunkCompileTaskGenerator(RenderChunk p_i46208_1_, ChunkCompileTaskGenerator.Type p_i46208_2_)
+    public ChunkCompileTaskGenerator(RenderChunk renderChunkIn, ChunkCompileTaskGenerator.Type typeIn)
     {
-        this.field_178548_g = ChunkCompileTaskGenerator.Status.PENDING;
-        this.field_178553_a = p_i46208_1_;
-        this.field_178549_d = p_i46208_2_;
+        this.renderChunk = renderChunkIn;
+        this.type = typeIn;
     }
 
-    public ChunkCompileTaskGenerator.Status func_178546_a()
+    public ChunkCompileTaskGenerator.Status getStatus()
     {
-        return this.field_178548_g;
+        return this.status;
     }
 
-    public RenderChunk func_178536_b()
+    public RenderChunk getRenderChunk()
     {
-        return this.field_178553_a;
+        return this.renderChunk;
     }
 
-    public CompiledChunk func_178544_c()
+    public CompiledChunk getCompiledChunk()
     {
-        return this.field_178547_f;
+        return this.compiledChunk;
     }
 
-    public void func_178543_a(CompiledChunk p_178543_1_)
+    public void setCompiledChunk(CompiledChunk compiledChunkIn)
     {
-        this.field_178547_f = p_178543_1_;
+        this.compiledChunk = compiledChunkIn;
     }
 
-    public RegionRenderCacheBuilder func_178545_d()
+    public RegionRenderCacheBuilder getRegionRenderCacheBuilder()
     {
-        return this.field_178550_e;
+        return this.regionRenderCacheBuilder;
     }
 
-    public void func_178541_a(RegionRenderCacheBuilder p_178541_1_)
+    public void setRegionRenderCacheBuilder(RegionRenderCacheBuilder regionRenderCacheBuilderIn)
     {
-        this.field_178550_e = p_178541_1_;
+        this.regionRenderCacheBuilder = regionRenderCacheBuilderIn;
     }
 
-    public void func_178535_a(ChunkCompileTaskGenerator.Status p_178535_1_)
+    public void setStatus(ChunkCompileTaskGenerator.Status statusIn)
     {
-        this.field_178551_b.lock();
+        this.lock.lock();
 
         try
         {
-            this.field_178548_g = p_178535_1_;
+            this.status = statusIn;
         }
         finally
         {
-            this.field_178551_b.unlock();
+            this.lock.unlock();
         }
     }
 
-    public void func_178542_e()
+    public void finish()
     {
-        this.field_178551_b.lock();
+        this.lock.lock();
 
         try
         {
-            this.field_178554_h = true;
-            this.field_178548_g = ChunkCompileTaskGenerator.Status.DONE;
-            Iterator var1 = this.field_178552_c.iterator();
-
-            while (var1.hasNext())
+            if (this.type == ChunkCompileTaskGenerator.Type.REBUILD_CHUNK && this.status != ChunkCompileTaskGenerator.Status.DONE)
             {
-                Runnable var2 = (Runnable)var1.next();
-                var2.run();
+                this.renderChunk.setNeedsUpdate(true);
+            }
+
+            this.finished = true;
+            this.status = ChunkCompileTaskGenerator.Status.DONE;
+
+            for (Runnable runnable : this.listFinishRunnables)
+            {
+                runnable.run();
             }
         }
         finally
         {
-            this.field_178551_b.unlock();
+            this.lock.unlock();
         }
     }
 
-    public void func_178539_a(Runnable p_178539_1_)
+    public void addFinishRunnable(Runnable p_178539_1_)
     {
-        this.field_178551_b.lock();
+        this.lock.lock();
 
         try
         {
-            this.field_178552_c.add(p_178539_1_);
+            this.listFinishRunnables.add(p_178539_1_);
 
-            if (this.field_178554_h)
+            if (this.finished)
             {
                 p_178539_1_.run();
             }
         }
         finally
         {
-            this.field_178551_b.unlock();
+            this.lock.unlock();
         }
     }
 
-    public ReentrantLock func_178540_f()
+    public ReentrantLock getLock()
     {
-        return this.field_178551_b;
+        return this.lock;
     }
 
-    public ChunkCompileTaskGenerator.Type func_178538_g()
+    public ChunkCompileTaskGenerator.Type getType()
     {
-        return this.field_178549_d;
+        return this.type;
     }
 
-    public boolean func_178537_h()
+    public boolean isFinished()
     {
-        return this.field_178554_h;
+        return this.finished;
     }
 
     public static enum Status
     {
-        PENDING("PENDING", 0),
-        COMPILING("COMPILING", 1),
-        UPLOADING("UPLOADING", 2),
-        DONE("DONE", 3);
-
-        private static final ChunkCompileTaskGenerator.Status[] $VALUES = new ChunkCompileTaskGenerator.Status[]{PENDING, COMPILING, UPLOADING, DONE};
-        private static final String __OBFID = "CL_00002465";
-
-        private Status(String p_i46207_1_, int p_i46207_2_) {}
+        PENDING,
+        COMPILING,
+        UPLOADING,
+        DONE;
     }
 
     public static enum Type
     {
-        REBUILD_CHUNK("REBUILD_CHUNK", 0),
-        RESORT_TRANSPARENCY("RESORT_TRANSPARENCY", 1);
-
-        private static final ChunkCompileTaskGenerator.Type[] $VALUES = new ChunkCompileTaskGenerator.Type[]{REBUILD_CHUNK, RESORT_TRANSPARENCY};
-        private static final String __OBFID = "CL_00002464";
-
-        private Type(String p_i46206_1_, int p_i46206_2_) {}
+        REBUILD_CHUNK,
+        RESORT_TRANSPARENCY;
     }
 }

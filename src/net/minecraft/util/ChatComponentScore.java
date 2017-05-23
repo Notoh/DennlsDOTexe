@@ -1,6 +1,5 @@
 package net.minecraft.util;
 
-import java.util.Iterator;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
@@ -8,30 +7,34 @@ import net.minecraft.server.MinecraftServer;
 
 public class ChatComponentScore extends ChatComponentStyle
 {
-    private final String field_179999_b;
-    private final String field_180000_c;
-    private String field_179998_d = "";
-    private static final String __OBFID = "CL_00002309";
+    private final String name;
+    private final String objective;
 
-    public ChatComponentScore(String p_i45997_1_, String p_i45997_2_)
+    /** The value displayed instead of the real score (may be null) */
+    private String value = "";
+
+    public ChatComponentScore(String nameIn, String objectiveIn)
     {
-        this.field_179999_b = p_i45997_1_;
-        this.field_180000_c = p_i45997_2_;
+        this.name = nameIn;
+        this.objective = objectiveIn;
     }
 
-    public String func_179995_g()
+    public String getName()
     {
-        return this.field_179999_b;
+        return this.name;
     }
 
-    public String func_179994_h()
+    public String getObjective()
     {
-        return this.field_180000_c;
+        return this.objective;
     }
 
-    public void func_179997_b(String p_179997_1_)
+    /**
+     * Sets the value displayed instead of the real score.
+     */
+    public void setValue(String valueIn)
     {
-        this.field_179998_d = p_179997_1_;
+        this.value = valueIn;
     }
 
     /**
@@ -40,41 +43,42 @@ public class ChatComponentScore extends ChatComponentStyle
      */
     public String getUnformattedTextForChat()
     {
-        MinecraftServer var1 = MinecraftServer.getServer();
+        MinecraftServer minecraftserver = MinecraftServer.getServer();
 
-        if (var1 != null && var1.func_175578_N() && StringUtils.isNullOrEmpty(this.field_179998_d))
+        if (minecraftserver != null && minecraftserver.isAnvilFileSet() && StringUtils.isNullOrEmpty(this.value))
         {
-            Scoreboard var2 = var1.worldServerForDimension(0).getScoreboard();
-            ScoreObjective var3 = var2.getObjective(this.field_180000_c);
+            Scoreboard scoreboard = minecraftserver.worldServerForDimension(0).getScoreboard();
+            ScoreObjective scoreobjective = scoreboard.getObjective(this.objective);
 
-            if (var2.func_178819_b(this.field_179999_b, var3))
+            if (scoreboard.entityHasObjective(this.name, scoreobjective))
             {
-                Score var4 = var2.getValueFromObjective(this.field_179999_b, var3);
-                this.func_179997_b(String.format("%d", new Object[] {Integer.valueOf(var4.getScorePoints())}));
+                Score score = scoreboard.getValueFromObjective(this.name, scoreobjective);
+                this.setValue(String.format("%d", new Object[] {Integer.valueOf(score.getScorePoints())}));
             }
             else
             {
-                this.field_179998_d = "";
+                this.value = "";
             }
         }
 
-        return this.field_179998_d;
+        return this.value;
     }
 
-    public ChatComponentScore func_179996_i()
+    /**
+     * Creates a copy of this component.  Almost a deep copy, except the style is shallow-copied.
+     */
+    public ChatComponentScore createCopy()
     {
-        ChatComponentScore var1 = new ChatComponentScore(this.field_179999_b, this.field_180000_c);
-        var1.func_179997_b(this.field_179998_d);
-        var1.setChatStyle(this.getChatStyle().createShallowCopy());
-        Iterator var2 = this.getSiblings().iterator();
+        ChatComponentScore chatcomponentscore = new ChatComponentScore(this.name, this.objective);
+        chatcomponentscore.setValue(this.value);
+        chatcomponentscore.setChatStyle(this.getChatStyle().createShallowCopy());
 
-        while (var2.hasNext())
+        for (IChatComponent ichatcomponent : this.getSiblings())
         {
-            IChatComponent var3 = (IChatComponent)var2.next();
-            var1.appendSibling(var3.createCopy());
+            chatcomponentscore.appendSibling(ichatcomponent.createCopy());
         }
 
-        return var1;
+        return chatcomponentscore;
     }
 
     public boolean equals(Object p_equals_1_)
@@ -89,21 +93,13 @@ public class ChatComponentScore extends ChatComponentStyle
         }
         else
         {
-            ChatComponentScore var2 = (ChatComponentScore)p_equals_1_;
-            return this.field_179999_b.equals(var2.field_179999_b) && this.field_180000_c.equals(var2.field_180000_c) && super.equals(p_equals_1_);
+            ChatComponentScore chatcomponentscore = (ChatComponentScore)p_equals_1_;
+            return this.name.equals(chatcomponentscore.name) && this.objective.equals(chatcomponentscore.objective) && super.equals(p_equals_1_);
         }
     }
 
     public String toString()
     {
-        return "ScoreComponent{name=\'" + this.field_179999_b + '\'' + "objective=\'" + this.field_180000_c + '\'' + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
-    }
-
-    /**
-     * Creates a copy of this component.  Almost a deep copy, except the style is shallow-copied.
-     */
-    public IChatComponent createCopy()
-    {
-        return this.func_179996_i();
+        return "ScoreComponent{name=\'" + this.name + '\'' + "objective=\'" + this.objective + '\'' + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
     }
 }

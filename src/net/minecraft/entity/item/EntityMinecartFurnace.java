@@ -19,7 +19,6 @@ public class EntityMinecartFurnace extends EntityMinecart
     private int fuel;
     public double pushX;
     public double pushZ;
-    private static final String __OBFID = "CL_00001675";
 
     public EntityMinecartFurnace(World worldIn)
     {
@@ -31,7 +30,7 @@ public class EntityMinecartFurnace extends EntityMinecart
         super(worldIn, p_i1719_2_, p_i1719_4_, p_i1719_6_);
     }
 
-    public EntityMinecart.EnumMinecartType func_180456_s()
+    public EntityMinecart.EnumMinecartType getMinecartType()
     {
         return EntityMinecart.EnumMinecartType.FURNACE;
     }
@@ -67,7 +66,10 @@ public class EntityMinecartFurnace extends EntityMinecart
         }
     }
 
-    protected double func_174898_m()
+    /**
+     * Get's the maximum speed for a minecart
+     */
+    protected double getMaximumSpeed()
     {
         return 0.2D;
     }
@@ -76,7 +78,7 @@ public class EntityMinecartFurnace extends EntityMinecart
     {
         super.killMinecart(p_94095_1_);
 
-        if (!p_94095_1_.isExplosion())
+        if (!p_94095_1_.isExplosion() && this.worldObj.getGameRules().getBoolean("doEntityDrops"))
         {
             this.entityDropItem(new ItemStack(Blocks.furnace, 1), 0.0F);
         }
@@ -85,13 +87,13 @@ public class EntityMinecartFurnace extends EntityMinecart
     protected void func_180460_a(BlockPos p_180460_1_, IBlockState p_180460_2_)
     {
         super.func_180460_a(p_180460_1_, p_180460_2_);
-        double var3 = this.pushX * this.pushX + this.pushZ * this.pushZ;
+        double d0 = this.pushX * this.pushX + this.pushZ * this.pushZ;
 
-        if (var3 > 1.0E-4D && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.001D)
+        if (d0 > 1.0E-4D && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.001D)
         {
-            var3 = (double)MathHelper.sqrt_double(var3);
-            this.pushX /= var3;
-            this.pushZ /= var3;
+            d0 = (double)MathHelper.sqrt_double(d0);
+            this.pushX /= d0;
+            this.pushZ /= d0;
 
             if (this.pushX * this.motionX + this.pushZ * this.motionZ < 0.0D)
             {
@@ -100,28 +102,28 @@ public class EntityMinecartFurnace extends EntityMinecart
             }
             else
             {
-                double var5 = var3 / this.func_174898_m();
-                this.pushX *= var5;
-                this.pushZ *= var5;
+                double d1 = d0 / this.getMaximumSpeed();
+                this.pushX *= d1;
+                this.pushZ *= d1;
             }
         }
     }
 
     protected void applyDrag()
     {
-        double var1 = this.pushX * this.pushX + this.pushZ * this.pushZ;
+        double d0 = this.pushX * this.pushX + this.pushZ * this.pushZ;
 
-        if (var1 > 1.0E-4D)
+        if (d0 > 1.0E-4D)
         {
-            var1 = (double)MathHelper.sqrt_double(var1);
-            this.pushX /= var1;
-            this.pushZ /= var1;
-            double var3 = 1.0D;
+            d0 = (double)MathHelper.sqrt_double(d0);
+            this.pushX /= d0;
+            this.pushZ /= d0;
+            double d1 = 1.0D;
             this.motionX *= 0.800000011920929D;
             this.motionY *= 0.0D;
             this.motionZ *= 0.800000011920929D;
-            this.motionX += this.pushX * var3;
-            this.motionZ += this.pushZ * var3;
+            this.motionX += this.pushX * d1;
+            this.motionZ += this.pushZ * d1;
         }
         else
         {
@@ -138,11 +140,11 @@ public class EntityMinecartFurnace extends EntityMinecart
      */
     public boolean interactFirst(EntityPlayer playerIn)
     {
-        ItemStack var2 = playerIn.inventory.getCurrentItem();
+        ItemStack itemstack = playerIn.inventory.getCurrentItem();
 
-        if (var2 != null && var2.getItem() == Items.coal)
+        if (itemstack != null && itemstack.getItem() == Items.coal)
         {
-            if (!playerIn.capabilities.isCreativeMode && --var2.stackSize == 0)
+            if (!playerIn.capabilities.isCreativeMode && --itemstack.stackSize == 0)
             {
                 playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, (ItemStack)null);
             }
@@ -194,7 +196,7 @@ public class EntityMinecartFurnace extends EntityMinecart
         }
     }
 
-    public IBlockState func_180457_u()
+    public IBlockState getDefaultDisplayTile()
     {
         return (this.isMinecartPowered() ? Blocks.lit_furnace : Blocks.furnace).getDefaultState().withProperty(BlockFurnace.FACING, EnumFacing.NORTH);
     }

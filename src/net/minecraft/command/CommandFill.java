@@ -1,8 +1,6 @@
 package net.minecraft.command;
 
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -17,8 +15,9 @@ import net.minecraft.world.World;
 
 public class CommandFill extends CommandBase
 {
-    private static final String __OBFID = "CL_00002342";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "fill";
@@ -32,11 +31,17 @@ public class CommandFill extends CommandBase
         return 2;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.fill.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length < 7)
@@ -45,69 +50,68 @@ public class CommandFill extends CommandBase
         }
         else
         {
-            sender.func_174794_a(CommandResultStats.Type.AFFECTED_BLOCKS, 0);
-            BlockPos var3 = func_175757_a(sender, args, 0, false);
-            BlockPos var4 = func_175757_a(sender, args, 3, false);
-            Block var5 = CommandBase.getBlockByText(sender, args[6]);
-            int var6 = 0;
+            sender.setCommandStat(CommandResultStats.Type.AFFECTED_BLOCKS, 0);
+            BlockPos blockpos = parseBlockPos(sender, args, 0, false);
+            BlockPos blockpos1 = parseBlockPos(sender, args, 3, false);
+            Block block = CommandBase.getBlockByText(sender, args[6]);
+            int i = 0;
 
             if (args.length >= 8)
             {
-                var6 = parseInt(args[7], 0, 15);
+                i = parseInt(args[7], 0, 15);
             }
 
-            BlockPos var7 = new BlockPos(Math.min(var3.getX(), var4.getX()), Math.min(var3.getY(), var4.getY()), Math.min(var3.getZ(), var4.getZ()));
-            BlockPos var8 = new BlockPos(Math.max(var3.getX(), var4.getX()), Math.max(var3.getY(), var4.getY()), Math.max(var3.getZ(), var4.getZ()));
-            int var9 = (var8.getX() - var7.getX() + 1) * (var8.getY() - var7.getY() + 1) * (var8.getZ() - var7.getZ() + 1);
+            BlockPos blockpos2 = new BlockPos(Math.min(blockpos.getX(), blockpos1.getX()), Math.min(blockpos.getY(), blockpos1.getY()), Math.min(blockpos.getZ(), blockpos1.getZ()));
+            BlockPos blockpos3 = new BlockPos(Math.max(blockpos.getX(), blockpos1.getX()), Math.max(blockpos.getY(), blockpos1.getY()), Math.max(blockpos.getZ(), blockpos1.getZ()));
+            int j = (blockpos3.getX() - blockpos2.getX() + 1) * (blockpos3.getY() - blockpos2.getY() + 1) * (blockpos3.getZ() - blockpos2.getZ() + 1);
 
-            if (var9 > 32768)
+            if (j > 32768)
             {
-                throw new CommandException("commands.fill.tooManyBlocks", new Object[] {Integer.valueOf(var9), Integer.valueOf(32768)});
+                throw new CommandException("commands.fill.tooManyBlocks", new Object[] {Integer.valueOf(j), Integer.valueOf(32768)});
             }
-            else if (var7.getY() >= 0 && var8.getY() < 256)
+            else if (blockpos2.getY() >= 0 && blockpos3.getY() < 256)
             {
-                World var10 = sender.getEntityWorld();
+                World world = sender.getEntityWorld();
 
-                for (int var11 = var7.getZ(); var11 < var8.getZ() + 16; var11 += 16)
+                for (int k = blockpos2.getZ(); k < blockpos3.getZ() + 16; k += 16)
                 {
-                    for (int var12 = var7.getX(); var12 < var8.getX() + 16; var12 += 16)
+                    for (int l = blockpos2.getX(); l < blockpos3.getX() + 16; l += 16)
                     {
-                        if (!var10.isBlockLoaded(new BlockPos(var12, var8.getY() - var7.getY(), var11)))
+                        if (!world.isBlockLoaded(new BlockPos(l, blockpos3.getY() - blockpos2.getY(), k)))
                         {
                             throw new CommandException("commands.fill.outOfWorld", new Object[0]);
                         }
                     }
                 }
 
-                NBTTagCompound var22 = new NBTTagCompound();
-                boolean var23 = false;
+                NBTTagCompound nbttagcompound = new NBTTagCompound();
+                boolean flag = false;
 
-                if (args.length >= 10 && var5.hasTileEntity())
+                if (args.length >= 10 && block.hasTileEntity())
                 {
-                    String var13 = getChatComponentFromNthArg(sender, args, 9).getUnformattedText();
+                    String s = getChatComponentFromNthArg(sender, args, 9).getUnformattedText();
 
                     try
                     {
-                        var22 = JsonToNBT.func_180713_a(var13);
-                        var23 = true;
+                        nbttagcompound = JsonToNBT.getTagFromJson(s);
+                        flag = true;
                     }
-                    catch (NBTException var21)
+                    catch (NBTException nbtexception)
                     {
-                        throw new CommandException("commands.fill.tagError", new Object[] {var21.getMessage()});
+                        throw new CommandException("commands.fill.tagError", new Object[] {nbtexception.getMessage()});
                     }
                 }
 
-                ArrayList var24 = Lists.newArrayList();
-                var9 = 0;
+                List<BlockPos> list = Lists.<BlockPos>newArrayList();
+                j = 0;
 
-                for (int var14 = var7.getZ(); var14 <= var8.getZ(); ++var14)
+                for (int i1 = blockpos2.getZ(); i1 <= blockpos3.getZ(); ++i1)
                 {
-                    for (int var15 = var7.getY(); var15 <= var8.getY(); ++var15)
+                    for (int j1 = blockpos2.getY(); j1 <= blockpos3.getY(); ++j1)
                     {
-                        for (int var16 = var7.getX(); var16 <= var8.getX(); ++var16)
+                        for (int k1 = blockpos2.getX(); k1 <= blockpos3.getX(); ++k1)
                         {
-                            BlockPos var17 = new BlockPos(var16, var15, var14);
-                            IBlockState var19;
+                            BlockPos blockpos4 = new BlockPos(k1, j1, i1);
 
                             if (args.length >= 9)
                             {
@@ -115,22 +119,22 @@ public class CommandFill extends CommandBase
                                 {
                                     if (args[8].equals("destroy"))
                                     {
-                                        var10.destroyBlock(var17, true);
+                                        world.destroyBlock(blockpos4, true);
                                     }
                                     else if (args[8].equals("keep"))
                                     {
-                                        if (!var10.isAirBlock(var17))
+                                        if (!world.isAirBlock(blockpos4))
                                         {
                                             continue;
                                         }
                                     }
-                                    else if (args[8].equals("replace") && !var5.hasTileEntity())
+                                    else if (args[8].equals("replace") && !block.hasTileEntity())
                                     {
                                         if (args.length > 9)
                                         {
-                                            Block var18 = CommandBase.getBlockByText(sender, args[9]);
+                                            Block block1 = CommandBase.getBlockByText(sender, args[9]);
 
-                                            if (var10.getBlockState(var17).getBlock() != var18)
+                                            if (world.getBlockState(blockpos4).getBlock() != block1)
                                             {
                                                 continue;
                                             }
@@ -138,57 +142,57 @@ public class CommandFill extends CommandBase
 
                                         if (args.length > 10)
                                         {
-                                            int var28 = CommandBase.parseInt(args[10]);
-                                            var19 = var10.getBlockState(var17);
+                                            int l1 = CommandBase.parseInt(args[10]);
+                                            IBlockState iblockstate = world.getBlockState(blockpos4);
 
-                                            if (var19.getBlock().getMetaFromState(var19) != var28)
+                                            if (iblockstate.getBlock().getMetaFromState(iblockstate) != l1)
                                             {
                                                 continue;
                                             }
                                         }
                                     }
                                 }
-                                else if (var16 != var7.getX() && var16 != var8.getX() && var15 != var7.getY() && var15 != var8.getY() && var14 != var7.getZ() && var14 != var8.getZ())
+                                else if (k1 != blockpos2.getX() && k1 != blockpos3.getX() && j1 != blockpos2.getY() && j1 != blockpos3.getY() && i1 != blockpos2.getZ() && i1 != blockpos3.getZ())
                                 {
                                     if (args[8].equals("hollow"))
                                     {
-                                        var10.setBlockState(var17, Blocks.air.getDefaultState(), 2);
-                                        var24.add(var17);
+                                        world.setBlockState(blockpos4, Blocks.air.getDefaultState(), 2);
+                                        list.add(blockpos4);
                                     }
 
                                     continue;
                                 }
                             }
 
-                            TileEntity var29 = var10.getTileEntity(var17);
+                            TileEntity tileentity1 = world.getTileEntity(blockpos4);
 
-                            if (var29 != null)
+                            if (tileentity1 != null)
                             {
-                                if (var29 instanceof IInventory)
+                                if (tileentity1 instanceof IInventory)
                                 {
-                                    ((IInventory)var29).clearInventory();
+                                    ((IInventory)tileentity1).clear();
                                 }
 
-                                var10.setBlockState(var17, Blocks.barrier.getDefaultState(), var5 == Blocks.barrier ? 2 : 4);
+                                world.setBlockState(blockpos4, Blocks.barrier.getDefaultState(), block == Blocks.barrier ? 2 : 4);
                             }
 
-                            var19 = var5.getStateFromMeta(var6);
+                            IBlockState iblockstate1 = block.getStateFromMeta(i);
 
-                            if (var10.setBlockState(var17, var19, 2))
+                            if (world.setBlockState(blockpos4, iblockstate1, 2))
                             {
-                                var24.add(var17);
-                                ++var9;
+                                list.add(blockpos4);
+                                ++j;
 
-                                if (var23)
+                                if (flag)
                                 {
-                                    TileEntity var20 = var10.getTileEntity(var17);
+                                    TileEntity tileentity = world.getTileEntity(blockpos4);
 
-                                    if (var20 != null)
+                                    if (tileentity != null)
                                     {
-                                        var22.setInteger("x", var17.getX());
-                                        var22.setInteger("y", var17.getY());
-                                        var22.setInteger("z", var17.getZ());
-                                        var20.readFromNBT(var22);
+                                        nbttagcompound.setInteger("x", blockpos4.getX());
+                                        nbttagcompound.setInteger("y", blockpos4.getY());
+                                        nbttagcompound.setInteger("z", blockpos4.getZ());
+                                        tileentity.readFromNBT(nbttagcompound);
                                     }
                                 }
                             }
@@ -196,23 +200,20 @@ public class CommandFill extends CommandBase
                     }
                 }
 
-                Iterator var25 = var24.iterator();
-
-                while (var25.hasNext())
+                for (BlockPos blockpos5 : list)
                 {
-                    BlockPos var26 = (BlockPos)var25.next();
-                    Block var27 = var10.getBlockState(var26).getBlock();
-                    var10.func_175722_b(var26, var27);
+                    Block block2 = world.getBlockState(blockpos5).getBlock();
+                    world.notifyNeighborsRespectDebug(blockpos5, block2);
                 }
 
-                if (var9 <= 0)
+                if (j <= 0)
                 {
                     throw new CommandException("commands.fill.failed", new Object[0]);
                 }
                 else
                 {
-                    sender.func_174794_a(CommandResultStats.Type.AFFECTED_BLOCKS, var9);
-                    notifyOperators(sender, this, "commands.fill.success", new Object[] {Integer.valueOf(var9)});
+                    sender.setCommandStat(CommandResultStats.Type.AFFECTED_BLOCKS, j);
+                    notifyOperators(sender, this, "commands.fill.success", new Object[] {Integer.valueOf(j)});
                 }
             }
             else
@@ -222,8 +223,8 @@ public class CommandFill extends CommandBase
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length > 0 && args.length <= 3 ? func_175771_a(args, 0, pos) : (args.length > 3 && args.length <= 6 ? func_175771_a(args, 3, pos) : (args.length == 7 ? func_175762_a(args, Block.blockRegistry.getKeys()) : (args.length == 9 ? getListOfStringsMatchingLastWord(args, new String[] {"replace", "destroy", "keep", "hollow", "outline"}): null)));
+        return args.length > 0 && args.length <= 3 ? func_175771_a(args, 0, pos) : (args.length > 3 && args.length <= 6 ? func_175771_a(args, 3, pos) : (args.length == 7 ? getListOfStringsMatchingLastWord(args, Block.blockRegistry.getKeys()) : (args.length == 9 ? getListOfStringsMatchingLastWord(args, new String[] {"replace", "destroy", "keep", "hollow", "outline"}): (args.length == 10 && "replace".equals(args[8]) ? getListOfStringsMatchingLastWord(args, Block.blockRegistry.getKeys()) : null))));
     }
 }

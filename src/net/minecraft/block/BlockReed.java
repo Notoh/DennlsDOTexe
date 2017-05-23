@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Iterator;
 import java.util.Random;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -19,43 +18,42 @@ import net.minecraft.world.World;
 
 public class BlockReed extends Block
 {
-    public static final PropertyInteger field_176355_a = PropertyInteger.create("age", 0, 15);
-    private static final String __OBFID = "CL_00000300";
+    public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 15);
 
     protected BlockReed()
     {
         super(Material.plants);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(field_176355_a, Integer.valueOf(0)));
-        float var1 = 0.375F;
-        this.setBlockBounds(0.5F - var1, 0.0F, 0.5F - var1, 0.5F + var1, 1.0F, 0.5F + var1);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
+        float f = 0.375F;
+        this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 1.0F, 0.5F + f);
         this.setTickRandomly(true);
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (worldIn.getBlockState(pos.offsetDown()).getBlock() == Blocks.reeds || this.func_176353_e(worldIn, pos, state))
+        if (worldIn.getBlockState(pos.down()).getBlock() == Blocks.reeds || this.checkForDrop(worldIn, pos, state))
         {
-            if (worldIn.isAirBlock(pos.offsetUp()))
+            if (worldIn.isAirBlock(pos.up()))
             {
-                int var5;
+                int i;
 
-                for (var5 = 1; worldIn.getBlockState(pos.offsetDown(var5)).getBlock() == this; ++var5)
+                for (i = 1; worldIn.getBlockState(pos.down(i)).getBlock() == this; ++i)
                 {
                     ;
                 }
 
-                if (var5 < 3)
+                if (i < 3)
                 {
-                    int var6 = ((Integer)state.getValue(field_176355_a)).intValue();
+                    int j = ((Integer)state.getValue(AGE)).intValue();
 
-                    if (var6 == 15)
+                    if (j == 15)
                     {
-                        worldIn.setBlockState(pos.offsetUp(), this.getDefaultState());
-                        worldIn.setBlockState(pos, state.withProperty(field_176355_a, Integer.valueOf(0)), 4);
+                        worldIn.setBlockState(pos.up(), this.getDefaultState());
+                        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(0)), 4);
                     }
                     else
                     {
-                        worldIn.setBlockState(pos, state.withProperty(field_176355_a, Integer.valueOf(var6 + 1)), 4);
+                        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
                     }
                 }
             }
@@ -64,58 +62,55 @@ public class BlockReed extends Block
 
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
-        Block var3 = worldIn.getBlockState(pos.offsetDown()).getBlock();
+        Block block = worldIn.getBlockState(pos.down()).getBlock();
 
-        if (var3 == this)
+        if (block == this)
         {
             return true;
         }
-        else if (var3 != Blocks.grass && var3 != Blocks.dirt && var3 != Blocks.sand)
+        else if (block != Blocks.grass && block != Blocks.dirt && block != Blocks.sand)
         {
             return false;
         }
         else
         {
-            Iterator var4 = EnumFacing.Plane.HORIZONTAL.iterator();
-            EnumFacing var5;
-
-            do
+            for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
             {
-                if (!var4.hasNext())
+                if (worldIn.getBlockState(pos.offset(enumfacing).down()).getBlock().getMaterial() == Material.water)
                 {
-                    return false;
+                    return true;
                 }
-
-                var5 = (EnumFacing)var4.next();
             }
-            while (worldIn.getBlockState(pos.offset(var5).offsetDown()).getBlock().getMaterial() != Material.water);
 
-            return true;
+            return false;
         }
     }
 
+    /**
+     * Called when a neighboring block changes.
+     */
     public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
     {
-        this.func_176353_e(worldIn, pos, state);
+        this.checkForDrop(worldIn, pos, state);
     }
 
-    protected final boolean func_176353_e(World worldIn, BlockPos p_176353_2_, IBlockState p_176353_3_)
+    protected final boolean checkForDrop(World worldIn, BlockPos pos, IBlockState state)
     {
-        if (this.func_176354_d(worldIn, p_176353_2_))
+        if (this.canBlockStay(worldIn, pos))
         {
             return true;
         }
         else
         {
-            this.dropBlockAsItem(worldIn, p_176353_2_, p_176353_3_, 0);
-            worldIn.setBlockToAir(p_176353_2_);
+            this.dropBlockAsItem(worldIn, pos, state, 0);
+            worldIn.setBlockToAir(pos);
             return false;
         }
     }
 
-    public boolean func_176354_d(World worldIn, BlockPos p_176354_2_)
+    public boolean canBlockStay(World worldIn, BlockPos pos)
     {
-        return this.canPlaceBlockAt(worldIn, p_176354_2_);
+        return this.canPlaceBlockAt(worldIn, pos);
     }
 
     public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
@@ -125,14 +120,15 @@ public class BlockReed extends Block
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Items.reeds;
     }
 
+    /**
+     * Used to determine ambient occlusion and culling when rebuilding chunks for render
+     */
     public boolean isOpaqueCube()
     {
         return false;
@@ -150,7 +146,7 @@ public class BlockReed extends Block
 
     public int colorMultiplier(IBlockAccess worldIn, BlockPos pos, int renderPass)
     {
-        return worldIn.getBiomeGenForCoords(pos).func_180627_b(pos);
+        return worldIn.getBiomeGenForCoords(pos).getGrassColorAtPos(pos);
     }
 
     public EnumWorldBlockLayer getBlockLayer()
@@ -163,7 +159,7 @@ public class BlockReed extends Block
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(field_176355_a, Integer.valueOf(meta));
+        return this.getDefaultState().withProperty(AGE, Integer.valueOf(meta));
     }
 
     /**
@@ -171,11 +167,11 @@ public class BlockReed extends Block
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((Integer)state.getValue(field_176355_a)).intValue();
+        return ((Integer)state.getValue(AGE)).intValue();
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {field_176355_a});
+        return new BlockState(this, new IProperty[] {AGE});
     }
 }

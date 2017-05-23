@@ -6,13 +6,12 @@ import net.minecraft.pathfinding.PathNavigateGround;
 public class EntityAISwimming extends EntityAIBase
 {
     private EntityLiving theEntity;
-    private static final String __OBFID = "CL_00001584";
 
-    public EntityAISwimming(EntityLiving p_i1624_1_)
+    public EntityAISwimming(EntityLiving entitylivingIn)
     {
-        this.theEntity = p_i1624_1_;
+        this.theEntity = entitylivingIn;
         this.setMutexBits(4);
-        ((PathNavigateGround)p_i1624_1_.getNavigator()).func_179693_d(true);
+        ((PathNavigateGround)entitylivingIn.getNavigator()).setCanSwim(true);
     }
 
     /**
@@ -20,7 +19,7 @@ public class EntityAISwimming extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-        return this.theEntity.isInWater() || this.theEntity.func_180799_ab();
+        return this.theEntity.isInWater() || this.theEntity.isInLava();
     }
 
     /**

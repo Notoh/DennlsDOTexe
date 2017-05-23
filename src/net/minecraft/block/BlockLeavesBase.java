@@ -7,15 +7,17 @@ import net.minecraft.world.IBlockAccess;
 
 public class BlockLeavesBase extends Block
 {
-    protected boolean field_150121_P;
-    private static final String __OBFID = "CL_00000326";
+    protected boolean fancyGraphics;
 
-    protected BlockLeavesBase(Material p_i45433_1_, boolean p_i45433_2_)
+    protected BlockLeavesBase(Material materialIn, boolean fancyGraphics)
     {
-        super(p_i45433_1_);
-        this.field_150121_P = p_i45433_2_;
+        super(materialIn);
+        this.fancyGraphics = fancyGraphics;
     }
 
+    /**
+     * Used to determine ambient occlusion and culling when rebuilding chunks for render
+     */
     public boolean isOpaqueCube()
     {
         return false;
@@ -23,6 +25,6 @@ public class BlockLeavesBase extends Block
 
     public boolean shouldSideBeRendered(IBlockAccess worldIn, BlockPos pos, EnumFacing side)
     {
-        return !this.field_150121_P && worldIn.getBlockState(pos).getBlock() == this ? false : super.shouldSideBeRendered(worldIn, pos, side);
+        return !this.fancyGraphics && worldIn.getBlockState(pos).getBlock() == this ? false : super.shouldSideBeRendered(worldIn, pos, side);
     }
 }

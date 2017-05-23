@@ -15,11 +15,10 @@ public class EntityDropParticleFX extends EntityFX
 
     /** The height of the current bob */
     private int bobTimer;
-    private static final String __OBFID = "CL_00000901";
 
-    protected EntityDropParticleFX(World worldIn, double p_i1203_2_, double p_i1203_4_, double p_i1203_6_, Material p_i1203_8_)
+    protected EntityDropParticleFX(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, Material p_i1203_8_)
     {
-        super(worldIn, p_i1203_2_, p_i1203_4_, p_i1203_6_, 0.0D, 0.0D, 0.0D);
+        super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.0D, 0.0D, 0.0D);
         this.motionX = this.motionY = this.motionZ = 0.0D;
 
         if (p_i1203_8_ == Material.water)
@@ -44,17 +43,17 @@ public class EntityDropParticleFX extends EntityFX
         this.motionX = this.motionY = this.motionZ = 0.0D;
     }
 
-    public int getBrightnessForRender(float p_70070_1_)
+    public int getBrightnessForRender(float partialTicks)
     {
-        return this.materialType == Material.water ? super.getBrightnessForRender(p_70070_1_) : 257;
+        return this.materialType == Material.water ? super.getBrightnessForRender(partialTicks) : 257;
     }
 
     /**
      * Gets how bright this entity is.
      */
-    public float getBrightness(float p_70013_1_)
+    public float getBrightness(float partialTicks)
     {
-        return this.materialType == Material.water ? super.getBrightness(p_70013_1_) : 1.0F;
+        return this.materialType == Material.water ? super.getBrightness(partialTicks) : 1.0F;
     }
 
     /**
@@ -119,22 +118,22 @@ public class EntityDropParticleFX extends EntityFX
             this.motionZ *= 0.699999988079071D;
         }
 
-        BlockPos var1 = new BlockPos(this);
-        IBlockState var2 = this.worldObj.getBlockState(var1);
-        Material var3 = var2.getBlock().getMaterial();
+        BlockPos blockpos = new BlockPos(this);
+        IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
+        Material material = iblockstate.getBlock().getMaterial();
 
-        if (var3.isLiquid() || var3.isSolid())
+        if (material.isLiquid() || material.isSolid())
         {
-            double var4 = 0.0D;
+            double d0 = 0.0D;
 
-            if (var2.getBlock() instanceof BlockLiquid)
+            if (iblockstate.getBlock() instanceof BlockLiquid)
             {
-                var4 = (double)BlockLiquid.getLiquidHeightPercent(((Integer)var2.getValue(BlockLiquid.LEVEL)).intValue());
+                d0 = (double)BlockLiquid.getLiquidHeightPercent(((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue());
             }
 
-            double var6 = (double)(MathHelper.floor_double(this.posY) + 1) - var4;
+            double d1 = (double)(MathHelper.floor_double(this.posY) + 1) - d0;
 
-            if (this.posY < var6)
+            if (this.posY < d1)
             {
                 this.setDead();
             }
@@ -143,21 +142,17 @@ public class EntityDropParticleFX extends EntityFX
 
     public static class LavaFactory implements IParticleFactory
     {
-        private static final String __OBFID = "CL_00002607";
-
-        public EntityFX func_178902_a(int p_178902_1_, World worldIn, double p_178902_3_, double p_178902_5_, double p_178902_7_, double p_178902_9_, double p_178902_11_, double p_178902_13_, int ... p_178902_15_)
+        public EntityFX getEntityFX(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, int... p_178902_15_)
         {
-            return new EntityDropParticleFX(worldIn, p_178902_3_, p_178902_5_, p_178902_7_, Material.lava);
+            return new EntityDropParticleFX(worldIn, xCoordIn, yCoordIn, zCoordIn, Material.lava);
         }
     }
 
     public static class WaterFactory implements IParticleFactory
     {
-        private static final String __OBFID = "CL_00002606";
-
-        public EntityFX func_178902_a(int p_178902_1_, World worldIn, double p_178902_3_, double p_178902_5_, double p_178902_7_, double p_178902_9_, double p_178902_11_, double p_178902_13_, int ... p_178902_15_)
+        public EntityFX getEntityFX(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, int... p_178902_15_)
         {
-            return new EntityDropParticleFX(worldIn, p_178902_3_, p_178902_5_, p_178902_7_, Material.water);
+            return new EntityDropParticleFX(worldIn, xCoordIn, yCoordIn, zCoordIn, Material.water);
         }
     }
 }

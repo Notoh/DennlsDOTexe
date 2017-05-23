@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Iterator;
 import java.util.Random;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -19,44 +18,43 @@ import net.minecraft.world.World;
 
 public class BlockCactus extends Block
 {
-    public static final PropertyInteger AGE_PROP = PropertyInteger.create("age", 0, 15);
-    private static final String __OBFID = "CL_00000210";
+    public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 15);
 
     protected BlockCactus()
     {
         super(Material.cactus);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE_PROP, Integer.valueOf(0)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
         this.setTickRandomly(true);
         this.setCreativeTab(CreativeTabs.tabDecorations);
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        BlockPos var5 = pos.offsetUp();
+        BlockPos blockpos = pos.up();
 
-        if (worldIn.isAirBlock(var5))
+        if (worldIn.isAirBlock(blockpos))
         {
-            int var6;
+            int i;
 
-            for (var6 = 1; worldIn.getBlockState(pos.offsetDown(var6)).getBlock() == this; ++var6)
+            for (i = 1; worldIn.getBlockState(pos.down(i)).getBlock() == this; ++i)
             {
                 ;
             }
 
-            if (var6 < 3)
+            if (i < 3)
             {
-                int var7 = ((Integer)state.getValue(AGE_PROP)).intValue();
+                int j = ((Integer)state.getValue(AGE)).intValue();
 
-                if (var7 == 15)
+                if (j == 15)
                 {
-                    worldIn.setBlockState(var5, this.getDefaultState());
-                    IBlockState var8 = state.withProperty(AGE_PROP, Integer.valueOf(0));
-                    worldIn.setBlockState(pos, var8, 4);
-                    this.onNeighborBlockChange(worldIn, var5, var8, this);
+                    worldIn.setBlockState(blockpos, this.getDefaultState());
+                    IBlockState iblockstate = state.withProperty(AGE, Integer.valueOf(0));
+                    worldIn.setBlockState(pos, iblockstate, 4);
+                    this.onNeighborBlockChange(worldIn, blockpos, iblockstate, this);
                 }
                 else
                 {
-                    worldIn.setBlockState(pos, state.withProperty(AGE_PROP, Integer.valueOf(var7 + 1)), 4);
+                    worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
                 }
             }
         }
@@ -64,14 +62,14 @@ public class BlockCactus extends Block
 
     public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
     {
-        float var4 = 0.0625F;
-        return new AxisAlignedBB((double)((float)pos.getX() + var4), (double)pos.getY(), (double)((float)pos.getZ() + var4), (double)((float)(pos.getX() + 1) - var4), (double)((float)(pos.getY() + 1) - var4), (double)((float)(pos.getZ() + 1) - var4));
+        float f = 0.0625F;
+        return new AxisAlignedBB((double)((float)pos.getX() + f), (double)pos.getY(), (double)((float)pos.getZ() + f), (double)((float)(pos.getX() + 1) - f), (double)((float)(pos.getY() + 1) - f), (double)((float)(pos.getZ() + 1) - f));
     }
 
     public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos)
     {
-        float var3 = 0.0625F;
-        return new AxisAlignedBB((double)((float)pos.getX() + var3), (double)pos.getY(), (double)((float)pos.getZ() + var3), (double)((float)(pos.getX() + 1) - var3), (double)(pos.getY() + 1), (double)((float)(pos.getZ() + 1) - var3));
+        float f = 0.0625F;
+        return new AxisAlignedBB((double)((float)pos.getX() + f), (double)pos.getY(), (double)((float)pos.getZ() + f), (double)((float)(pos.getX() + 1) - f), (double)(pos.getY() + 1), (double)((float)(pos.getZ() + 1) - f));
     }
 
     public boolean isFullCube()
@@ -79,6 +77,9 @@ public class BlockCactus extends Block
         return false;
     }
 
+    /**
+     * Used to determine ambient occlusion and culling when rebuilding chunks for render
+     */
     public boolean isOpaqueCube()
     {
         return false;
@@ -89,6 +90,9 @@ public class BlockCactus extends Block
         return super.canPlaceBlockAt(worldIn, pos) ? this.canBlockStay(worldIn, pos) : false;
     }
 
+    /**
+     * Called when a neighboring block changes.
+     */
     public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
     {
         if (!this.canBlockStay(worldIn, pos))
@@ -97,22 +101,18 @@ public class BlockCactus extends Block
         }
     }
 
-    public boolean canBlockStay(World worldIn, BlockPos p_176586_2_)
+    public boolean canBlockStay(World worldIn, BlockPos pos)
     {
-        Iterator var3 = EnumFacing.Plane.HORIZONTAL.iterator();
-
-        while (var3.hasNext())
+        for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
         {
-            EnumFacing var4 = (EnumFacing)var3.next();
-
-            if (worldIn.getBlockState(p_176586_2_.offset(var4)).getBlock().getMaterial().isSolid())
+            if (worldIn.getBlockState(pos.offset(enumfacing)).getBlock().getMaterial().isSolid())
             {
                 return false;
             }
         }
 
-        Block var5 = worldIn.getBlockState(p_176586_2_.offsetDown()).getBlock();
-        return var5 == Blocks.cactus || var5 == Blocks.sand;
+        Block block = worldIn.getBlockState(pos.down()).getBlock();
+        return block == Blocks.cactus || block == Blocks.sand;
     }
 
     /**
@@ -133,7 +133,7 @@ public class BlockCactus extends Block
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(AGE_PROP, Integer.valueOf(meta));
+        return this.getDefaultState().withProperty(AGE, Integer.valueOf(meta));
     }
 
     /**
@@ -141,11 +141,11 @@ public class BlockCactus extends Block
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((Integer)state.getValue(AGE_PROP)).intValue();
+        return ((Integer)state.getValue(AGE)).intValue();
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {AGE_PROP});
+        return new BlockState(this, new IProperty[] {AGE});
     }
 }

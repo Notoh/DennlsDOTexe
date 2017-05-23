@@ -6,8 +6,6 @@ import net.minecraft.world.World;
 
 public class EntityGiantZombie extends EntityMob
 {
-    private static final String __OBFID = "CL_00001690";
-
     public EntityGiantZombie(World worldIn)
     {
         super(worldIn);
@@ -27,8 +25,8 @@ public class EntityGiantZombie extends EntityMob
         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(50.0D);
     }
 
-    public float func_180484_a(BlockPos p_180484_1_)
+    public float getBlockPathWeight(BlockPos pos)
     {
-        return this.worldObj.getLightBrightness(p_180484_1_) - 0.5F;
+        return this.worldObj.getLightBrightness(pos) - 0.5F;
     }
 }

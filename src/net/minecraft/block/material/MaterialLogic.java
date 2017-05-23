@@ -2,14 +2,15 @@ package net.minecraft.block.material;
 
 public class MaterialLogic extends Material
 {
-    private static final String __OBFID = "CL_00000539";
-
-    public MaterialLogic(MapColor p_i2112_1_)
+    public MaterialLogic(MapColor color)
     {
-        super(p_i2112_1_);
+        super(color);
         this.setAdventureModeExempt();
     }
 
+    /**
+     * Returns true if the block is a considered solid. This is true by default.
+     */
     public boolean isSolid()
     {
         return false;

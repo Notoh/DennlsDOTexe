@@ -7,5 +7,4 @@ public enum EnumAction
     DRINK,
     BLOCK,
     BOW;
-    private static final String __OBFID = "CL_00000073";
 }

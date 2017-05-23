@@ -2,12 +2,11 @@ package net.minecraft.network.play.server;
 
 import java.io.IOException;
 import net.minecraft.entity.player.PlayerCapabilities;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 
-public class S39PacketPlayerAbilities implements Packet
+public class S39PacketPlayerAbilities implements Packet<INetHandlerPlayClient>
 {
     private boolean invulnerable;
     private boolean flying;
@@ -15,9 +14,10 @@ public class S39PacketPlayerAbilities implements Packet
     private boolean creativeMode;
     private float flySpeed;
     private float walkSpeed;
-    private static final String __OBFID = "CL_00001317";
 
-    public S39PacketPlayerAbilities() {}
+    public S39PacketPlayerAbilities()
+    {
+    }
 
     public S39PacketPlayerAbilities(PlayerCapabilities capabilities)
     {
@@ -32,52 +32,55 @@ public class S39PacketPlayerAbilities implements Packet
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        byte var2 = data.readByte();
-        this.setInvulnerable((var2 & 1) > 0);
-        this.setFlying((var2 & 2) > 0);
-        this.setAllowFlying((var2 & 4) > 0);
-        this.setCreativeMode((var2 & 8) > 0);
-        this.setFlySpeed(data.readFloat());
-        this.setWalkSpeed(data.readFloat());
+        byte b0 = buf.readByte();
+        this.setInvulnerable((b0 & 1) > 0);
+        this.setFlying((b0 & 2) > 0);
+        this.setAllowFlying((b0 & 4) > 0);
+        this.setCreativeMode((b0 & 8) > 0);
+        this.setFlySpeed(buf.readFloat());
+        this.setWalkSpeed(buf.readFloat());
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        byte var2 = 0;
+        byte b0 = 0;
 
         if (this.isInvulnerable())
         {
-            var2 = (byte)(var2 | 1);
+            b0 = (byte)(b0 | 1);
         }
 
         if (this.isFlying())
         {
-            var2 = (byte)(var2 | 2);
+            b0 = (byte)(b0 | 2);
         }
 
         if (this.isAllowFlying())
         {
-            var2 = (byte)(var2 | 4);
+            b0 = (byte)(b0 | 4);
         }
 
         if (this.isCreativeMode())
         {
-            var2 = (byte)(var2 | 8);
+            b0 = (byte)(b0 | 8);
         }
 
-        data.writeByte(var2);
-        data.writeFloat(this.flySpeed);
-        data.writeFloat(this.walkSpeed);
+        buf.writeByte(b0);
+        buf.writeFloat(this.flySpeed);
+        buf.writeFloat(this.walkSpeed);
     }
 
-    public void func_180742_a(INetHandlerPlayClient p_180742_1_)
+    /**
+     * Passes this Packet on to the NetHandler for processing.
+     */
+    public void processPacket(INetHandlerPlayClient handler)
     {
-        p_180742_1_.handlePlayerAbilities(this);
+        handler.handlePlayerAbilities(this);
     }
 
     public boolean isInvulnerable()
@@ -138,13 +141,5 @@ public class S39PacketPlayerAbilities implements Packet
     public void setWalkSpeed(float walkSpeedIn)
     {
         this.walkSpeed = walkSpeedIn;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.func_180742_a((INetHandlerPlayClient)handler);
     }
 }

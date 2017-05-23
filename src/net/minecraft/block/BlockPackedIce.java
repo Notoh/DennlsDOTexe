@@ -6,8 +6,6 @@ import net.minecraft.creativetab.CreativeTabs;
 
 public class BlockPackedIce extends Block
 {
-    private static final String __OBFID = "CL_00000283";
-
     public BlockPackedIce()
     {
         super(Material.packedIce);

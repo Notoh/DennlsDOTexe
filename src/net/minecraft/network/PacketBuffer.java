@@ -8,7 +8,6 @@ import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufProcessor;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
-import io.netty.util.ReferenceCounted;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,7 +28,6 @@ import net.minecraft.util.IChatComponent;
 public class PacketBuffer extends ByteBuf
 {
     private final ByteBuf buf;
-    private static final String __OBFID = "CL_00001251";
 
     public PacketBuffer(ByteBuf wrapped)
     {
@@ -42,11 +40,11 @@ public class PacketBuffer extends ByteBuf
      */
     public static int getVarIntSize(int input)
     {
-        for (int var1 = 1; var1 < 5; ++var1)
+        for (int i = 1; i < 5; ++i)
         {
-            if ((input & -1 << var1 * 7) == 0)
+            if ((input & -1 << i * 7) == 0)
             {
-                return var1;
+                return i;
             }
         }
 
@@ -61,9 +59,9 @@ public class PacketBuffer extends ByteBuf
 
     public byte[] readByteArray()
     {
-        byte[] var1 = new byte[this.readVarIntFromBuffer()];
-        this.readBytes(var1);
-        return var1;
+        byte[] abyte = new byte[this.readVarIntFromBuffer()];
+        this.readBytes(abyte);
+        return abyte;
     }
 
     public BlockPos readBlockPos()
@@ -76,22 +74,22 @@ public class PacketBuffer extends ByteBuf
         this.writeLong(pos.toLong());
     }
 
-    public IChatComponent readChatComponent()
+    public IChatComponent readChatComponent() throws IOException
     {
         return IChatComponent.Serializer.jsonToComponent(this.readStringFromBuffer(32767));
     }
 
-    public void writeChatComponent(IChatComponent component)
+    public void writeChatComponent(IChatComponent component) throws IOException
     {
         this.writeString(IChatComponent.Serializer.componentToJson(component));
     }
 
-    public Enum readEnumValue(Class enumClass)
+    public <T extends Enum<T>> T readEnumValue(Class<T> enumClass)
     {
-        return ((Enum[])enumClass.getEnumConstants())[this.readVarIntFromBuffer()];
+        return (T)((Enum[])enumClass.getEnumConstants())[this.readVarIntFromBuffer()];
     }
 
-    public void writeEnumValue(Enum value)
+    public void writeEnumValue(Enum<?> value)
     {
         this.writeVarIntToBuffer(value.ordinal());
     }
@@ -102,44 +100,50 @@ public class PacketBuffer extends ByteBuf
      */
     public int readVarIntFromBuffer()
     {
-        int var1 = 0;
-        int var2 = 0;
-        byte var3;
+        int i = 0;
+        int j = 0;
 
-        do
+        while (true)
         {
-            var3 = this.readByte();
-            var1 |= (var3 & 127) << var2++ * 7;
+            byte b0 = this.readByte();
+            i |= (b0 & 127) << j++ * 7;
 
-            if (var2 > 5)
+            if (j > 5)
             {
                 throw new RuntimeException("VarInt too big");
             }
-        }
-        while ((var3 & 128) == 128);
 
-        return var1;
+            if ((b0 & 128) != 128)
+            {
+                break;
+            }
+        }
+
+        return i;
     }
 
     public long readVarLong()
     {
-        long var1 = 0L;
-        int var3 = 0;
-        byte var4;
+        long i = 0L;
+        int j = 0;
 
-        do
+        while (true)
         {
-            var4 = this.readByte();
-            var1 |= (long)(var4 & 127) << var3++ * 7;
+            byte b0 = this.readByte();
+            i |= (long)(b0 & 127) << j++ * 7;
 
-            if (var3 > 10)
+            if (j > 10)
             {
                 throw new RuntimeException("VarLong too big");
             }
-        }
-        while ((var4 & 128) == 128);
 
-        return var1;
+            if ((b0 & 128) != 128)
+            {
+                break;
+            }
+        }
+
+        return i;
     }
 
     public void writeUuid(UUID uuid)
@@ -196,9 +200,9 @@ public class PacketBuffer extends ByteBuf
             {
                 CompressedStreamTools.write(nbt, new ByteBufOutputStream(this));
             }
-            catch (IOException var3)
+            catch (IOException ioexception)
             {
-                throw new EncoderException(var3);
+                throw new EncoderException(ioexception);
             }
         }
     }
@@ -208,17 +212,17 @@ public class PacketBuffer extends ByteBuf
      */
     public NBTTagCompound readNBTTagCompoundFromBuffer() throws IOException
     {
-        int var1 = this.readerIndex();
-        byte var2 = this.readByte();
+        int i = this.readerIndex();
+        byte b0 = this.readByte();
 
-        if (var2 == 0)
+        if (b0 == 0)
         {
             return null;
         }
         else
         {
-            this.readerIndex(var1);
-            return CompressedStreamTools.func_152456_a(new ByteBufInputStream(this), new NBTSizeTracker(2097152L));
+            this.readerIndex(i);
+            return CompressedStreamTools.read(new ByteBufInputStream(this), new NBTSizeTracker(2097152L));
         }
     }
 
@@ -236,14 +240,14 @@ public class PacketBuffer extends ByteBuf
             this.writeShort(Item.getIdFromItem(stack.getItem()));
             this.writeByte(stack.stackSize);
             this.writeShort(stack.getMetadata());
-            NBTTagCompound var2 = null;
+            NBTTagCompound nbttagcompound = null;
 
             if (stack.getItem().isDamageable() || stack.getItem().getShareTag())
             {
-                var2 = stack.getTagCompound();
+                nbttagcompound = stack.getTagCompound();
             }
 
-            this.writeNBTTagCompoundToBuffer(var2);
+            this.writeNBTTagCompoundToBuffer(nbttagcompound);
         }
     }
 
@@ -252,18 +256,18 @@ public class PacketBuffer extends ByteBuf
      */
     public ItemStack readItemStackFromBuffer() throws IOException
     {
-        ItemStack var1 = null;
-        short var2 = this.readShort();
+        ItemStack itemstack = null;
+        int i = this.readShort();
 
-        if (var2 >= 0)
+        if (i >= 0)
         {
-            byte var3 = this.readByte();
-            short var4 = this.readShort();
-            var1 = new ItemStack(Item.getItemById(var2), var3, var4);
-            var1.setTagCompound(this.readNBTTagCompoundFromBuffer());
+            int j = this.readByte();
+            int k = this.readShort();
+            itemstack = new ItemStack(Item.getItemById(i), j, k);
+            itemstack.setTagCompound(this.readNBTTagCompoundFromBuffer());
         }
 
-        return var1;
+        return itemstack;
     }
 
     /**
@@ -272,43 +276,43 @@ public class PacketBuffer extends ByteBuf
      */
     public String readStringFromBuffer(int maxLength)
     {
-        int var2 = this.readVarIntFromBuffer();
+        int i = this.readVarIntFromBuffer();
 
-        if (var2 > maxLength * 4)
+        if (i > maxLength * 4)
         {
-            throw new DecoderException("The received encoded string buffer length is longer than maximum allowed (" + var2 + " > " + maxLength * 4 + ")");
+            throw new DecoderException("The received encoded string buffer length is longer than maximum allowed (" + i + " > " + maxLength * 4 + ")");
         }
-        else if (var2 < 0)
+        else if (i < 0)
         {
             throw new DecoderException("The received encoded string buffer length is less than zero! Weird string!");
         }
         else
         {
-            String var3 = new String(this.readBytes(var2).array(), Charsets.UTF_8);
+            String s = new String(this.readBytes(i).array(), Charsets.UTF_8);
 
-            if (var3.length() > maxLength)
+            if (s.length() > maxLength)
             {
-                throw new DecoderException("The received string length is longer than maximum allowed (" + var2 + " > " + maxLength + ")");
+                throw new DecoderException("The received string length is longer than maximum allowed (" + i + " > " + maxLength + ")");
             }
             else
             {
-                return var3;
+                return s;
             }
         }
     }
 
     public PacketBuffer writeString(String string)
     {
-        byte[] var2 = string.getBytes(Charsets.UTF_8);
+        byte[] abyte = string.getBytes(Charsets.UTF_8);
 
-        if (var2.length > 32767)
+        if (abyte.length > 32767)
         {
             throw new EncoderException("String too big (was " + string.length() + " bytes encoded, max " + 32767 + ")");
         }
         else
         {
-            this.writeVarIntToBuffer(var2.length);
-            this.writeBytes(var2);
+            this.writeVarIntToBuffer(abyte.length);
+            this.writeBytes(abyte);
             return this;
         }
     }

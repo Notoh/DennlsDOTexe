@@ -201,11 +201,10 @@ public class Items
     public static final Item prismarine_shard;
     public static final Item prismarine_crystals;
     public static final Item banner;
-    private static final String __OBFID = "CL_00000044";
 
-    private static Item getRegisteredItem(String p_179554_0_)
+    private static Item getRegisteredItem(String name)
     {
-        return (Item)Item.itemRegistry.getObject(new ResourceLocation(p_179554_0_));
+        return (Item)Item.itemRegistry.getObject(new ResourceLocation(name));
     }
 
     static

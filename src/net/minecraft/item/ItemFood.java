@@ -36,20 +36,19 @@ public class ItemFood extends Item
 
     /** probably of the set potion effect occurring */
     private float potionEffectProbability;
-    private static final String __OBFID = "CL_00000036";
 
-    public ItemFood(int p_i45339_1_, float p_i45339_2_, boolean p_i45339_3_)
+    public ItemFood(int amount, float saturation, boolean isWolfFood)
     {
         this.itemUseDuration = 32;
-        this.healAmount = p_i45339_1_;
-        this.isWolfsFavoriteMeat = p_i45339_3_;
-        this.saturationModifier = p_i45339_2_;
+        this.healAmount = amount;
+        this.isWolfsFavoriteMeat = isWolfFood;
+        this.saturationModifier = saturation;
         this.setCreativeTab(CreativeTabs.tabFood);
     }
 
-    public ItemFood(int p_i45340_1_, boolean p_i45340_2_)
+    public ItemFood(int amount, boolean isWolfFood)
     {
-        this(p_i45340_1_, 0.6F, p_i45340_2_);
+        this(amount, 0.6F, isWolfFood);
     }
 
     /**
@@ -66,11 +65,11 @@ public class ItemFood extends Item
         return stack;
     }
 
-    protected void onFoodEaten(ItemStack p_77849_1_, World worldIn, EntityPlayer p_77849_3_)
+    protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player)
     {
         if (!worldIn.isRemote && this.potionId > 0 && worldIn.rand.nextFloat() < this.potionEffectProbability)
         {
-            p_77849_3_.addPotionEffect(new PotionEffect(this.potionId, this.potionDuration * 20, this.potionAmplifier));
+            player.addPotionEffect(new PotionEffect(this.potionId, this.potionDuration * 20, this.potionAmplifier));
         }
     }
 
@@ -103,12 +102,12 @@ public class ItemFood extends Item
         return itemStackIn;
     }
 
-    public int getHealAmount(ItemStack itemStackIn)
+    public int getHealAmount(ItemStack stack)
     {
         return this.healAmount;
     }
 
-    public float getSaturationModifier(ItemStack itemStackIn)
+    public float getSaturationModifier(ItemStack stack)
     {
         return this.saturationModifier;
     }
@@ -125,9 +124,9 @@ public class ItemFood extends Item
      * sets a potion effect on the item. Args: int potionId, int duration (will be multiplied by 20), int amplifier,
      * float probability of effect happening
      */
-    public ItemFood setPotionEffect(int p_77844_1_, int duration, int amplifier, float probability)
+    public ItemFood setPotionEffect(int id, int duration, int amplifier, float probability)
     {
-        this.potionId = p_77844_1_;
+        this.potionId = id;
         this.potionDuration = duration;
         this.potionAmplifier = amplifier;
         this.potionEffectProbability = probability;

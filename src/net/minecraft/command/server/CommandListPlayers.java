@@ -10,8 +10,9 @@ import net.minecraft.util.ChatComponentTranslation;
 
 public class CommandListPlayers extends CommandBase
 {
-    private static final String __OBFID = "CL_00000615";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "list";
@@ -25,16 +26,22 @@ public class CommandListPlayers extends CommandBase
         return 0;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.players.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
-        int var3 = MinecraftServer.getServer().getCurrentPlayerCount();
-        sender.addChatMessage(new ChatComponentTranslation("commands.players.list", new Object[] {Integer.valueOf(var3), Integer.valueOf(MinecraftServer.getServer().getMaxPlayers())}));
-        sender.addChatMessage(new ChatComponentText(MinecraftServer.getServer().getConfigurationManager().func_180602_f()));
-        sender.func_174794_a(CommandResultStats.Type.QUERY_RESULT, var3);
+        int i = MinecraftServer.getServer().getCurrentPlayerCount();
+        sender.addChatMessage(new ChatComponentTranslation("commands.players.list", new Object[] {Integer.valueOf(i), Integer.valueOf(MinecraftServer.getServer().getMaxPlayers())}));
+        sender.addChatMessage(new ChatComponentText(MinecraftServer.getServer().getConfigurationManager().func_181058_b(args.length > 0 && "uuids".equalsIgnoreCase(args[0]))));
+        sender.setCommandStat(CommandResultStats.Type.QUERY_RESULT, i);
     }
 }

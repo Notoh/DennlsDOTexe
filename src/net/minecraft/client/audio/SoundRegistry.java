@@ -3,19 +3,16 @@ package net.minecraft.client.audio;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import net.minecraft.util.RegistrySimple;
+import net.minecraft.util.ResourceLocation;
 
-public class SoundRegistry extends RegistrySimple
+public class SoundRegistry extends RegistrySimple<ResourceLocation, SoundEventAccessorComposite>
 {
-    private Map field_148764_a;
-    private static final String __OBFID = "CL_00001151";
+    private Map<ResourceLocation, SoundEventAccessorComposite> soundRegistry;
 
-    /**
-     * Creates the Map we will use to map keys to their registered values.
-     */
-    protected Map createUnderlyingMap()
+    protected Map<ResourceLocation, SoundEventAccessorComposite> createUnderlyingMap()
     {
-        this.field_148764_a = Maps.newHashMap();
-        return this.field_148764_a;
+        this.soundRegistry = Maps.<ResourceLocation, SoundEventAccessorComposite>newHashMap();
+        return this.soundRegistry;
     }
 
     public void registerSound(SoundEventAccessorComposite p_148762_1_)
@@ -28,6 +25,6 @@ public class SoundRegistry extends RegistrySimple
      */
     public void clearMap()
     {
-        this.field_148764_a.clear();
+        this.soundRegistry.clear();
     }
 }

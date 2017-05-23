@@ -11,25 +11,21 @@ import net.minecraft.world.World;
 
 public abstract class EntityCreature extends EntityLiving
 {
-    public static final UUID field_110179_h = UUID.fromString("E199AD21-BA8A-4C53-8D13-6182D5C69D3A");
-    public static final AttributeModifier field_110181_i = (new AttributeModifier(field_110179_h, "Fleeing speed bonus", 2.0D, 2)).setSaved(false);
-    private BlockPos homePosition;
+    public static final UUID FLEEING_SPEED_MODIFIER_UUID = UUID.fromString("E199AD21-BA8A-4C53-8D13-6182D5C69D3A");
+    public static final AttributeModifier FLEEING_SPEED_MODIFIER = (new AttributeModifier(FLEEING_SPEED_MODIFIER_UUID, "Fleeing speed bonus", 2.0D, 2)).setSaved(false);
+    private BlockPos homePosition = BlockPos.ORIGIN;
 
     /** If -1 there is no maximum distance */
-    private float maximumHomeDistance;
-    private EntityAIBase aiBase;
-    private boolean field_110180_bt;
-    private static final String __OBFID = "CL_00001558";
+    private float maximumHomeDistance = -1.0F;
+    private EntityAIBase aiBase = new EntityAIMoveTowardsRestriction(this, 1.0D);
+    private boolean isMovementAITaskSet;
 
     public EntityCreature(World worldIn)
     {
         super(worldIn);
-        this.homePosition = BlockPos.ORIGIN;
-        this.maximumHomeDistance = -1.0F;
-        this.aiBase = new EntityAIMoveTowardsRestriction(this, 1.0D);
     }
 
-    public float func_180484_a(BlockPos p_180484_1_)
+    public float getBlockPathWeight(BlockPos pos)
     {
         return 0.0F;
     }
@@ -39,7 +35,7 @@ public abstract class EntityCreature extends EntityLiving
      */
     public boolean getCanSpawnHere()
     {
-        return super.getCanSpawnHere() && this.func_180484_a(new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ)) >= 0.0F;
+        return super.getCanSpawnHere() && this.getBlockPathWeight(new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ)) >= 0.0F;
     }
 
     /**
@@ -52,21 +48,24 @@ public abstract class EntityCreature extends EntityLiving
 
     public boolean isWithinHomeDistanceCurrentPosition()
     {
-        return this.func_180485_d(new BlockPos(this));
+        return this.isWithinHomeDistanceFromPosition(new BlockPos(this));
     }
 
-    public boolean func_180485_d(BlockPos p_180485_1_)
+    public boolean isWithinHomeDistanceFromPosition(BlockPos pos)
     {
-        return this.maximumHomeDistance == -1.0F ? true : this.homePosition.distanceSq(p_180485_1_) < (double)(this.maximumHomeDistance * this.maximumHomeDistance);
+        return this.maximumHomeDistance == -1.0F ? true : this.homePosition.distanceSq(pos) < (double)(this.maximumHomeDistance * this.maximumHomeDistance);
     }
 
-    public void func_175449_a(BlockPos p_175449_1_, int p_175449_2_)
+    /**
+     * Sets home position and max distance for it
+     */
+    public void setHomePosAndDistance(BlockPos pos, int distance)
     {
-        this.homePosition = p_175449_1_;
-        this.maximumHomeDistance = (float)p_175449_2_;
+        this.homePosition = pos;
+        this.maximumHomeDistance = (float)distance;
     }
 
-    public BlockPos func_180486_cf()
+    public BlockPos getHomePosition()
     {
         return this.homePosition;
     }
@@ -98,13 +97,13 @@ public abstract class EntityCreature extends EntityLiving
 
         if (this.getLeashed() && this.getLeashedToEntity() != null && this.getLeashedToEntity().worldObj == this.worldObj)
         {
-            Entity var1 = this.getLeashedToEntity();
-            this.func_175449_a(new BlockPos((int)var1.posX, (int)var1.posY, (int)var1.posZ), 5);
-            float var2 = this.getDistanceToEntity(var1);
+            Entity entity = this.getLeashedToEntity();
+            this.setHomePosAndDistance(new BlockPos((int)entity.posX, (int)entity.posY, (int)entity.posZ), 5);
+            float f = this.getDistanceToEntity(entity);
 
             if (this instanceof EntityTameable && ((EntityTameable)this).isSitting())
             {
-                if (var2 > 10.0F)
+                if (f > 10.0F)
                 {
                     this.clearLeashed(true, true);
                 }
@@ -112,53 +111,55 @@ public abstract class EntityCreature extends EntityLiving
                 return;
             }
 
-            if (!this.field_110180_bt)
+            if (!this.isMovementAITaskSet)
             {
                 this.tasks.addTask(2, this.aiBase);
 
                 if (this.getNavigator() instanceof PathNavigateGround)
                 {
-                    ((PathNavigateGround)this.getNavigator()).func_179690_a(false);
+                    ((PathNavigateGround)this.getNavigator()).setAvoidsWater(false);
                 }
 
-                this.field_110180_bt = true;
+                this.isMovementAITaskSet = true;
             }
 
-            this.func_142017_o(var2);
+            this.func_142017_o(f);
 
-            if (var2 > 4.0F)
+            if (f > 4.0F)
             {
-                this.getNavigator().tryMoveToEntityLiving(var1, 1.0D);
+                this.getNavigator().tryMoveToEntityLiving(entity, 1.0D);
             }
 
-            if (var2 > 6.0F)
+            if (f > 6.0F)
             {
-                double var3 = (var1.posX - this.posX) / (double)var2;
-                double var5 = (var1.posY - this.posY) / (double)var2;
-                double var7 = (var1.posZ - this.posZ) / (double)var2;
-                this.motionX += var3 * Math.abs(var3) * 0.4D;
-                this.motionY += var5 * Math.abs(var5) * 0.4D;
-                this.motionZ += var7 * Math.abs(var7) * 0.4D;
+                double d0 = (entity.posX - this.posX) / (double)f;
+                double d1 = (entity.posY - this.posY) / (double)f;
+                double d2 = (entity.posZ - this.posZ) / (double)f;
+                this.motionX += d0 * Math.abs(d0) * 0.4D;
+                this.motionY += d1 * Math.abs(d1) * 0.4D;
+                this.motionZ += d2 * Math.abs(d2) * 0.4D;
             }
 
-            if (var2 > 10.0F)
+            if (f > 10.0F)
             {
                 this.clearLeashed(true, true);
             }
         }
-        else if (!this.getLeashed() && this.field_110180_bt)
+        else if (!this.getLeashed() && this.isMovementAITaskSet)
         {
-            this.field_110180_bt = false;
+            this.isMovementAITaskSet = false;
             this.tasks.removeTask(this.aiBase);
 
             if (this.getNavigator() instanceof PathNavigateGround)
             {
-                ((PathNavigateGround)this.getNavigator()).func_179690_a(true);
+                ((PathNavigateGround)this.getNavigator()).setAvoidsWater(true);
             }
 
             this.detachHome();
         }
     }
 
-    protected void func_142017_o(float p_142017_1_) {}
+    protected void func_142017_o(float p_142017_1_)
+    {
+    }
 }

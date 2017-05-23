@@ -4,16 +4,15 @@ import net.minecraft.block.Block;
 
 public class ItemColored extends ItemBlock
 {
-    private final Block field_150944_b;
-    private String[] field_150945_c;
-    private static final String __OBFID = "CL_00000003";
+    private final Block coloredBlock;
+    private String[] subtypeNames;
 
-    public ItemColored(Block p_i45332_1_, boolean p_i45332_2_)
+    public ItemColored(Block block, boolean hasSubtypes)
     {
-        super(p_i45332_1_);
-        this.field_150944_b = p_i45332_1_;
+        super(block);
+        this.coloredBlock = block;
 
-        if (p_i45332_2_)
+        if (hasSubtypes)
         {
             this.setMaxDamage(0);
             this.setHasSubtypes(true);
@@ -22,7 +21,7 @@ public class ItemColored extends ItemBlock
 
     public int getColorFromItemStack(ItemStack stack, int renderPass)
     {
-        return this.field_150944_b.getRenderColor(this.field_150944_b.getStateFromMeta(stack.getMetadata()));
+        return this.coloredBlock.getRenderColor(this.coloredBlock.getStateFromMeta(stack.getMetadata()));
     }
 
     /**
@@ -34,9 +33,9 @@ public class ItemColored extends ItemBlock
         return damage;
     }
 
-    public ItemColored func_150943_a(String[] p_150943_1_)
+    public ItemColored setSubtypeNames(String[] names)
     {
-        this.field_150945_c = p_150943_1_;
+        this.subtypeNames = names;
         return this;
     }
 
@@ -46,14 +45,14 @@ public class ItemColored extends ItemBlock
      */
     public String getUnlocalizedName(ItemStack stack)
     {
-        if (this.field_150945_c == null)
+        if (this.subtypeNames == null)
         {
             return super.getUnlocalizedName(stack);
         }
         else
         {
-            int var2 = stack.getMetadata();
-            return var2 >= 0 && var2 < this.field_150945_c.length ? super.getUnlocalizedName(stack) + "." + this.field_150945_c[var2] : super.getUnlocalizedName(stack);
+            int i = stack.getMetadata();
+            return i >= 0 && i < this.subtypeNames.length ? super.getUnlocalizedName(stack) + "." + this.subtypeNames[i] : super.getUnlocalizedName(stack);
         }
     }
 }

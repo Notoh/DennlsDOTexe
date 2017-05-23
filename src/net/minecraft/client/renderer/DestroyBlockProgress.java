@@ -9,7 +9,7 @@ public class DestroyBlockProgress
      * Renderer, max 1 per player on a server
      */
     private final int miningPlayerEntId;
-    private final BlockPos field_180247_b;
+    private final BlockPos position;
 
     /**
      * damage ranges from 1 to 10. -1 causes the client to delete the partial block renderer.
@@ -20,17 +20,16 @@ public class DestroyBlockProgress
      * keeps track of how many ticks this PartiallyDestroyedBlock already exists
      */
     private int createdAtCloudUpdateTick;
-    private static final String __OBFID = "CL_00001427";
 
-    public DestroyBlockProgress(int p_i45925_1_, BlockPos p_i45925_2_)
+    public DestroyBlockProgress(int miningPlayerEntIdIn, BlockPos positionIn)
     {
-        this.miningPlayerEntId = p_i45925_1_;
-        this.field_180247_b = p_i45925_2_;
+        this.miningPlayerEntId = miningPlayerEntIdIn;
+        this.position = positionIn;
     }
 
-    public BlockPos func_180246_b()
+    public BlockPos getPosition()
     {
-        return this.field_180247_b;
+        return this.position;
     }
 
     /**
@@ -55,9 +54,9 @@ public class DestroyBlockProgress
     /**
      * saves the current Cloud update tick into the PartiallyDestroyedBlock
      */
-    public void setCloudUpdateTick(int p_82744_1_)
+    public void setCloudUpdateTick(int createdAtCloudUpdateTickIn)
     {
-        this.createdAtCloudUpdateTick = p_82744_1_;
+        this.createdAtCloudUpdateTick = createdAtCloudUpdateTickIn;
     }
 
     /**

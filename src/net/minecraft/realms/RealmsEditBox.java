@@ -6,11 +6,10 @@ import net.minecraft.client.gui.GuiTextField;
 public class RealmsEditBox
 {
     private final GuiTextField editBox;
-    private static final String __OBFID = "CL_00001858";
 
     public RealmsEditBox(int p_i45743_1_, int p_i45743_2_, int p_i45743_3_, int p_i45743_4_, int p_i45743_5_)
     {
-        this.editBox = new GuiTextField(p_i45743_1_, Minecraft.getMC().fontRendererObj, p_i45743_2_, p_i45743_3_, p_i45743_4_, p_i45743_5_);
+        this.editBox = new GuiTextField(p_i45743_1_, Minecraft.getMinecraft().fontRendererObj, p_i45743_2_, p_i45743_3_, p_i45743_4_, p_i45743_5_);
     }
 
     public String getValue()

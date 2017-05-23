@@ -6,13 +6,13 @@ import net.minecraft.util.ResourceLocation;
 
 public interface IResource
 {
-    ResourceLocation func_177241_a();
+    ResourceLocation getResourceLocation();
 
     InputStream getInputStream();
 
     boolean hasMetadata();
 
-    IMetadataSection getMetadata(String p_110526_1_);
+    <T extends IMetadataSection> T getMetadata(String p_110526_1_);
 
-    String func_177240_d();
+    String getResourcePackName();
 }

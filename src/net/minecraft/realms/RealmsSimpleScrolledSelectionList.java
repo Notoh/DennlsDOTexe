@@ -5,7 +5,6 @@ import net.minecraft.client.gui.GuiSimpleScrolledSelectionListProxy;
 public class RealmsSimpleScrolledSelectionList
 {
     private final GuiSimpleScrolledSelectionListProxy proxy;
-    private static final String __OBFID = "CL_00002186";
 
     public RealmsSimpleScrolledSelectionList(int p_i45803_1_, int p_i45803_2_, int p_i45803_3_, int p_i45803_4_, int p_i45803_5_)
     {
@@ -19,20 +18,22 @@ public class RealmsSimpleScrolledSelectionList
 
     public int width()
     {
-        return this.proxy.func_178048_e();
+        return this.proxy.getWidth();
     }
 
     public int ym()
     {
-        return this.proxy.func_178047_f();
+        return this.proxy.getMouseY();
     }
 
     public int xm()
     {
-        return this.proxy.func_178049_g();
+        return this.proxy.getMouseX();
     }
 
-    protected void renderItem(int p_renderItem_1_, int p_renderItem_2_, int p_renderItem_3_, int p_renderItem_4_, Tezzelator p_renderItem_5_, int p_renderItem_6_, int p_renderItem_7_) {}
+    protected void renderItem(int p_renderItem_1_, int p_renderItem_2_, int p_renderItem_3_, int p_renderItem_4_, Tezzelator p_renderItem_5_, int p_renderItem_6_, int p_renderItem_7_)
+    {
+    }
 
     public void renderItem(int p_renderItem_1_, int p_renderItem_2_, int p_renderItem_3_, int p_renderItem_4_, int p_renderItem_5_, int p_renderItem_6_)
     {
@@ -44,14 +45,18 @@ public class RealmsSimpleScrolledSelectionList
         return 0;
     }
 
-    public void selectItem(int p_selectItem_1_, boolean p_selectItem_2_, int p_selectItem_3_, int p_selectItem_4_) {}
+    public void selectItem(int p_selectItem_1_, boolean p_selectItem_2_, int p_selectItem_3_, int p_selectItem_4_)
+    {
+    }
 
     public boolean isSelectedItem(int p_isSelectedItem_1_)
     {
         return false;
     }
 
-    public void renderBackground() {}
+    public void renderBackground()
+    {
+    }
 
     public int getMaxPosition()
     {
@@ -60,12 +65,12 @@ public class RealmsSimpleScrolledSelectionList
 
     public int getScrollbarPosition()
     {
-        return this.proxy.func_178048_e() / 2 + 124;
+        return this.proxy.getWidth() / 2 + 124;
     }
 
     public void mouseEvent()
     {
-        this.proxy.func_178039_p();
+        this.proxy.handleMouseInput();
     }
 
     public void scroll(int p_scroll_1_)
@@ -78,5 +83,7 @@ public class RealmsSimpleScrolledSelectionList
         return this.proxy.getAmountScrolled();
     }
 
-    protected void renderList(int p_renderList_1_, int p_renderList_2_, int p_renderList_3_, int p_renderList_4_) {}
+    protected void renderList(int p_renderList_1_, int p_renderList_2_, int p_renderList_3_, int p_renderList_4_)
+    {
+    }
 }

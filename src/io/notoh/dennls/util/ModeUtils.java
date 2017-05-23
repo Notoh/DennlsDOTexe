@@ -1,6 +1,6 @@
 package io.notoh.dennls.util;
 
-import io.notoh.dennls.ClientEntry;
+import io.notoh.dennls.Dennls;
 import io.notoh.dennls.mods.Mode;
 
 /**
@@ -9,12 +9,12 @@ import io.notoh.dennls.mods.Mode;
 public final class ModeUtils {
 
     public static Mode getNext() {
-        Mode active = ClientEntry.getActive();
+        Mode active = Dennls.getActive();
         switch(active) {
-            case GHOST: return Mode.BYPASS;
+            case GHOST: return Mode.SAFE;
             case BLATANT: return Mode.GHOST;
-            case BYPASS: return Mode.BLATANT;
-            default: return Mode.BYPASS;
+            case SAFE: return Mode.BLATANT;
+            default: return Mode.SAFE;
         }
     }
 

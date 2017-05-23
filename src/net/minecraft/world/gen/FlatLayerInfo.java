@@ -12,7 +12,6 @@ public class FlatLayerInfo
     /** Amount of layers for this set of layers. */
     private int layerCount;
     private int layerMinimumY;
-    private static final String __OBFID = "CL_00000441";
 
     public FlatLayerInfo(int p_i45467_1_, Block p_i45467_2_)
     {
@@ -77,35 +76,35 @@ public class FlatLayerInfo
 
     public String toString()
     {
-        String var1;
+        String s;
 
         if (this.field_175902_a >= 3)
         {
-            ResourceLocation var2 = (ResourceLocation)Block.blockRegistry.getNameForObject(this.func_151536_b());
-            var1 = var2 == null ? "null" : var2.toString();
+            ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.func_151536_b());
+            s = resourcelocation == null ? "null" : resourcelocation.toString();
 
             if (this.layerCount > 1)
             {
-                var1 = this.layerCount + "*" + var1;
+                s = this.layerCount + "*" + s;
             }
         }
         else
         {
-            var1 = Integer.toString(Block.getIdFromBlock(this.func_151536_b()));
+            s = Integer.toString(Block.getIdFromBlock(this.func_151536_b()));
 
             if (this.layerCount > 1)
             {
-                var1 = this.layerCount + "x" + var1;
+                s = this.layerCount + "x" + s;
             }
         }
 
-        int var3 = this.getFillBlockMeta();
+        int i = this.getFillBlockMeta();
 
-        if (var3 > 0)
+        if (i > 0)
         {
-            var1 = var1 + ":" + var3;
+            s = s + ":" + i;
         }
 
-        return var1;
+        return s;
     }
 }

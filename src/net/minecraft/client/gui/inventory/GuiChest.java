@@ -1,14 +1,22 @@
 package net.minecraft.client.gui.inventory;
 
+import io.notoh.dennls.Dennls;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GuiChest extends GuiContainer
 {
-    private static final ResourceLocation field_147017_u = new ResourceLocation("textures/gui/container/generic_54.png");
+    /** The ResourceLocation containing the chest GUI texture. */
+    private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
     private IInventory upperChestInventory;
     private IInventory lowerChestInventory;
 
@@ -16,18 +24,17 @@ public class GuiChest extends GuiContainer
      * window height is calculated with these values; the more rows, the heigher
      */
     private int inventoryRows;
-    private static final String __OBFID = "CL_00000749";
 
-    public GuiChest(IInventory p_i46315_1_, IInventory p_i46315_2_)
+    public GuiChest(IInventory upperInv, IInventory lowerInv)
     {
-        super(new ContainerChest(p_i46315_1_, p_i46315_2_, Minecraft.getMC().thePlayer));
-        this.upperChestInventory = p_i46315_1_;
-        this.lowerChestInventory = p_i46315_2_;
+        super(new ContainerChest(upperInv, lowerInv, Minecraft.getMinecraft().thePlayer));
+        this.upperChestInventory = upperInv;
+        this.lowerChestInventory = lowerInv;
         this.allowUserInput = false;
-        short var3 = 222;
-        int var4 = var3 - 108;
-        this.inventoryRows = p_i46315_2_.getSizeInventory() / 9;
-        this.ySize = var4 + this.inventoryRows * 18;
+        int i = 222;
+        int j = i - 108;
+        this.inventoryRows = lowerInv.getSizeInventory() / 9;
+        this.ySize = j + this.inventoryRows * 18;
     }
 
     /**
@@ -45,10 +52,61 @@ public class GuiChest extends GuiContainer
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(field_147017_u);
-        int var4 = (this.width - this.xSize) / 2;
-        int var5 = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(var4, var5, 0, 0, this.xSize, this.inventoryRows * 18 + 17);
-        this.drawTexturedModalRect(var4, var5 + this.inventoryRows * 18 + 17, 0, 126, this.xSize, 96);
+        this.mc.getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
+        int i = (this.width - this.xSize) / 2;
+        int j = (this.height - this.ySize) / 2;
+        this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.inventoryRows * 18 + 17);
+        this.drawTexturedModalRect(i, j + this.inventoryRows * 18 + 17, 0, 126, this.xSize, 96);
+    }
+
+    @Override
+    public void initGui() {
+        super.initGui();
+        if(Dennls.chestStealer.getToggle()) {
+            int posY = (height - ySize)/2+2;
+            buttonList.add(new GuiButton(1,width/2-5,posY,40,14,"Steal"));
+            buttonList.add(new GuiButton(2,width/2+40,posY,40,14,"Store"));
+        }
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        super.actionPerformed(button);
+        //dennls
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        if(button.id == 1) {
+            service.execute(() -> {
+                try {
+                    for(int i = 0; i < GuiChest.this.inventoryRows * 9; i++) {
+                        Slot slot = GuiChest.this.inventorySlots.inventorySlots.get(i);
+                        if(slot.getStack() != null) {
+                            Thread.sleep(25L);
+                            GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 1);
+                            GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 6);
+                        }
+                    }
+                } catch(InterruptedException e) {
+                    e.printStackTrace();
+                    Dennls.addChatMessage("ChestStealer failed!");
+                }
+            });
+        } else if(button.id == 2) {
+            service.execute(() -> {
+                try {
+                    for(int i = 0; i < inventorySlots.inventorySlots.size(); i++) {
+                        /*Slot slot = GuiChest.this.inventorySlots.inventorySlots.get(i);
+                        if(slot.getStack() != null) {
+                            Thread.sleep(10L);
+                            GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 1);
+                            GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 6);
+                        }*/
+                        mc.playerController.windowClick(inventorySlots.windowId,i,0,1,mc.thePlayer);
+                    }
+                } catch(Exception e) {
+                    e.printStackTrace();
+                    Dennls.addChatMessage("ChestStealer failed!");
+                }
+            });
+        }
     }
 }

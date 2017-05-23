@@ -11,7 +11,6 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -31,24 +30,18 @@ public class SkinManager
     private final TextureManager textureManager;
     private final File skinCacheDir;
     private final MinecraftSessionService sessionService;
-    private final LoadingCache skinCacheLoader;
-    private static final String __OBFID = "CL_00001830";
+    private final LoadingCache<GameProfile, Map<Type, MinecraftProfileTexture>> skinCacheLoader;
 
     public SkinManager(TextureManager textureManagerInstance, File skinCacheDirectory, MinecraftSessionService sessionService)
     {
         this.textureManager = textureManagerInstance;
         this.skinCacheDir = skinCacheDirectory;
         this.sessionService = sessionService;
-        this.skinCacheLoader = CacheBuilder.newBuilder().expireAfterAccess(15L, TimeUnit.SECONDS).build(new CacheLoader()
+        this.skinCacheLoader = CacheBuilder.newBuilder().expireAfterAccess(15L, TimeUnit.SECONDS).<GameProfile, Map<Type, MinecraftProfileTexture>>build(new CacheLoader<GameProfile, Map<Type, MinecraftProfileTexture>>()
         {
-            private static final String __OBFID = "CL_00001829";
-            public Map func_152786_a(GameProfile p_152786_1_)
+            public Map<Type, MinecraftProfileTexture> load(GameProfile p_load_1_) throws Exception
             {
-                return Minecraft.getMC().getSessionService().getTextures(p_152786_1_, false);
-            }
-            public Object load(Object p_load_1_)
-            {
-                return this.func_152786_a((GameProfile)p_load_1_);
+                return Minecraft.getMinecraft().getSessionService().getTextures(p_load_1_, false);
             }
         });
     }
@@ -56,98 +49,97 @@ public class SkinManager
     /**
      * Used in the Skull renderer to fetch a skin. May download the skin if it's not in the cache
      */
-    public ResourceLocation loadSkin(MinecraftProfileTexture p_152792_1_, Type p_152792_2_)
+    public ResourceLocation loadSkin(MinecraftProfileTexture profileTexture, Type p_152792_2_)
     {
-        return this.loadSkin(p_152792_1_, p_152792_2_, (SkinManager.SkinAvailableCallback)null);
+        return this.loadSkin(profileTexture, p_152792_2_, (SkinManager.SkinAvailableCallback)null);
     }
 
     /**
      * May download the skin if its not in the cache, can be passed a SkinManager#SkinAvailableCallback for handling
      */
-    public ResourceLocation loadSkin(final MinecraftProfileTexture p_152789_1_, final Type p_152789_2_, final SkinManager.SkinAvailableCallback p_152789_3_)
+    public ResourceLocation loadSkin(final MinecraftProfileTexture profileTexture, final Type p_152789_2_, final SkinManager.SkinAvailableCallback skinAvailableCallback)
     {
-        final ResourceLocation var4 = new ResourceLocation("skins/" + p_152789_1_.getHash());
-        ITextureObject var5 = this.textureManager.getTexture(var4);
+        final ResourceLocation resourcelocation = new ResourceLocation("skins/" + profileTexture.getHash());
+        ITextureObject itextureobject = this.textureManager.getTexture(resourcelocation);
 
-        if (var5 != null)
+        if (itextureobject != null)
         {
-            if (p_152789_3_ != null)
+            if (skinAvailableCallback != null)
             {
-                p_152789_3_.func_180521_a(p_152789_2_, var4, p_152789_1_);
+                skinAvailableCallback.skinAvailable(p_152789_2_, resourcelocation, profileTexture);
             }
         }
         else
         {
-            File var6 = new File(this.skinCacheDir, p_152789_1_.getHash().substring(0, 2));
-            File var7 = new File(var6, p_152789_1_.getHash());
-            final ImageBufferDownload var8 = p_152789_2_ == Type.SKIN ? new ImageBufferDownload() : null;
-            ThreadDownloadImageData var9 = new ThreadDownloadImageData(var7, p_152789_1_.getUrl(), DefaultPlayerSkin.func_177335_a(), new IImageBuffer()
+            File file1 = new File(this.skinCacheDir, profileTexture.getHash().length() > 2 ? profileTexture.getHash().substring(0, 2) : "xx");
+            File file2 = new File(file1, profileTexture.getHash());
+            final IImageBuffer iimagebuffer = p_152789_2_ == Type.SKIN ? new ImageBufferDownload() : null;
+            ThreadDownloadImageData threaddownloadimagedata = new ThreadDownloadImageData(file2, profileTexture.getUrl(), DefaultPlayerSkin.getDefaultSkinLegacy(), new IImageBuffer()
             {
-                private static final String __OBFID = "CL_00001828";
-                public BufferedImage parseUserSkin(BufferedImage p_78432_1_)
+                public BufferedImage parseUserSkin(BufferedImage image)
                 {
-                    if (var8 != null)
+                    if (iimagebuffer != null)
                     {
-                        p_78432_1_ = var8.parseUserSkin(p_78432_1_);
+                        image = iimagebuffer.parseUserSkin(image);
                     }
 
-                    return p_78432_1_;
+                    return image;
                 }
-                public void func_152634_a()
+                public void skinAvailable()
                 {
-                    if (var8 != null)
+                    if (iimagebuffer != null)
                     {
-                        var8.func_152634_a();
+                        iimagebuffer.skinAvailable();
                     }
 
-                    if (p_152789_3_ != null)
+                    if (skinAvailableCallback != null)
                     {
-                        p_152789_3_.func_180521_a(p_152789_2_, var4, p_152789_1_);
+                        skinAvailableCallback.skinAvailable(p_152789_2_, resourcelocation, profileTexture);
                     }
                 }
             });
-            this.textureManager.loadTexture(var4, var9);
+            this.textureManager.loadTexture(resourcelocation, threaddownloadimagedata);
         }
 
-        return var4;
+        return resourcelocation;
     }
 
-    public void func_152790_a(final GameProfile p_152790_1_, final SkinManager.SkinAvailableCallback p_152790_2_, final boolean p_152790_3_)
+    public void loadProfileTextures(final GameProfile profile, final SkinManager.SkinAvailableCallback skinAvailableCallback, final boolean requireSecure)
     {
         THREAD_POOL.submit(new Runnable()
         {
-            private static final String __OBFID = "CL_00001827";
             public void run()
             {
-                final HashMap var1 = Maps.newHashMap();
+                final Map<Type, MinecraftProfileTexture> map = Maps.<Type, MinecraftProfileTexture>newHashMap();
 
                 try
                 {
-                    var1.putAll(SkinManager.this.sessionService.getTextures(p_152790_1_, p_152790_3_));
+                    map.putAll(SkinManager.this.sessionService.getTextures(profile, requireSecure));
                 }
                 catch (InsecureTextureException var3)
                 {
                     ;
                 }
 
-                if (var1.isEmpty() && p_152790_1_.getId().equals(Minecraft.getMC().getSession().getProfile().getId()))
+                if (map.isEmpty() && profile.getId().equals(Minecraft.getMinecraft().getSession().getProfile().getId()))
                 {
-                    var1.putAll(SkinManager.this.sessionService.getTextures(SkinManager.this.sessionService.fillProfileProperties(p_152790_1_, false), false));
+                    profile.getProperties().clear();
+                    profile.getProperties().putAll(Minecraft.getMinecraft().func_181037_M());
+                    map.putAll(SkinManager.this.sessionService.getTextures(profile, false));
                 }
 
-                Minecraft.getMC().addScheduledTask(new Runnable()
+                Minecraft.getMinecraft().addScheduledTask(new Runnable()
                 {
-                    private static final String __OBFID = "CL_00001826";
                     public void run()
                     {
-                        if (var1.containsKey(Type.SKIN))
+                        if (map.containsKey(Type.SKIN))
                         {
-                            SkinManager.this.loadSkin((MinecraftProfileTexture)var1.get(Type.SKIN), Type.SKIN, p_152790_2_);
+                            SkinManager.this.loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN, skinAvailableCallback);
                         }
 
-                        if (var1.containsKey(Type.CAPE))
+                        if (map.containsKey(Type.CAPE))
                         {
-                            SkinManager.this.loadSkin((MinecraftProfileTexture)var1.get(Type.CAPE), Type.CAPE, p_152790_2_);
+                            SkinManager.this.loadSkin((MinecraftProfileTexture)map.get(Type.CAPE), Type.CAPE, skinAvailableCallback);
                         }
                     }
                 });
@@ -155,13 +147,13 @@ public class SkinManager
         });
     }
 
-    public Map loadSkinFromCache(GameProfile p_152788_1_)
+    public Map<Type, MinecraftProfileTexture> loadSkinFromCache(GameProfile profile)
     {
-        return (Map)this.skinCacheLoader.getUnchecked(p_152788_1_);
+        return (Map)this.skinCacheLoader.getUnchecked(profile);
     }
 
     public interface SkinAvailableCallback
     {
-        void func_180521_a(Type p_180521_1_, ResourceLocation p_180521_2_, MinecraftProfileTexture p_180521_3_);
+        void skinAvailable(Type p_180521_1_, ResourceLocation location, MinecraftProfileTexture profileTexture);
     }
 }

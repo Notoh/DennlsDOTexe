@@ -7,9 +7,12 @@ import net.minecraft.world.World;
 
 public interface IGrowable
 {
-    boolean isStillGrowing(World worldIn, BlockPos p_176473_2_, IBlockState p_176473_3_, boolean p_176473_4_);
+    /**
+     * Whether this IGrowable can grow
+     */
+    boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient);
 
-    boolean canUseBonemeal(World worldIn, Random p_180670_2_, BlockPos p_180670_3_, IBlockState p_180670_4_);
+    boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state);
 
-    void grow(World worldIn, Random p_176474_2_, BlockPos p_176474_3_, IBlockState p_176474_4_);
+    void grow(World worldIn, Random rand, BlockPos pos, IBlockState state);
 }

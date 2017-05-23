@@ -8,8 +8,6 @@ import net.minecraft.world.World;
 
 public class EntityExpBottle extends EntityThrowable
 {
-    private static final String __OBFID = "CL_00001726";
-
     public EntityExpBottle(World worldIn)
     {
         super(worldIn);
@@ -33,12 +31,12 @@ public class EntityExpBottle extends EntityThrowable
         return 0.07F;
     }
 
-    protected float func_70182_d()
+    protected float getVelocity()
     {
         return 0.7F;
     }
 
-    protected float func_70183_g()
+    protected float getInaccuracy()
     {
         return -20.0F;
     }
@@ -51,13 +49,13 @@ public class EntityExpBottle extends EntityThrowable
         if (!this.worldObj.isRemote)
         {
             this.worldObj.playAuxSFX(2002, new BlockPos(this), 0);
-            int var2 = 3 + this.worldObj.rand.nextInt(5) + this.worldObj.rand.nextInt(5);
+            int i = 3 + this.worldObj.rand.nextInt(5) + this.worldObj.rand.nextInt(5);
 
-            while (var2 > 0)
+            while (i > 0)
             {
-                int var3 = EntityXPOrb.getXPSplit(var2);
-                var2 -= var3;
-                this.worldObj.spawnEntityInWorld(new EntityXPOrb(this.worldObj, this.posX, this.posY, this.posZ, var3));
+                int j = EntityXPOrb.getXPSplit(i);
+                i -= j;
+                this.worldObj.spawnEntityInWorld(new EntityXPOrb(this.worldObj, this.posX, this.posY, this.posZ, j));
             }
 
             this.setDead();

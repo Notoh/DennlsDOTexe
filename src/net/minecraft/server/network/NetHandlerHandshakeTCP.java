@@ -13,7 +13,6 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
 {
     private final MinecraftServer server;
     private final NetworkManager networkManager;
-    private static final String __OBFID = "CL_00001456";
 
     public NetHandlerHandshakeTCP(MinecraftServer serverIn, NetworkManager netManager)
     {
@@ -28,23 +27,22 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
      */
     public void processHandshake(C00Handshake packetIn)
     {
-        switch (NetHandlerHandshakeTCP.SwitchEnumConnectionState.VALUES[packetIn.getRequestedState().ordinal()])
+        switch (packetIn.getRequestedState())
         {
-            case 1:
+            case LOGIN:
                 this.networkManager.setConnectionState(EnumConnectionState.LOGIN);
-                ChatComponentText var2;
 
                 if (packetIn.getProtocolVersion() > 47)
                 {
-                    var2 = new ChatComponentText("Outdated server! I\'m still on 1.8");
-                    this.networkManager.sendPacket(new S00PacketDisconnect(var2));
-                    this.networkManager.closeChannel(var2);
+                    ChatComponentText chatcomponenttext = new ChatComponentText("Outdated server! I\'m still on 1.8.8");
+                    this.networkManager.sendPacket(new S00PacketDisconnect(chatcomponenttext));
+                    this.networkManager.closeChannel(chatcomponenttext);
                 }
                 else if (packetIn.getProtocolVersion() < 47)
                 {
-                    var2 = new ChatComponentText("Outdated client! Please use 1.8");
-                    this.networkManager.sendPacket(new S00PacketDisconnect(var2));
-                    this.networkManager.closeChannel(var2);
+                    ChatComponentText chatcomponenttext1 = new ChatComponentText("Outdated client! Please use 1.8.8");
+                    this.networkManager.sendPacket(new S00PacketDisconnect(chatcomponenttext1));
+                    this.networkManager.closeChannel(chatcomponenttext1);
                 }
                 else
                 {
@@ -53,7 +51,7 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
 
                 break;
 
-            case 2:
+            case STATUS:
                 this.networkManager.setConnectionState(EnumConnectionState.STATUS);
                 this.networkManager.setNetHandler(new NetHandlerStatusServer(this.server, this.networkManager));
                 break;
@@ -66,32 +64,7 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
     /**
      * Invoked when disconnecting, the parameter is a ChatComponent describing the reason for termination
      */
-    public void onDisconnect(IChatComponent reason) {}
-
-    static final class SwitchEnumConnectionState
+    public void onDisconnect(IChatComponent reason)
     {
-        static final int[] VALUES = new int[EnumConnectionState.values().length];
-        private static final String __OBFID = "CL_00001457";
-
-        static
-        {
-            try
-            {
-                VALUES[EnumConnectionState.LOGIN.ordinal()] = 1;
-            }
-            catch (NoSuchFieldError var2)
-            {
-                ;
-            }
-
-            try
-            {
-                VALUES[EnumConnectionState.STATUS.ordinal()] = 2;
-            }
-            catch (NoSuchFieldError var1)
-            {
-                ;
-            }
-        }
     }
 }

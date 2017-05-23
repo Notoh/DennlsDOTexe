@@ -12,8 +12,9 @@ import net.minecraft.util.IChatComponent;
 
 public class CommandBroadcast extends CommandBase
 {
-    private static final String __OBFID = "CL_00000191";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "say";
@@ -27,17 +28,23 @@ public class CommandBroadcast extends CommandBase
         return 1;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.say.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length > 0 && args[0].length() > 0)
         {
-            IChatComponent var3 = getChatComponentFromNthArg(sender, args, 0, true);
-            MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentTranslation("chat.type.announcement", new Object[] {sender.getDisplayName(), var3}));
+            IChatComponent ichatcomponent = getChatComponentFromNthArg(sender, args, 0, true);
+            MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentTranslation("chat.type.announcement", new Object[] {sender.getDisplayName(), ichatcomponent}));
         }
         else
         {
@@ -45,7 +52,7 @@ public class CommandBroadcast extends CommandBase
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
         return args.length >= 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : null;
     }

@@ -25,7 +25,6 @@ public class EntityGhast extends EntityFlying implements IMob
 {
     /** The explosion radius of spawned fireballs. */
     private int explosionStrength = 1;
-    private static final String __OBFID = "CL_00001689";
 
     public EntityGhast(World worldIn)
     {
@@ -33,24 +32,24 @@ public class EntityGhast extends EntityFlying implements IMob
         this.setSize(4.0F, 4.0F);
         this.isImmuneToFire = true;
         this.experienceValue = 5;
-        this.moveHelper = new EntityGhast.GhastMoveHelper();
-        this.tasks.addTask(5, new EntityGhast.AIRandomFly());
-        this.tasks.addTask(7, new EntityGhast.AILookAround());
-        this.tasks.addTask(7, new EntityGhast.AIFireballAttack());
+        this.moveHelper = new EntityGhast.GhastMoveHelper(this);
+        this.tasks.addTask(5, new EntityGhast.AIRandomFly(this));
+        this.tasks.addTask(7, new EntityGhast.AILookAround(this));
+        this.tasks.addTask(7, new EntityGhast.AIFireballAttack(this));
         this.targetTasks.addTask(1, new EntityAIFindEntityNearestPlayer(this));
     }
 
-    public boolean func_110182_bF()
+    public boolean isAttacking()
     {
         return this.dataWatcher.getWatchableObjectByte(16) != 0;
     }
 
-    public void func_175454_a(boolean p_175454_1_)
+    public void setAttacking(boolean p_175454_1_)
     {
         this.dataWatcher.updateObject(16, Byte.valueOf((byte)(p_175454_1_ ? 1 : 0)));
     }
 
-    public int func_175453_cd()
+    public int getFireballStrength()
     {
         return this.explosionStrength;
     }
@@ -73,7 +72,7 @@ public class EntityGhast extends EntityFlying implements IMob
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        if (this.func_180431_b(source))
+        if (this.isEntityInvulnerable(source))
         {
             return false;
         }
@@ -136,17 +135,16 @@ public class EntityGhast extends EntityFlying implements IMob
      */
     protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
     {
-        int var3 = this.rand.nextInt(2) + this.rand.nextInt(1 + p_70628_2_);
-        int var4;
+        int i = this.rand.nextInt(2) + this.rand.nextInt(1 + p_70628_2_);
 
-        for (var4 = 0; var4 < var3; ++var4)
+        for (int j = 0; j < i; ++j)
         {
             this.dropItem(Items.ghast_tear, 1);
         }
 
-        var3 = this.rand.nextInt(3) + this.rand.nextInt(1 + p_70628_2_);
+        i = this.rand.nextInt(3) + this.rand.nextInt(1 + p_70628_2_);
 
-        for (var4 = 0; var4 < var3; ++var4)
+        for (int k = 0; k < i; ++k)
         {
             this.dropItem(Items.gunpowder, 1);
         }
@@ -203,75 +201,79 @@ public class EntityGhast extends EntityFlying implements IMob
         return 2.6F;
     }
 
-    class AIFireballAttack extends EntityAIBase
+    static class AIFireballAttack extends EntityAIBase
     {
-        private EntityGhast field_179470_b = EntityGhast.this;
-        public int field_179471_a;
-        private static final String __OBFID = "CL_00002215";
+        private EntityGhast parentEntity;
+        public int attackTimer;
+
+        public AIFireballAttack(EntityGhast p_i45837_1_)
+        {
+            this.parentEntity = p_i45837_1_;
+        }
 
         public boolean shouldExecute()
         {
-            return this.field_179470_b.getAttackTarget() != null;
+            return this.parentEntity.getAttackTarget() != null;
         }
 
         public void startExecuting()
         {
-            this.field_179471_a = 0;
+            this.attackTimer = 0;
         }
 
         public void resetTask()
         {
-            this.field_179470_b.func_175454_a(false);
+            this.parentEntity.setAttacking(false);
         }
 
         public void updateTask()
         {
-            EntityLivingBase var1 = this.field_179470_b.getAttackTarget();
-            double var2 = 64.0D;
+            EntityLivingBase entitylivingbase = this.parentEntity.getAttackTarget();
+            double d0 = 64.0D;
 
-            if (var1.getDistanceSqToEntity(this.field_179470_b) < var2 * var2 && this.field_179470_b.canEntityBeSeen(var1))
+            if (entitylivingbase.getDistanceSqToEntity(this.parentEntity) < d0 * d0 && this.parentEntity.canEntityBeSeen(entitylivingbase))
             {
-                World var4 = this.field_179470_b.worldObj;
-                ++this.field_179471_a;
+                World world = this.parentEntity.worldObj;
+                ++this.attackTimer;
 
-                if (this.field_179471_a == 10)
+                if (this.attackTimer == 10)
                 {
-                    var4.playAuxSFXAtEntity((EntityPlayer)null, 1007, new BlockPos(this.field_179470_b), 0);
+                    world.playAuxSFXAtEntity((EntityPlayer)null, 1007, new BlockPos(this.parentEntity), 0);
                 }
 
-                if (this.field_179471_a == 20)
+                if (this.attackTimer == 20)
                 {
-                    double var5 = 4.0D;
-                    Vec3 var7 = this.field_179470_b.getLook(1.0F);
-                    double var8 = var1.posX - (this.field_179470_b.posX + var7.xCoord * var5);
-                    double var10 = var1.getEntityBoundingBox().minY + (double)(var1.height / 2.0F) - (0.5D + this.field_179470_b.posY + (double)(this.field_179470_b.height / 2.0F));
-                    double var12 = var1.posZ - (this.field_179470_b.posZ + var7.zCoord * var5);
-                    var4.playAuxSFXAtEntity((EntityPlayer)null, 1008, new BlockPos(this.field_179470_b), 0);
-                    EntityLargeFireball var14 = new EntityLargeFireball(var4, this.field_179470_b, var8, var10, var12);
-                    var14.field_92057_e = this.field_179470_b.func_175453_cd();
-                    var14.posX = this.field_179470_b.posX + var7.xCoord * var5;
-                    var14.posY = this.field_179470_b.posY + (double)(this.field_179470_b.height / 2.0F) + 0.5D;
-                    var14.posZ = this.field_179470_b.posZ + var7.zCoord * var5;
-                    var4.spawnEntityInWorld(var14);
-                    this.field_179471_a = -40;
+                    double d1 = 4.0D;
+                    Vec3 vec3 = this.parentEntity.getLook(1.0F);
+                    double d2 = entitylivingbase.posX - (this.parentEntity.posX + vec3.xCoord * d1);
+                    double d3 = entitylivingbase.getEntityBoundingBox().minY + (double)(entitylivingbase.height / 2.0F) - (0.5D + this.parentEntity.posY + (double)(this.parentEntity.height / 2.0F));
+                    double d4 = entitylivingbase.posZ - (this.parentEntity.posZ + vec3.zCoord * d1);
+                    world.playAuxSFXAtEntity((EntityPlayer)null, 1008, new BlockPos(this.parentEntity), 0);
+                    EntityLargeFireball entitylargefireball = new EntityLargeFireball(world, this.parentEntity, d2, d3, d4);
+                    entitylargefireball.explosionPower = this.parentEntity.getFireballStrength();
+                    entitylargefireball.posX = this.parentEntity.posX + vec3.xCoord * d1;
+                    entitylargefireball.posY = this.parentEntity.posY + (double)(this.parentEntity.height / 2.0F) + 0.5D;
+                    entitylargefireball.posZ = this.parentEntity.posZ + vec3.zCoord * d1;
+                    world.spawnEntityInWorld(entitylargefireball);
+                    this.attackTimer = -40;
                 }
             }
-            else if (this.field_179471_a > 0)
+            else if (this.attackTimer > 0)
             {
-                --this.field_179471_a;
+                --this.attackTimer;
             }
 
-            this.field_179470_b.func_175454_a(this.field_179471_a > 10);
+            this.parentEntity.setAttacking(this.attackTimer > 10);
         }
     }
 
-    class AILookAround extends EntityAIBase
+    static class AILookAround extends EntityAIBase
     {
-        private EntityGhast field_179472_a = EntityGhast.this;
-        private static final String __OBFID = "CL_00002217";
+        private EntityGhast parentEntity;
 
-        public AILookAround()
+        public AILookAround(EntityGhast p_i45839_1_)
         {
+            this.parentEntity = p_i45839_1_;
             this.setMutexBits(2);
         }
 
@@ -282,50 +284,50 @@ public class EntityGhast extends EntityFlying implements IMob
 
         public void updateTask()
         {
-            if (this.field_179472_a.getAttackTarget() == null)
+            if (this.parentEntity.getAttackTarget() == null)
             {
-                this.field_179472_a.renderYawOffset = this.field_179472_a.rotationYaw = -((float)Math.atan2(this.field_179472_a.motionX, this.field_179472_a.motionZ)) * 180.0F / (float)Math.PI;
+                this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw = -((float)MathHelper.func_181159_b(this.parentEntity.motionX, this.parentEntity.motionZ)) * 180.0F / (float)Math.PI;
             }
             else
             {
-                EntityLivingBase var1 = this.field_179472_a.getAttackTarget();
-                double var2 = 64.0D;
+                EntityLivingBase entitylivingbase = this.parentEntity.getAttackTarget();
+                double d0 = 64.0D;
 
-                if (var1.getDistanceSqToEntity(this.field_179472_a) < var2 * var2)
+                if (entitylivingbase.getDistanceSqToEntity(this.parentEntity) < d0 * d0)
                 {
-                    double var4 = var1.posX - this.field_179472_a.posX;
-                    double var6 = var1.posZ - this.field_179472_a.posZ;
-                    this.field_179472_a.renderYawOffset = this.field_179472_a.rotationYaw = -((float)Math.atan2(var4, var6)) * 180.0F / (float)Math.PI;
+                    double d1 = entitylivingbase.posX - this.parentEntity.posX;
+                    double d2 = entitylivingbase.posZ - this.parentEntity.posZ;
+                    this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw = -((float)MathHelper.func_181159_b(d1, d2)) * 180.0F / (float)Math.PI;
                 }
             }
         }
     }
 
-    class AIRandomFly extends EntityAIBase
+    static class AIRandomFly extends EntityAIBase
     {
-        private EntityGhast field_179454_a = EntityGhast.this;
-        private static final String __OBFID = "CL_00002214";
+        private EntityGhast parentEntity;
 
-        public AIRandomFly()
+        public AIRandomFly(EntityGhast p_i45836_1_)
         {
+            this.parentEntity = p_i45836_1_;
             this.setMutexBits(1);
         }
 
         public boolean shouldExecute()
         {
-            EntityMoveHelper var1 = this.field_179454_a.getMoveHelper();
+            EntityMoveHelper entitymovehelper = this.parentEntity.getMoveHelper();
 
-            if (!var1.isUpdating())
+            if (!entitymovehelper.isUpdating())
             {
                 return true;
             }
             else
             {
-                double var2 = var1.func_179917_d() - this.field_179454_a.posX;
-                double var4 = var1.func_179919_e() - this.field_179454_a.posY;
-                double var6 = var1.func_179918_f() - this.field_179454_a.posZ;
-                double var8 = var2 * var2 + var4 * var4 + var6 * var6;
-                return var8 < 1.0D || var8 > 3600.0D;
+                double d0 = entitymovehelper.getX() - this.parentEntity.posX;
+                double d1 = entitymovehelper.getY() - this.parentEntity.posY;
+                double d2 = entitymovehelper.getZ() - this.parentEntity.posZ;
+                double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+                return d3 < 1.0D || d3 > 3600.0D;
             }
         }
 
@@ -336,44 +338,44 @@ public class EntityGhast extends EntityFlying implements IMob
 
         public void startExecuting()
         {
-            Random var1 = this.field_179454_a.getRNG();
-            double var2 = this.field_179454_a.posX + (double)((var1.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double var4 = this.field_179454_a.posY + (double)((var1.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double var6 = this.field_179454_a.posZ + (double)((var1.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            this.field_179454_a.getMoveHelper().setMoveTo(var2, var4, var6, 1.0D);
+            Random random = this.parentEntity.getRNG();
+            double d0 = this.parentEntity.posX + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double d1 = this.parentEntity.posY + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double d2 = this.parentEntity.posZ + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
         }
     }
 
-    class GhastMoveHelper extends EntityMoveHelper
+    static class GhastMoveHelper extends EntityMoveHelper
     {
-        private EntityGhast field_179927_g = EntityGhast.this;
-        private int field_179928_h;
-        private static final String __OBFID = "CL_00002216";
+        private EntityGhast parentEntity;
+        private int courseChangeCooldown;
 
-        public GhastMoveHelper()
+        public GhastMoveHelper(EntityGhast p_i45838_1_)
         {
-            super(EntityGhast.this);
+            super(p_i45838_1_);
+            this.parentEntity = p_i45838_1_;
         }
 
         public void onUpdateMoveHelper()
         {
             if (this.update)
             {
-                double var1 = this.posX - this.field_179927_g.posX;
-                double var3 = this.posY - this.field_179927_g.posY;
-                double var5 = this.posZ - this.field_179927_g.posZ;
-                double var7 = var1 * var1 + var3 * var3 + var5 * var5;
+                double d0 = this.posX - this.parentEntity.posX;
+                double d1 = this.posY - this.parentEntity.posY;
+                double d2 = this.posZ - this.parentEntity.posZ;
+                double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
-                if (this.field_179928_h-- <= 0)
+                if (this.courseChangeCooldown-- <= 0)
                 {
-                    this.field_179928_h += this.field_179927_g.getRNG().nextInt(5) + 2;
-                    var7 = (double)MathHelper.sqrt_double(var7);
+                    this.courseChangeCooldown += this.parentEntity.getRNG().nextInt(5) + 2;
+                    d3 = (double)MathHelper.sqrt_double(d3);
 
-                    if (this.func_179926_b(this.posX, this.posY, this.posZ, var7))
+                    if (this.isNotColliding(this.posX, this.posY, this.posZ, d3))
                     {
-                        this.field_179927_g.motionX += var1 / var7 * 0.1D;
-                        this.field_179927_g.motionY += var3 / var7 * 0.1D;
-                        this.field_179927_g.motionZ += var5 / var7 * 0.1D;
+                        this.parentEntity.motionX += d0 / d3 * 0.1D;
+                        this.parentEntity.motionY += d1 / d3 * 0.1D;
+                        this.parentEntity.motionZ += d2 / d3 * 0.1D;
                     }
                     else
                     {
@@ -383,18 +385,18 @@ public class EntityGhast extends EntityFlying implements IMob
             }
         }
 
-        private boolean func_179926_b(double p_179926_1_, double p_179926_3_, double p_179926_5_, double p_179926_7_)
+        private boolean isNotColliding(double p_179926_1_, double p_179926_3_, double p_179926_5_, double p_179926_7_)
         {
-            double var9 = (p_179926_1_ - this.field_179927_g.posX) / p_179926_7_;
-            double var11 = (p_179926_3_ - this.field_179927_g.posY) / p_179926_7_;
-            double var13 = (p_179926_5_ - this.field_179927_g.posZ) / p_179926_7_;
-            AxisAlignedBB var15 = this.field_179927_g.getEntityBoundingBox();
+            double d0 = (p_179926_1_ - this.parentEntity.posX) / p_179926_7_;
+            double d1 = (p_179926_3_ - this.parentEntity.posY) / p_179926_7_;
+            double d2 = (p_179926_5_ - this.parentEntity.posZ) / p_179926_7_;
+            AxisAlignedBB axisalignedbb = this.parentEntity.getEntityBoundingBox();
 
-            for (int var16 = 1; (double)var16 < p_179926_7_; ++var16)
+            for (int i = 1; (double)i < p_179926_7_; ++i)
             {
-                var15 = var15.offset(var9, var11, var13);
+                axisalignedbb = axisalignedbb.offset(d0, d1, d2);
 
-                if (!this.field_179927_g.worldObj.getCollidingBoundingBoxes(this.field_179927_g, var15).isEmpty())
+                if (!this.parentEntity.worldObj.getCollidingBoundingBoxes(this.parentEntity, axisalignedbb).isEmpty())
                 {
                     return false;
                 }

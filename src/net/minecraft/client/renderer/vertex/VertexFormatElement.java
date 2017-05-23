@@ -5,80 +5,67 @@ import org.apache.logging.log4j.Logger;
 
 public class VertexFormatElement
 {
-    private static final Logger field_177381_a = LogManager.getLogger();
-    private final VertexFormatElement.EnumType field_177379_b;
-    private final VertexFormatElement.EnumUseage field_177380_c;
-    private int field_177377_d;
-    private int field_177378_e;
-    private int field_177376_f;
-    private static final String __OBFID = "CL_00002399";
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final VertexFormatElement.EnumType type;
+    private final VertexFormatElement.EnumUsage usage;
+    private int index;
+    private int elementCount;
 
-    public VertexFormatElement(int p_i46096_1_, VertexFormatElement.EnumType p_i46096_2_, VertexFormatElement.EnumUseage p_i46096_3_, int p_i46096_4_)
+    public VertexFormatElement(int indexIn, VertexFormatElement.EnumType typeIn, VertexFormatElement.EnumUsage usageIn, int count)
     {
-        if (!this.func_177372_a(p_i46096_1_, p_i46096_3_))
+        if (!this.func_177372_a(indexIn, usageIn))
         {
-            field_177381_a.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
-            this.field_177380_c = VertexFormatElement.EnumUseage.UV;
+            LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
+            this.usage = VertexFormatElement.EnumUsage.UV;
         }
         else
         {
-            this.field_177380_c = p_i46096_3_;
+            this.usage = usageIn;
         }
 
-        this.field_177379_b = p_i46096_2_;
-        this.field_177377_d = p_i46096_1_;
-        this.field_177378_e = p_i46096_4_;
-        this.field_177376_f = 0;
+        this.type = typeIn;
+        this.index = indexIn;
+        this.elementCount = count;
     }
 
-    public void func_177371_a(int p_177371_1_)
+    private final boolean func_177372_a(int p_177372_1_, VertexFormatElement.EnumUsage p_177372_2_)
     {
-        this.field_177376_f = p_177371_1_;
+        return p_177372_1_ == 0 || p_177372_2_ == VertexFormatElement.EnumUsage.UV;
     }
 
-    public int func_177373_a()
+    public final VertexFormatElement.EnumType getType()
     {
-        return this.field_177376_f;
+        return this.type;
     }
 
-    private final boolean func_177372_a(int p_177372_1_, VertexFormatElement.EnumUseage p_177372_2_)
+    public final VertexFormatElement.EnumUsage getUsage()
     {
-        return p_177372_1_ == 0 || p_177372_2_ == VertexFormatElement.EnumUseage.UV;
+        return this.usage;
     }
 
-    public final VertexFormatElement.EnumType func_177367_b()
+    public final int getElementCount()
     {
-        return this.field_177379_b;
+        return this.elementCount;
     }
 
-    public final VertexFormatElement.EnumUseage func_177375_c()
+    public final int getIndex()
     {
-        return this.field_177380_c;
-    }
-
-    public final int func_177370_d()
-    {
-        return this.field_177378_e;
-    }
-
-    public final int func_177369_e()
-    {
-        return this.field_177377_d;
+        return this.index;
     }
 
     public String toString()
     {
-        return this.field_177378_e + "," + this.field_177380_c.func_177384_a() + "," + this.field_177379_b.func_177396_b();
+        return this.elementCount + "," + this.usage.getDisplayName() + "," + this.type.getDisplayName();
     }
 
-    public final int func_177368_f()
+    public final int getSize()
     {
-        return this.field_177379_b.func_177395_a() * this.field_177378_e;
+        return this.type.getSize() * this.elementCount;
     }
 
-    public final boolean func_177374_g()
+    public final boolean isPositionElement()
     {
-        return this.field_177380_c == VertexFormatElement.EnumUseage.POSITION;
+        return this.usage == VertexFormatElement.EnumUsage.POSITION;
     }
 
     public boolean equals(Object p_equals_1_)
@@ -89,8 +76,8 @@ public class VertexFormatElement
         }
         else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass())
         {
-            VertexFormatElement var2 = (VertexFormatElement)p_equals_1_;
-            return this.field_177378_e != var2.field_177378_e ? false : (this.field_177377_d != var2.field_177377_d ? false : (this.field_177376_f != var2.field_177376_f ? false : (this.field_177379_b != var2.field_177379_b ? false : this.field_177380_c == var2.field_177380_c)));
+            VertexFormatElement vertexformatelement = (VertexFormatElement)p_equals_1_;
+            return this.elementCount != vertexformatelement.elementCount ? false : (this.index != vertexformatelement.index ? false : (this.type != vertexformatelement.type ? false : this.usage == vertexformatelement.usage));
         }
         else
         {
@@ -100,75 +87,70 @@ public class VertexFormatElement
 
     public int hashCode()
     {
-        int var1 = this.field_177379_b.hashCode();
-        var1 = 31 * var1 + this.field_177380_c.hashCode();
-        var1 = 31 * var1 + this.field_177377_d;
-        var1 = 31 * var1 + this.field_177378_e;
-        var1 = 31 * var1 + this.field_177376_f;
-        return var1;
+        int i = this.type.hashCode();
+        i = 31 * i + this.usage.hashCode();
+        i = 31 * i + this.index;
+        i = 31 * i + this.elementCount;
+        return i;
     }
 
     public static enum EnumType
     {
-        FLOAT("FLOAT", 0, 4, "Float", 5126),
-        UBYTE("UBYTE", 1, 1, "Unsigned Byte", 5121),
-        BYTE("BYTE", 2, 1, "Byte", 5120),
-        USHORT("USHORT", 3, 2, "Unsigned Short", 5123),
-        SHORT("SHORT", 4, 2, "Short", 5122),
-        UINT("UINT", 5, 4, "Unsigned Int", 5125),
-        INT("INT", 6, 4, "Int", 5124);
-        private final int field_177407_h;
-        private final String field_177408_i;
-        private final int field_177405_j;
+        FLOAT(4, "Float", 5126),
+        UBYTE(1, "Unsigned Byte", 5121),
+        BYTE(1, "Byte", 5120),
+        USHORT(2, "Unsigned Short", 5123),
+        SHORT(2, "Short", 5122),
+        UINT(4, "Unsigned Int", 5125),
+        INT(4, "Int", 5124);
 
-        private static final VertexFormatElement.EnumType[] $VALUES = new VertexFormatElement.EnumType[]{FLOAT, UBYTE, BYTE, USHORT, SHORT, UINT, INT};
-        private static final String __OBFID = "CL_00002398";
+        private final int size;
+        private final String displayName;
+        private final int glConstant;
 
-        private EnumType(String p_i46095_1_, int p_i46095_2_, int p_i46095_3_, String p_i46095_4_, int p_i46095_5_)
+        private EnumType(int sizeIn, String displayNameIn, int glConstantIn)
         {
-            this.field_177407_h = p_i46095_3_;
-            this.field_177408_i = p_i46095_4_;
-            this.field_177405_j = p_i46095_5_;
+            this.size = sizeIn;
+            this.displayName = displayNameIn;
+            this.glConstant = glConstantIn;
         }
 
-        public int func_177395_a()
+        public int getSize()
         {
-            return this.field_177407_h;
+            return this.size;
         }
 
-        public String func_177396_b()
+        public String getDisplayName()
         {
-            return this.field_177408_i;
+            return this.displayName;
         }
 
-        public int func_177397_c()
+        public int getGlConstant()
         {
-            return this.field_177405_j;
+            return this.glConstant;
         }
     }
 
-    public static enum EnumUseage
+    public static enum EnumUsage
     {
-        POSITION("POSITION", 0, "Position"),
-        NORMAL("NORMAL", 1, "Normal"),
-        COLOR("COLOR", 2, "Vertex Color"),
-        UV("UV", 3, "UV"),
-        MATRIX("MATRIX", 4, "Bone Matrix"),
-        BLEND_WEIGHT("BLEND_WEIGHT", 5, "Blend Weight"),
-        PADDING("PADDING", 6, "Padding");
-        private final String field_177392_h;
+        POSITION("Position"),
+        NORMAL("Normal"),
+        COLOR("Vertex Color"),
+        UV("UV"),
+        MATRIX("Bone Matrix"),
+        BLEND_WEIGHT("Blend Weight"),
+        PADDING("Padding");
 
-        private static final VertexFormatElement.EnumUseage[] $VALUES = new VertexFormatElement.EnumUseage[]{POSITION, NORMAL, COLOR, UV, MATRIX, BLEND_WEIGHT, PADDING};
-        private static final String __OBFID = "CL_00002397";
+        private final String displayName;
 
-        private EnumUseage(String p_i46094_1_, int p_i46094_2_, String p_i46094_3_)
+        private EnumUsage(String displayNameIn)
         {
-            this.field_177392_h = p_i46094_3_;
+            this.displayName = displayNameIn;
         }
 
-        public String func_177384_a()
+        public String getDisplayName()
         {
-            return this.field_177392_h;
+            return this.displayName;
         }
     }
 }

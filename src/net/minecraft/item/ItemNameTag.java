@@ -7,8 +7,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public class ItemNameTag extends Item
 {
-    private static final String __OBFID = "CL_00000052";
-
     public ItemNameTag()
     {
         this.setCreativeTab(CreativeTabs.tabTools);
@@ -25,9 +23,9 @@ public class ItemNameTag extends Item
         }
         else if (target instanceof EntityLiving)
         {
-            EntityLiving var4 = (EntityLiving)target;
-            var4.setCustomNameTag(stack.getDisplayName());
-            var4.enablePersistence();
+            EntityLiving entityliving = (EntityLiving)target;
+            entityliving.setCustomNameTag(stack.getDisplayName());
+            entityliving.enablePersistence();
             --stack.stackSize;
             return true;
         }

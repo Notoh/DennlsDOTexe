@@ -37,7 +37,6 @@ public class WorldType
     /** Whether this WorldType has a version or not. */
     private boolean isWorldTypeVersioned;
     private boolean hasNotificationData;
-    private static final String __OBFID = "CL_00000150";
 
     private WorldType(int id, String name)
     {
@@ -120,11 +119,11 @@ public class WorldType
 
     public static WorldType parseWorldType(String type)
     {
-        for (int var1 = 0; var1 < worldTypes.length; ++var1)
+        for (int i = 0; i < worldTypes.length; ++i)
         {
-            if (worldTypes[var1] != null && worldTypes[var1].worldType.equalsIgnoreCase(type))
+            if (worldTypes[i] != null && worldTypes[i].worldType.equalsIgnoreCase(type))
             {
-                return worldTypes[var1];
+                return worldTypes[i];
             }
         }
 

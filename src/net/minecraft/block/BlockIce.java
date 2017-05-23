@@ -17,8 +17,6 @@ import net.minecraft.world.World;
 
 public class BlockIce extends BlockBreakable
 {
-    private static final String __OBFID = "CL_00000259";
-
     public BlockIce()
     {
         super(Material.ice, false);
@@ -32,33 +30,33 @@ public class BlockIce extends BlockBreakable
         return EnumWorldBlockLayer.TRANSLUCENT;
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer playerIn, BlockPos pos, IBlockState state, TileEntity te)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te)
     {
-        playerIn.triggerAchievement(StatList.mineBlockStatArray[Block.getIdFromBlock(this)]);
-        playerIn.addExhaustion(0.025F);
+        player.triggerAchievement(StatList.mineBlockStatArray[Block.getIdFromBlock(this)]);
+        player.addExhaustion(0.025F);
 
-        if (this.canSilkHarvest() && EnchantmentHelper.getSilkTouchModifier(playerIn))
+        if (this.canSilkHarvest() && EnchantmentHelper.getSilkTouchModifier(player))
         {
-            ItemStack var8 = this.createStackedBlock(state);
+            ItemStack itemstack = this.createStackedBlock(state);
 
-            if (var8 != null)
+            if (itemstack != null)
             {
-                spawnAsEntity(worldIn, pos, var8);
+                spawnAsEntity(worldIn, pos, itemstack);
             }
         }
         else
         {
-            if (worldIn.provider.func_177500_n())
+            if (worldIn.provider.doesWaterVaporize())
             {
                 worldIn.setBlockToAir(pos);
                 return;
             }
 
-            int var6 = EnchantmentHelper.getFortuneModifier(playerIn);
-            this.dropBlockAsItem(worldIn, pos, state, var6);
-            Material var7 = worldIn.getBlockState(pos.offsetDown()).getBlock().getMaterial();
+            int i = EnchantmentHelper.getFortuneModifier(player);
+            this.dropBlockAsItem(worldIn, pos, state, i);
+            Material material = worldIn.getBlockState(pos.down()).getBlock().getMaterial();
 
-            if (var7.blocksMovement() || var7.isLiquid())
+            if (material.blocksMovement() || material.isLiquid())
             {
                 worldIn.setBlockState(pos, Blocks.flowing_water.getDefaultState());
             }
@@ -77,7 +75,7 @@ public class BlockIce extends BlockBreakable
     {
         if (worldIn.getLightFor(EnumSkyBlock.BLOCK, pos) > 11 - this.getLightOpacity())
         {
-            if (worldIn.provider.func_177500_n())
+            if (worldIn.provider.doesWaterVaporize())
             {
                 worldIn.setBlockToAir(pos);
             }

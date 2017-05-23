@@ -1,81 +1,65 @@
 package net.minecraft.util;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Random;
 
 public class WeightedRandom
 {
-    private static final String __OBFID = "CL_00001503";
-
     /**
      * Returns the total weight of all items in a collection.
      */
-    public static int getTotalWeight(Collection p_76272_0_)
+    public static int getTotalWeight(Collection <? extends WeightedRandom.Item > collection)
     {
-        int var1 = 0;
-        WeightedRandom.Item var3;
+        int i = 0;
 
-        for (Iterator var2 = p_76272_0_.iterator(); var2.hasNext(); var1 += var3.itemWeight)
+        for (WeightedRandom.Item weightedrandom$item : collection)
         {
-            var3 = (WeightedRandom.Item)var2.next();
+            i += weightedrandom$item.itemWeight;
         }
 
-        return var1;
+        return i;
     }
 
-    /**
-     * Returns a random choice from the input items, with a total weight value.
-     */
-    public static WeightedRandom.Item getRandomItem(Random p_76273_0_, Collection p_76273_1_, int p_76273_2_)
+    public static <T extends WeightedRandom.Item> T getRandomItem(Random random, Collection<T> collection, int totalWeight)
     {
-        if (p_76273_2_ <= 0)
+        if (totalWeight <= 0)
         {
             throw new IllegalArgumentException();
         }
         else
         {
-            int var3 = p_76273_0_.nextInt(p_76273_2_);
-            return func_180166_a(p_76273_1_, var3);
+            int i = random.nextInt(totalWeight);
+            return getRandomItem(collection, i);
         }
     }
 
-    public static WeightedRandom.Item func_180166_a(Collection p_180166_0_, int p_180166_1_)
+    public static <T extends WeightedRandom.Item> T getRandomItem(Collection<T> collection, int weight)
     {
-        Iterator var2 = p_180166_0_.iterator();
-        WeightedRandom.Item var3;
-
-        do
+        for (T t : collection)
         {
-            if (!var2.hasNext())
+            weight -= t.itemWeight;
+
+            if (weight < 0)
             {
-                return null;
+                return t;
             }
-
-            var3 = (WeightedRandom.Item)var2.next();
-            p_180166_1_ -= var3.itemWeight;
         }
-        while (p_180166_1_ >= 0);
 
-        return var3;
+        return (T)null;
     }
 
-    /**
-     * Returns a random choice from the input items.
-     */
-    public static WeightedRandom.Item getRandomItem(Random p_76271_0_, Collection p_76271_1_)
+    public static <T extends WeightedRandom.Item> T getRandomItem(Random random, Collection<T> collection)
     {
-        return getRandomItem(p_76271_0_, p_76271_1_, getTotalWeight(p_76271_1_));
+        return getRandomItem(random, collection, getTotalWeight(collection));
     }
 
     public static class Item
     {
         protected int itemWeight;
-        private static final String __OBFID = "CL_00001504";
 
-        public Item(int p_i1556_1_)
+        public Item(int itemWeightIn)
         {
-            this.itemWeight = p_i1556_1_;
+            this.itemWeight = itemWeightIn;
         }
     }
 }

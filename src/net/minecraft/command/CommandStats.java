@@ -1,9 +1,7 @@
 package net.minecraft.command;
 
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -16,8 +14,9 @@ import net.minecraft.world.World;
 
 public class CommandStats extends CommandBase
 {
-    private static final String __OBFID = "CL_00002339";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "stats";
@@ -31,11 +30,17 @@ public class CommandStats extends CommandBase
         return 2;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.stats.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length < 1)
@@ -44,11 +49,11 @@ public class CommandStats extends CommandBase
         }
         else
         {
-            boolean var3;
+            boolean flag;
 
             if (args[0].equals("entity"))
             {
-                var3 = false;
+                flag = false;
             }
             else
             {
@@ -57,19 +62,19 @@ public class CommandStats extends CommandBase
                     throw new WrongUsageException("commands.stats.usage", new Object[0]);
                 }
 
-                var3 = true;
+                flag = true;
             }
 
-            byte var4;
+            int i;
 
-            if (var3)
+            if (flag)
             {
                 if (args.length < 5)
                 {
                     throw new WrongUsageException("commands.stats.block.usage", new Object[0]);
                 }
 
-                var4 = 4;
+                i = 4;
             }
             else
             {
@@ -78,17 +83,16 @@ public class CommandStats extends CommandBase
                     throw new WrongUsageException("commands.stats.entity.usage", new Object[0]);
                 }
 
-                var4 = 2;
+                i = 2;
             }
 
-            int var11 = var4 + 1;
-            String var5 = args[var4];
+            String s = args[i++];
 
-            if ("set".equals(var5))
+            if ("set".equals(s))
             {
-                if (args.length < var11 + 3)
+                if (args.length < i + 3)
                 {
-                    if (var11 == 5)
+                    if (i == 5)
                     {
                         throw new WrongUsageException("commands.stats.block.set.usage", new Object[0]);
                     }
@@ -98,14 +102,14 @@ public class CommandStats extends CommandBase
             }
             else
             {
-                if (!"clear".equals(var5))
+                if (!"clear".equals(s))
                 {
                     throw new WrongUsageException("commands.stats.usage", new Object[0]);
                 }
 
-                if (args.length < var11 + 1)
+                if (args.length < i + 1)
                 {
-                    if (var11 == 5)
+                    if (i == 5)
                     {
                         throw new WrongUsageException("commands.stats.block.clear.usage", new Object[0]);
                     }
@@ -114,81 +118,79 @@ public class CommandStats extends CommandBase
                 }
             }
 
-            CommandResultStats.Type var6 = CommandResultStats.Type.func_179635_a(args[var11++]);
+            CommandResultStats.Type commandresultstats$type = CommandResultStats.Type.getTypeByName(args[i++]);
 
-            if (var6 == null)
+            if (commandresultstats$type == null)
             {
                 throw new CommandException("commands.stats.failed", new Object[0]);
             }
             else
             {
-                World var7 = sender.getEntityWorld();
-                CommandResultStats var8;
-                BlockPos var9;
-                TileEntity var10;
+                World world = sender.getEntityWorld();
+                CommandResultStats commandresultstats;
 
-                if (var3)
+                if (flag)
                 {
-                    var9 = func_175757_a(sender, args, 1, false);
-                    var10 = var7.getTileEntity(var9);
+                    BlockPos blockpos = parseBlockPos(sender, args, 1, false);
+                    TileEntity tileentity = world.getTileEntity(blockpos);
 
-                    if (var10 == null)
+                    if (tileentity == null)
                     {
-                        throw new CommandException("commands.stats.noCompatibleBlock", new Object[] {Integer.valueOf(var9.getX()), Integer.valueOf(var9.getY()), Integer.valueOf(var9.getZ())});
+                        throw new CommandException("commands.stats.noCompatibleBlock", new Object[] {Integer.valueOf(blockpos.getX()), Integer.valueOf(blockpos.getY()), Integer.valueOf(blockpos.getZ())});
                     }
 
-                    if (var10 instanceof TileEntityCommandBlock)
+                    if (tileentity instanceof TileEntityCommandBlock)
                     {
-                        var8 = ((TileEntityCommandBlock)var10).func_175124_c();
+                        commandresultstats = ((TileEntityCommandBlock)tileentity).getCommandResultStats();
                     }
                     else
                     {
-                        if (!(var10 instanceof TileEntitySign))
+                        if (!(tileentity instanceof TileEntitySign))
                         {
-                            throw new CommandException("commands.stats.noCompatibleBlock", new Object[] {Integer.valueOf(var9.getX()), Integer.valueOf(var9.getY()), Integer.valueOf(var9.getZ())});
+                            throw new CommandException("commands.stats.noCompatibleBlock", new Object[] {Integer.valueOf(blockpos.getX()), Integer.valueOf(blockpos.getY()), Integer.valueOf(blockpos.getZ())});
                         }
 
-                        var8 = ((TileEntitySign)var10).func_174880_d();
+                        commandresultstats = ((TileEntitySign)tileentity).getStats();
                     }
                 }
                 else
                 {
-                    Entity var12 = func_175768_b(sender, args[1]);
-                    var8 = var12.func_174807_aT();
+                    Entity entity = func_175768_b(sender, args[1]);
+                    commandresultstats = entity.getCommandStats();
                 }
 
-                if ("set".equals(var5))
+                if ("set".equals(s))
                 {
-                    String var13 = args[var11++];
-                    String var14 = args[var11];
+                    String s1 = args[i++];
+                    String s2 = args[i];
 
-                    if (var13.length() == 0 || var14.length() == 0)
+                    if (s1.length() == 0 || s2.length() == 0)
                     {
                         throw new CommandException("commands.stats.failed", new Object[0]);
                     }
 
-                    CommandResultStats.func_179667_a(var8, var6, var13, var14);
-                    notifyOperators(sender, this, "commands.stats.success", new Object[] {var6.func_179637_b(), var14, var13});
+                    CommandResultStats.func_179667_a(commandresultstats, commandresultstats$type, s1, s2);
+                    notifyOperators(sender, this, "commands.stats.success", new Object[] {commandresultstats$type.getTypeName(), s2, s1});
                 }
-                else if ("clear".equals(var5))
+                else if ("clear".equals(s))
                 {
-                    CommandResultStats.func_179667_a(var8, var6, (String)null, (String)null);
-                    notifyOperators(sender, this, "commands.stats.cleared", new Object[] {var6.func_179637_b()});
+                    CommandResultStats.func_179667_a(commandresultstats, commandresultstats$type, (String)null, (String)null);
+                    notifyOperators(sender, this, "commands.stats.cleared", new Object[] {commandresultstats$type.getTypeName()});
                 }
 
-                if (var3)
+                if (flag)
                 {
-                    var9 = func_175757_a(sender, args, 1, false);
-                    var10 = var7.getTileEntity(var9);
-                    var10.markDirty();
+                    BlockPos blockpos1 = parseBlockPos(sender, args, 1, false);
+                    TileEntity tileentity1 = world.getTileEntity(blockpos1);
+                    tileentity1.markDirty();
                 }
             }
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"entity", "block"}): (args.length == 2 && args[0].equals("entity") ? getListOfStringsMatchingLastWord(args, this.func_175776_d()) : ((args.length != 3 || !args[0].equals("entity")) && (args.length != 5 || !args[0].equals("block")) ? ((args.length != 4 || !args[0].equals("entity")) && (args.length != 6 || !args[0].equals("block")) ? ((args.length != 6 || !args[0].equals("entity")) && (args.length != 8 || !args[0].equals("block")) ? null : func_175762_a(args, this.func_175777_e())) : getListOfStringsMatchingLastWord(args, CommandResultStats.Type.func_179634_c())) : getListOfStringsMatchingLastWord(args, new String[] {"set", "clear"})));
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"entity", "block"}): (args.length == 2 && args[0].equals("entity") ? getListOfStringsMatchingLastWord(args, this.func_175776_d()) : (args.length >= 2 && args.length <= 4 && args[0].equals("block") ? func_175771_a(args, 1, pos) : ((args.length != 3 || !args[0].equals("entity")) && (args.length != 5 || !args[0].equals("block")) ? ((args.length != 4 || !args[0].equals("entity")) && (args.length != 6 || !args[0].equals("block")) ? ((args.length != 6 || !args[0].equals("entity")) && (args.length != 8 || !args[0].equals("block")) ? null : getListOfStringsMatchingLastWord(args, this.func_175777_e())) : getListOfStringsMatchingLastWord(args, CommandResultStats.Type.getTypeNames())) : getListOfStringsMatchingLastWord(args, new String[] {"set", "clear"}))));
     }
 
     protected String[] func_175776_d()
@@ -196,23 +198,20 @@ public class CommandStats extends CommandBase
         return MinecraftServer.getServer().getAllUsernames();
     }
 
-    protected List func_175777_e()
+    protected List<String> func_175777_e()
     {
-        Collection var1 = MinecraftServer.getServer().worldServerForDimension(0).getScoreboard().getScoreObjectives();
-        ArrayList var2 = Lists.newArrayList();
-        Iterator var3 = var1.iterator();
+        Collection<ScoreObjective> collection = MinecraftServer.getServer().worldServerForDimension(0).getScoreboard().getScoreObjectives();
+        List<String> list = Lists.<String>newArrayList();
 
-        while (var3.hasNext())
+        for (ScoreObjective scoreobjective : collection)
         {
-            ScoreObjective var4 = (ScoreObjective)var3.next();
-
-            if (!var4.getCriteria().isReadOnly())
+            if (!scoreobjective.getCriteria().isReadOnly())
             {
-                var2.add(var4.getName());
+                list.add(scoreobjective.getName());
             }
         }
 
-        return var2;
+        return list;
     }
 
     /**

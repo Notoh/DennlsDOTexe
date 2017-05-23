@@ -3,17 +3,16 @@ package net.minecraft.block.properties;
 import com.google.common.collect.ImmutableSet;
 import java.util.Collection;
 
-public class PropertyBool extends PropertyHelper
+public class PropertyBool extends PropertyHelper<Boolean>
 {
-    private final ImmutableSet allowedValues = ImmutableSet.of(Boolean.valueOf(true), Boolean.valueOf(false));
-    private static final String __OBFID = "CL_00002017";
+    private final ImmutableSet<Boolean> allowedValues = ImmutableSet.<Boolean>of(Boolean.valueOf(true), Boolean.valueOf(false));
 
     protected PropertyBool(String name)
     {
         super(name, Boolean.class);
     }
 
-    public Collection getAllowedValues()
+    public Collection<Boolean> getAllowedValues()
     {
         return this.allowedValues;
     }
@@ -24,18 +23,10 @@ public class PropertyBool extends PropertyHelper
     }
 
     /**
-     * Synthetic method called by getName
-     */
-    public String getName0(Boolean value)
-    {
-        return value.toString();
-    }
-
-    /**
      * Get the name for the given value.
      */
-    public String getName(Comparable value)
+    public String getName(Boolean value)
     {
-        return this.getName0((Boolean)value);
+        return value.toString();
     }
 }

@@ -6,5 +6,5 @@ import net.minecraft.world.World;
 
 public interface IRenderChunkFactory
 {
-    RenderChunk func_178602_a(World worldIn, RenderGlobal p_178602_2_, BlockPos p_178602_3_, int p_178602_4_);
+    RenderChunk makeRenderChunk(World worldIn, RenderGlobal globalRenderer, BlockPos pos, int index);
 }

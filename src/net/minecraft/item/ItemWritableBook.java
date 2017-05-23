@@ -8,8 +8,6 @@ import net.minecraft.world.World;
 
 public class ItemWritableBook extends Item
 {
-    private static final String __OBFID = "CL_00000076";
-
     public ItemWritableBook()
     {
         this.setMaxStackSize(1);
@@ -28,30 +26,30 @@ public class ItemWritableBook extends Item
     /**
      * this method returns true if the book's NBT Tag List "pages" is valid
      */
-    public static boolean validBookPageTagContents(NBTTagCompound p_150930_0_)
+    public static boolean isNBTValid(NBTTagCompound nbt)
     {
-        if (p_150930_0_ == null)
+        if (nbt == null)
         {
             return false;
         }
-        else if (!p_150930_0_.hasKey("pages", 9))
+        else if (!nbt.hasKey("pages", 9))
         {
             return false;
         }
         else
         {
-            NBTTagList var1 = p_150930_0_.getTagList("pages", 8);
+            NBTTagList nbttaglist = nbt.getTagList("pages", 8);
 
-            for (int var2 = 0; var2 < var1.tagCount(); ++var2)
+            for (int i = 0; i < nbttaglist.tagCount(); ++i)
             {
-                String var3 = var1.getStringTagAt(var2);
+                String s = nbttaglist.getStringTagAt(i);
 
-                if (var3 == null)
+                if (s == null)
                 {
                     return false;
                 }
 
-                if (var3.length() > 32767)
+                if (s.length() > 32767)
                 {
                     return false;
                 }

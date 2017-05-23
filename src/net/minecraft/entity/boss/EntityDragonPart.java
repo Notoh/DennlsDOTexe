@@ -9,28 +9,33 @@ public class EntityDragonPart extends Entity
 {
     /** The dragon entity this dragon part belongs to */
     public final IEntityMultiPart entityDragonObj;
-    public final String field_146032_b;
-    private static final String __OBFID = "CL_00001657";
+    public final String partName;
 
-    public EntityDragonPart(IEntityMultiPart p_i1697_1_, String p_i1697_2_, float p_i1697_3_, float p_i1697_4_)
+    public EntityDragonPart(IEntityMultiPart parent, String partName, float base, float sizeHeight)
     {
-        super(p_i1697_1_.func_82194_d());
-        this.setSize(p_i1697_3_, p_i1697_4_);
-        this.entityDragonObj = p_i1697_1_;
-        this.field_146032_b = p_i1697_2_;
+        super(parent.getWorld());
+        this.setSize(base, sizeHeight);
+        this.entityDragonObj = parent;
+        this.partName = partName;
     }
 
-    protected void entityInit() {}
+    protected void entityInit()
+    {
+    }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund) {}
+    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    {
+    }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound) {}
+    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    {
+    }
 
     /**
      * Returns true if other Entities should be prevented from moving through this Entity.
@@ -45,7 +50,7 @@ public class EntityDragonPart extends Entity
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        return this.func_180431_b(source) ? false : this.entityDragonObj.attackEntityFromPart(this, source, amount);
+        return this.isEntityInvulnerable(source) ? false : this.entityDragonObj.attackEntityFromPart(this, source, amount);
     }
 
     /**

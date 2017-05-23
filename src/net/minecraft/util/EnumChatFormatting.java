@@ -2,8 +2,8 @@ package net.minecraft.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -32,17 +32,16 @@ public enum EnumChatFormatting
     ITALIC("ITALIC", 'o', true),
     RESET("RESET", 'r', -1);
 
-    /**
-     * Maps a name (e.g., 'underline') to its corresponding enum value (e.g., UNDERLINE).
-     */
-    private static final Map nameMapping = Maps.newHashMap();
+    private static final Map<String, EnumChatFormatting> nameMapping = Maps.<String, EnumChatFormatting>newHashMap();
 
     /**
      * Matches formatting codes that indicate that the client should treat the following text as bold, recolored,
      * obfuscated, etc.
      */
     private static final Pattern formattingCodePattern = Pattern.compile("(?i)" + String.valueOf('\u00a7') + "[0-9A-FK-OR]");
-    private final String field_175748_y;
+
+    /** The name of this color/formatting */
+    private final String name;
 
     /** The formatting code that produces this format. */
     private final char formattingCode;
@@ -53,36 +52,40 @@ public enum EnumChatFormatting
      * subsequent text in this format.
      */
     private final String controlString;
-    private final int field_175747_C;
-    private static final String __OBFID = "CL_00000342";
+
+    /** The numerical index that represents this color */
+    private final int colorIndex;
 
     private static String func_175745_c(String p_175745_0_)
     {
         return p_175745_0_.toLowerCase().replaceAll("[^a-z]", "");
     }
 
-    private EnumChatFormatting(String p_i46291_3_, char p_i46291_4_, int p_i46291_5_)
+    private EnumChatFormatting(String formattingName, char formattingCodeIn, int colorIndex)
     {
-        this(p_i46291_3_, p_i46291_4_, false, p_i46291_5_);
+        this(formattingName, formattingCodeIn, false, colorIndex);
     }
 
-    private EnumChatFormatting(String p_i46292_3_, char p_i46292_4_, boolean p_i46292_5_)
+    private EnumChatFormatting(String formattingName, char formattingCodeIn, boolean fancyStylingIn)
     {
-        this(p_i46292_3_, p_i46292_4_, p_i46292_5_, -1);
+        this(formattingName, formattingCodeIn, fancyStylingIn, -1);
     }
 
-    private EnumChatFormatting(String p_i46293_3_, char p_i46293_4_, boolean p_i46293_5_, int p_i46293_6_)
+    private EnumChatFormatting(String formattingName, char formattingCodeIn, boolean fancyStylingIn, int colorIndex)
     {
-        this.field_175748_y = p_i46293_3_;
-        this.formattingCode = p_i46293_4_;
-        this.fancyStyling = p_i46293_5_;
-        this.field_175747_C = p_i46293_6_;
-        this.controlString = "\u00a7" + p_i46293_4_;
+        this.name = formattingName;
+        this.formattingCode = formattingCodeIn;
+        this.fancyStyling = fancyStylingIn;
+        this.colorIndex = colorIndex;
+        this.controlString = "\u00a7" + formattingCodeIn;
     }
 
-    public int func_175746_b()
+    /**
+     * Returns the numerical color index that represents this formatting
+     */
+    public int getColorIndex()
     {
-        return this.field_175747_C;
+        return this.colorIndex;
     }
 
     /**
@@ -117,17 +120,17 @@ public enum EnumChatFormatting
     /**
      * Returns a copy of the given string, with formatting codes stripped away.
      */
-    public static String getTextWithoutFormattingCodes(String p_110646_0_)
+    public static String getTextWithoutFormattingCodes(String text)
     {
-        return p_110646_0_ == null ? null : formattingCodePattern.matcher(p_110646_0_).replaceAll("");
+        return text == null ? null : formattingCodePattern.matcher(text).replaceAll("");
     }
 
     /**
      * Gets a value by its friendly name; null if the given name does not map to a defined value.
      */
-    public static EnumChatFormatting getValueByName(String p_96300_0_)
+    public static EnumChatFormatting getValueByName(String friendlyName)
     {
-        return p_96300_0_ == null ? null : (EnumChatFormatting)nameMapping.get(func_175745_c(p_96300_0_));
+        return friendlyName == null ? null : (EnumChatFormatting)nameMapping.get(func_175745_c(friendlyName));
     }
 
     public static EnumChatFormatting func_175744_a(int p_175744_0_)
@@ -138,16 +141,11 @@ public enum EnumChatFormatting
         }
         else
         {
-            EnumChatFormatting[] var1 = values();
-            int var2 = var1.length;
-
-            for (int var3 = 0; var3 < var2; ++var3)
+            for (EnumChatFormatting enumchatformatting : values())
             {
-                EnumChatFormatting var4 = var1[var3];
-
-                if (var4.func_175746_b() == p_175744_0_)
+                if (enumchatformatting.getColorIndex() == p_175744_0_)
                 {
-                    return var4;
+                    return enumchatformatting;
                 }
             }
 
@@ -155,37 +153,25 @@ public enum EnumChatFormatting
         }
     }
 
-    /**
-     * Gets all the valid values. Args: @param par0: Whether or not to include color values. @param par1: Whether or not
-     * to include fancy-styling values (anything that isn't a color value or the "reset" value).
-     */
-    public static Collection getValidValues(boolean p_96296_0_, boolean p_96296_1_)
+    public static Collection<String> getValidValues(boolean p_96296_0_, boolean p_96296_1_)
     {
-        ArrayList var2 = Lists.newArrayList();
-        EnumChatFormatting[] var3 = values();
-        int var4 = var3.length;
+        List<String> list = Lists.<String>newArrayList();
 
-        for (int var5 = 0; var5 < var4; ++var5)
+        for (EnumChatFormatting enumchatformatting : values())
         {
-            EnumChatFormatting var6 = var3[var5];
-
-            if ((!var6.isColor() || p_96296_0_) && (!var6.isFancyStyling() || p_96296_1_))
+            if ((!enumchatformatting.isColor() || p_96296_0_) && (!enumchatformatting.isFancyStyling() || p_96296_1_))
             {
-                var2.add(var6.getFriendlyName());
+                list.add(enumchatformatting.getFriendlyName());
             }
         }
 
-        return var2;
+        return list;
     }
 
     static {
-        EnumChatFormatting[] var0 = values();
-        int var1 = var0.length;
-
-        for (int var2 = 0; var2 < var1; ++var2)
+        for (EnumChatFormatting enumchatformatting : values())
         {
-            EnumChatFormatting var3 = var0[var2];
-            nameMapping.put(func_175745_c(var3.field_175748_y), var3);
+            nameMapping.put(func_175745_c(enumchatformatting.name), enumchatformatting);
         }
     }
 }

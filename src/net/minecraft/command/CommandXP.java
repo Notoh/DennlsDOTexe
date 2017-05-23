@@ -1,14 +1,15 @@
 package net.minecraft.command;
 
 import java.util.List;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandXP extends CommandBase
 {
-    private static final String __OBFID = "CL_00000398";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "xp";
@@ -22,11 +23,17 @@ public class CommandXP extends CommandBase
         return 2;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.xp.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length <= 0)
@@ -35,55 +42,55 @@ public class CommandXP extends CommandBase
         }
         else
         {
-            String var3 = args[0];
-            boolean var4 = var3.endsWith("l") || var3.endsWith("L");
+            String s = args[0];
+            boolean flag = s.endsWith("l") || s.endsWith("L");
 
-            if (var4 && var3.length() > 1)
+            if (flag && s.length() > 1)
             {
-                var3 = var3.substring(0, var3.length() - 1);
+                s = s.substring(0, s.length() - 1);
             }
 
-            int var5 = parseInt(var3);
-            boolean var6 = var5 < 0;
+            int i = parseInt(s);
+            boolean flag1 = i < 0;
 
-            if (var6)
+            if (flag1)
             {
-                var5 *= -1;
+                i *= -1;
             }
 
-            EntityPlayerMP var7 = args.length > 1 ? getPlayer(sender, args[1]) : getCommandSenderAsPlayer(sender);
+            EntityPlayer entityplayer = args.length > 1 ? getPlayer(sender, args[1]) : getCommandSenderAsPlayer(sender);
 
-            if (var4)
+            if (flag)
             {
-                sender.func_174794_a(CommandResultStats.Type.QUERY_RESULT, var7.experienceLevel);
+                sender.setCommandStat(CommandResultStats.Type.QUERY_RESULT, entityplayer.experienceLevel);
 
-                if (var6)
+                if (flag1)
                 {
-                    var7.addExperienceLevel(-var5);
-                    notifyOperators(sender, this, "commands.xp.success.negative.levels", new Object[] {Integer.valueOf(var5), var7.getName()});
+                    entityplayer.addExperienceLevel(-i);
+                    notifyOperators(sender, this, "commands.xp.success.negative.levels", new Object[] {Integer.valueOf(i), entityplayer.getName()});
                 }
                 else
                 {
-                    var7.addExperienceLevel(var5);
-                    notifyOperators(sender, this, "commands.xp.success.levels", new Object[] {Integer.valueOf(var5), var7.getName()});
+                    entityplayer.addExperienceLevel(i);
+                    notifyOperators(sender, this, "commands.xp.success.levels", new Object[] {Integer.valueOf(i), entityplayer.getName()});
                 }
             }
             else
             {
-                sender.func_174794_a(CommandResultStats.Type.QUERY_RESULT, var7.experienceTotal);
+                sender.setCommandStat(CommandResultStats.Type.QUERY_RESULT, entityplayer.experienceTotal);
 
-                if (var6)
+                if (flag1)
                 {
                     throw new CommandException("commands.xp.failure.widthdrawXp", new Object[0]);
                 }
 
-                var7.addExperience(var5);
-                notifyOperators(sender, this, "commands.xp.success", new Object[] {Integer.valueOf(var5), var7.getName()});
+                entityplayer.addExperience(i);
+                notifyOperators(sender, this, "commands.xp.success", new Object[] {Integer.valueOf(i), entityplayer.getName()});
             }
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
         return args.length == 2 ? getListOfStringsMatchingLastWord(args, this.getAllUsernames()) : null;
     }

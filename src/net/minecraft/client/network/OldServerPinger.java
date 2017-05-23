@@ -47,116 +47,117 @@ public class OldServerPinger
 {
     private static final Splitter PING_RESPONSE_SPLITTER = Splitter.on('\u0000').limit(6);
     private static final Logger logger = LogManager.getLogger();
-
-    /** A list of NetworkManagers that have pending pings */
-    private final List pingDestinations = Collections.synchronizedList(Lists.newArrayList());
-    private static final String __OBFID = "CL_00000892";
+    private final List<NetworkManager> pingDestinations = Collections.<NetworkManager>synchronizedList(Lists.<NetworkManager>newArrayList());
 
     public void ping(final ServerData server) throws UnknownHostException
     {
-        ServerAddress var2 = ServerAddress.func_78860_a(server.serverIP);
-        final NetworkManager var3 = NetworkManager.provideLanClient(InetAddress.getByName(var2.getIP()), var2.getPort());
-        this.pingDestinations.add(var3);
+        ServerAddress serveraddress = ServerAddress.func_78860_a(server.serverIP);
+        final NetworkManager networkmanager = NetworkManager.func_181124_a(InetAddress.getByName(serveraddress.getIP()), serveraddress.getPort(), false);
+        this.pingDestinations.add(networkmanager);
         server.serverMOTD = "Pinging...";
         server.pingToServer = -1L;
         server.playerList = null;
-        var3.setNetHandler(new INetHandlerStatusClient()
+        networkmanager.setNetHandler(new INetHandlerStatusClient()
         {
             private boolean field_147403_d = false;
+            private boolean field_183009_e = false;
             private long field_175092_e = 0L;
-            private static final String __OBFID = "CL_00000893";
             public void handleServerInfo(S00PacketServerInfo packetIn)
             {
-                ServerStatusResponse var2 = packetIn.func_149294_c();
-
-                if (var2.getServerDescription() != null)
+                if (this.field_183009_e)
                 {
-                    server.serverMOTD = var2.getServerDescription().getFormattedText();
+                    networkmanager.closeChannel(new ChatComponentText("Received unrequested status"));
                 }
                 else
                 {
-                    server.serverMOTD = "";
-                }
+                    this.field_183009_e = true;
+                    ServerStatusResponse serverstatusresponse = packetIn.getResponse();
 
-                if (var2.getProtocolVersionInfo() != null)
-                {
-                    server.gameVersion = var2.getProtocolVersionInfo().getName();
-                    server.version = var2.getProtocolVersionInfo().getProtocol();
-                }
-                else
-                {
-                    server.gameVersion = "Old";
-                    server.version = 0;
-                }
-
-                if (var2.getPlayerCountData() != null)
-                {
-                    server.populationInfo = EnumChatFormatting.GRAY + "" + var2.getPlayerCountData().getOnlinePlayerCount() + "" + EnumChatFormatting.DARK_GRAY + "/" + EnumChatFormatting.GRAY + var2.getPlayerCountData().getMaxPlayers();
-
-                    if (ArrayUtils.isNotEmpty(var2.getPlayerCountData().getPlayers()))
+                    if (serverstatusresponse.getServerDescription() != null)
                     {
-                        StringBuilder var3x = new StringBuilder();
-                        GameProfile[] var4 = var2.getPlayerCountData().getPlayers();
-                        int var5 = var4.length;
-
-                        for (int var6 = 0; var6 < var5; ++var6)
-                        {
-                            GameProfile var7 = var4[var6];
-
-                            if (var3x.length() > 0)
-                            {
-                                var3x.append("\n");
-                            }
-
-                            var3x.append(var7.getName());
-                        }
-
-                        if (var2.getPlayerCountData().getPlayers().length < var2.getPlayerCountData().getOnlinePlayerCount())
-                        {
-                            if (var3x.length() > 0)
-                            {
-                                var3x.append("\n");
-                            }
-
-                            var3x.append("... and ").append(var2.getPlayerCountData().getOnlinePlayerCount() - var2.getPlayerCountData().getPlayers().length).append(" more ...");
-                        }
-
-                        server.playerList = var3x.toString();
-                    }
-                }
-                else
-                {
-                    server.populationInfo = EnumChatFormatting.DARK_GRAY + "???";
-                }
-
-                if (var2.getFavicon() != null)
-                {
-                    String var8 = var2.getFavicon();
-
-                    if (var8.startsWith("data:image/png;base64,"))
-                    {
-                        server.setBase64EncodedIconData(var8.substring("data:image/png;base64,".length()));
+                        server.serverMOTD = serverstatusresponse.getServerDescription().getFormattedText();
                     }
                     else
                     {
-                        OldServerPinger.logger.error("Invalid server icon (unknown format)");
+                        server.serverMOTD = "";
                     }
-                }
-                else
-                {
-                    server.setBase64EncodedIconData((String)null);
-                }
 
-                this.field_175092_e = Minecraft.getSystemTime();
-                var3.sendPacket(new C01PacketPing(this.field_175092_e));
-                this.field_147403_d = true;
+                    if (serverstatusresponse.getProtocolVersionInfo() != null)
+                    {
+                        server.gameVersion = serverstatusresponse.getProtocolVersionInfo().getName();
+                        server.version = serverstatusresponse.getProtocolVersionInfo().getProtocol();
+                    }
+                    else
+                    {
+                        server.gameVersion = "Old";
+                        server.version = 0;
+                    }
+
+                    if (serverstatusresponse.getPlayerCountData() != null)
+                    {
+                        server.populationInfo = EnumChatFormatting.GRAY + "" + serverstatusresponse.getPlayerCountData().getOnlinePlayerCount() + "" + EnumChatFormatting.DARK_GRAY + "/" + EnumChatFormatting.GRAY + serverstatusresponse.getPlayerCountData().getMaxPlayers();
+
+                        if (ArrayUtils.isNotEmpty(serverstatusresponse.getPlayerCountData().getPlayers()))
+                        {
+                            StringBuilder stringbuilder = new StringBuilder();
+
+                            for (GameProfile gameprofile : serverstatusresponse.getPlayerCountData().getPlayers())
+                            {
+                                if (stringbuilder.length() > 0)
+                                {
+                                    stringbuilder.append("\n");
+                                }
+
+                                stringbuilder.append(gameprofile.getName());
+                            }
+
+                            if (serverstatusresponse.getPlayerCountData().getPlayers().length < serverstatusresponse.getPlayerCountData().getOnlinePlayerCount())
+                            {
+                                if (stringbuilder.length() > 0)
+                                {
+                                    stringbuilder.append("\n");
+                                }
+
+                                stringbuilder.append("... and ").append(serverstatusresponse.getPlayerCountData().getOnlinePlayerCount() - serverstatusresponse.getPlayerCountData().getPlayers().length).append(" more ...");
+                            }
+
+                            server.playerList = stringbuilder.toString();
+                        }
+                    }
+                    else
+                    {
+                        server.populationInfo = EnumChatFormatting.DARK_GRAY + "???";
+                    }
+
+                    if (serverstatusresponse.getFavicon() != null)
+                    {
+                        String s = serverstatusresponse.getFavicon();
+
+                        if (s.startsWith("data:image/png;base64,"))
+                        {
+                            server.setBase64EncodedIconData(s.substring("data:image/png;base64,".length()));
+                        }
+                        else
+                        {
+                            OldServerPinger.logger.error("Invalid server icon (unknown format)");
+                        }
+                    }
+                    else
+                    {
+                        server.setBase64EncodedIconData((String)null);
+                    }
+
+                    this.field_175092_e = Minecraft.getSystemTime();
+                    networkmanager.sendPacket(new C01PacketPing(this.field_175092_e));
+                    this.field_147403_d = true;
+                }
             }
             public void handlePong(S01PacketPong packetIn)
             {
-                long var2 = this.field_175092_e;
-                long var4 = Minecraft.getSystemTime();
-                server.pingToServer = var4 - var2;
-                var3.closeChannel(new ChatComponentText("Finished"));
+                long i = this.field_175092_e;
+                long j = Minecraft.getSystemTime();
+                server.pingToServer = j - i;
+                networkmanager.closeChannel(new ChatComponentText("Finished"));
             }
             public void onDisconnect(IChatComponent reason)
             {
@@ -172,147 +173,122 @@ public class OldServerPinger
 
         try
         {
-            var3.sendPacket(new C00Handshake(47, var2.getIP(), var2.getPort(), EnumConnectionState.STATUS));
-            var3.sendPacket(new C00PacketServerQuery());
+            networkmanager.sendPacket(new C00Handshake(47, serveraddress.getIP(), serveraddress.getPort(), EnumConnectionState.STATUS));
+            networkmanager.sendPacket(new C00PacketServerQuery());
         }
-        catch (Throwable var5)
+        catch (Throwable throwable)
         {
-            logger.error(var5);
+            logger.error((Object)throwable);
         }
     }
 
     private void tryCompatibilityPing(final ServerData server)
     {
-        final ServerAddress var2 = ServerAddress.func_78860_a(server.serverIP);
-        ((Bootstrap)((Bootstrap)((Bootstrap)(new Bootstrap()).group((EventLoopGroup)NetworkManager.CLIENT_NIO_EVENTLOOP.getValue())).handler(new ChannelInitializer()
+        final ServerAddress serveraddress = ServerAddress.func_78860_a(server.serverIP);
+        ((Bootstrap)((Bootstrap)((Bootstrap)(new Bootstrap()).group((EventLoopGroup)NetworkManager.CLIENT_NIO_EVENTLOOP.getValue())).handler(new ChannelInitializer<Channel>()
         {
-            private static final String __OBFID = "CL_00000894";
-            protected void initChannel(Channel p_initChannel_1_)
+            protected void initChannel(Channel p_initChannel_1_) throws Exception
             {
                 try
                 {
-                    p_initChannel_1_.config().setOption(ChannelOption.IP_TOS, Integer.valueOf(24));
-                }
-                catch (ChannelException var4)
-                {
-                    ;
-                }
-
-                try
-                {
-                    p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, Boolean.valueOf(false));
+                    p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, Boolean.valueOf(true));
                 }
                 catch (ChannelException var3)
                 {
                     ;
                 }
 
-                p_initChannel_1_.pipeline().addLast(new ChannelHandler[] {new SimpleChannelInboundHandler()
+                p_initChannel_1_.pipeline().addLast(new ChannelHandler[] {new SimpleChannelInboundHandler<ByteBuf>()
                     {
-                        private static final String __OBFID = "CL_00000895";
                         public void channelActive(ChannelHandlerContext p_channelActive_1_) throws Exception
                         {
                             super.channelActive(p_channelActive_1_);
-                            ByteBuf var2x = Unpooled.buffer();
+                            ByteBuf bytebuf = Unpooled.buffer();
 
                             try
                             {
-                                var2x.writeByte(254);
-                                var2x.writeByte(1);
-                                var2x.writeByte(250);
-                                char[] var3 = "MC|PingHost".toCharArray();
-                                var2x.writeShort(var3.length);
-                                char[] var4 = var3;
-                                int var5 = var3.length;
-                                int var6;
-                                char var7;
+                                bytebuf.writeByte(254);
+                                bytebuf.writeByte(1);
+                                bytebuf.writeByte(250);
+                                char[] achar = "MC|PingHost".toCharArray();
+                                bytebuf.writeShort(achar.length);
 
-                                for (var6 = 0; var6 < var5; ++var6)
+                                for (char c0 : achar)
                                 {
-                                    var7 = var4[var6];
-                                    var2x.writeChar(var7);
+                                    bytebuf.writeChar(c0);
                                 }
 
-                                var2x.writeShort(7 + 2 * var2.getIP().length());
-                                var2x.writeByte(127);
-                                var3 = var2.getIP().toCharArray();
-                                var2x.writeShort(var3.length);
-                                var4 = var3;
-                                var5 = var3.length;
+                                bytebuf.writeShort(7 + 2 * serveraddress.getIP().length());
+                                bytebuf.writeByte(127);
+                                achar = serveraddress.getIP().toCharArray();
+                                bytebuf.writeShort(achar.length);
 
-                                for (var6 = 0; var6 < var5; ++var6)
+                                for (char c1 : achar)
                                 {
-                                    var7 = var4[var6];
-                                    var2x.writeChar(var7);
+                                    bytebuf.writeChar(c1);
                                 }
 
-                                var2x.writeInt(var2.getPort());
-                                p_channelActive_1_.channel().writeAndFlush(var2x).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+                                bytebuf.writeInt(serveraddress.getPort());
+                                p_channelActive_1_.channel().writeAndFlush(bytebuf).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
                             }
                             finally
                             {
-                                var2x.release();
+                                bytebuf.release();
                             }
                         }
-                        protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, ByteBuf p_channelRead0_2_)
+                        protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, ByteBuf p_channelRead0_2_) throws Exception
                         {
-                            short var3 = p_channelRead0_2_.readUnsignedByte();
+                            short short1 = p_channelRead0_2_.readUnsignedByte();
 
-                            if (var3 == 255)
+                            if (short1 == 255)
                             {
-                                String var4 = new String(p_channelRead0_2_.readBytes(p_channelRead0_2_.readShort() * 2).array(), Charsets.UTF_16BE);
-                                String[] var5 = (String[])Iterables.toArray(OldServerPinger.PING_RESPONSE_SPLITTER.split(var4), String.class);
+                                String s = new String(p_channelRead0_2_.readBytes(p_channelRead0_2_.readShort() * 2).array(), Charsets.UTF_16BE);
+                                String[] astring = (String[])Iterables.toArray(OldServerPinger.PING_RESPONSE_SPLITTER.split(s), String.class);
 
-                                if ("\u00a71".equals(var5[0]))
+                                if ("\u00a71".equals(astring[0]))
                                 {
-                                    int var6 = MathHelper.parseIntWithDefault(var5[1], 0);
-                                    String var7 = var5[2];
-                                    String var8 = var5[3];
-                                    int var9 = MathHelper.parseIntWithDefault(var5[4], -1);
-                                    int var10 = MathHelper.parseIntWithDefault(var5[5], -1);
+                                    int i = MathHelper.parseIntWithDefault(astring[1], 0);
+                                    String s1 = astring[2];
+                                    String s2 = astring[3];
+                                    int j = MathHelper.parseIntWithDefault(astring[4], -1);
+                                    int k = MathHelper.parseIntWithDefault(astring[5], -1);
                                     server.version = -1;
-                                    server.gameVersion = var7;
-                                    server.serverMOTD = var8;
-                                    server.populationInfo = EnumChatFormatting.GRAY + "" + var9 + "" + EnumChatFormatting.DARK_GRAY + "/" + EnumChatFormatting.GRAY + var10;
+                                    server.gameVersion = s1;
+                                    server.serverMOTD = s2;
+                                    server.populationInfo = EnumChatFormatting.GRAY + "" + j + "" + EnumChatFormatting.DARK_GRAY + "/" + EnumChatFormatting.GRAY + k;
                                 }
                             }
 
                             p_channelRead0_1_.close();
                         }
-                        public void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_)
+                        public void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_) throws Exception
                         {
                             p_exceptionCaught_1_.close();
-                        }
-                        protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Object p_channelRead0_2_)
-                        {
-                            this.channelRead0(p_channelRead0_1_, (ByteBuf)p_channelRead0_2_);
                         }
                     }
                 });
             }
-        })).channel(NioSocketChannel.class)).connect(var2.getIP(), var2.getPort());
+        })).channel(NioSocketChannel.class)).connect(serveraddress.getIP(), serveraddress.getPort());
     }
 
     public void pingPendingNetworks()
     {
-        List var1 = this.pingDestinations;
-
         synchronized (this.pingDestinations)
         {
-            Iterator var2 = this.pingDestinations.iterator();
+            Iterator<NetworkManager> iterator = this.pingDestinations.iterator();
 
-            while (var2.hasNext())
+            while (iterator.hasNext())
             {
-                NetworkManager var3 = (NetworkManager)var2.next();
+                NetworkManager networkmanager = (NetworkManager)iterator.next();
 
-                if (var3.isChannelOpen())
+                if (networkmanager.isChannelOpen())
                 {
-                    var3.processReceivedPackets();
+                    networkmanager.processReceivedPackets();
                 }
                 else
                 {
-                    var2.remove();
-                    var3.checkDisconnected();
+                    iterator.remove();
+                    networkmanager.checkDisconnected();
                 }
             }
         }
@@ -320,20 +296,18 @@ public class OldServerPinger
 
     public void clearPendingNetworks()
     {
-        List var1 = this.pingDestinations;
-
         synchronized (this.pingDestinations)
         {
-            Iterator var2 = this.pingDestinations.iterator();
+            Iterator<NetworkManager> iterator = this.pingDestinations.iterator();
 
-            while (var2.hasNext())
+            while (iterator.hasNext())
             {
-                NetworkManager var3 = (NetworkManager)var2.next();
+                NetworkManager networkmanager = (NetworkManager)iterator.next();
 
-                if (var3.isChannelOpen())
+                if (networkmanager.isChannelOpen())
                 {
-                    var2.remove();
-                    var3.closeChannel(new ChatComponentText("Cancelled"));
+                    iterator.remove();
+                    networkmanager.closeChannel(new ChatComponentText("Cancelled"));
                 }
             }
         }

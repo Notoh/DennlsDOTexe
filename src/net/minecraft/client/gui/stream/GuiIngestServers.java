@@ -15,7 +15,6 @@ public class GuiIngestServers extends GuiScreen
     private final GuiScreen field_152309_a;
     private String field_152310_f;
     private GuiIngestServers.ServerList field_152311_g;
-    private static final String __OBFID = "CL_00001843";
 
     public GuiIngestServers(GuiScreen p_i46312_1_)
     {
@@ -23,7 +22,8 @@ public class GuiIngestServers extends GuiScreen
     }
 
     /**
-     * Adds the buttons (and other controls) to the screen in question.
+     * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
+     * window resizes, the buttonList is cleared beforehand.
      */
     public void initGui()
     {
@@ -45,7 +45,7 @@ public class GuiIngestServers extends GuiScreen
     public void handleMouseInput() throws IOException
     {
         super.handleMouseInput();
-        this.field_152311_g.func_178039_p();
+        this.field_152311_g.handleMouseInput();
     }
 
     /**
@@ -59,6 +59,9 @@ public class GuiIngestServers extends GuiScreen
         }
     }
 
+    /**
+     * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
+     */
     protected void actionPerformed(GuiButton button) throws IOException
     {
         if (button.enabled)
@@ -88,8 +91,6 @@ public class GuiIngestServers extends GuiScreen
 
     class ServerList extends GuiSlot
     {
-        private static final String __OBFID = "CL_00001842";
-
         public ServerList(Minecraft mcIn)
         {
             super(mcIn, GuiIngestServers.this.width, GuiIngestServers.this.height, 32, GuiIngestServers.this.height - 35, (int)((double)mcIn.fontRendererObj.FONT_HEIGHT * 3.5D));
@@ -112,58 +113,60 @@ public class GuiIngestServers extends GuiScreen
             return this.mc.getTwitchStream().func_152925_v()[slotIndex].serverUrl.equals(this.mc.gameSettings.streamPreferredServer);
         }
 
-        protected void drawBackground() {}
-
-        protected void drawSlot(int p_180791_1_, int p_180791_2_, int p_180791_3_, int p_180791_4_, int p_180791_5_, int p_180791_6_)
+        protected void drawBackground()
         {
-            IngestServer var7 = this.mc.getTwitchStream().func_152925_v()[p_180791_1_];
-            String var8 = var7.serverUrl.replaceAll("\\{stream_key\\}", "");
-            String var9 = (int)var7.bitrateKbps + " kbps";
-            String var10 = null;
-            IngestServerTester var11 = this.mc.getTwitchStream().func_152932_y();
+        }
 
-            if (var11 != null)
+        protected void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn)
+        {
+            IngestServer ingestserver = this.mc.getTwitchStream().func_152925_v()[entryID];
+            String s = ingestserver.serverUrl.replaceAll("\\{stream_key\\}", "");
+            String s1 = (int)ingestserver.bitrateKbps + " kbps";
+            String s2 = null;
+            IngestServerTester ingestservertester = this.mc.getTwitchStream().func_152932_y();
+
+            if (ingestservertester != null)
             {
-                if (var7 == var11.func_153040_c())
+                if (ingestserver == ingestservertester.func_153040_c())
                 {
-                    var8 = EnumChatFormatting.GREEN + var8;
-                    var9 = (int)(var11.func_153030_h() * 100.0F) + "%";
+                    s = EnumChatFormatting.GREEN + s;
+                    s1 = (int)(ingestservertester.func_153030_h() * 100.0F) + "%";
                 }
-                else if (p_180791_1_ < var11.func_153028_p())
+                else if (entryID < ingestservertester.func_153028_p())
                 {
-                    if (var7.bitrateKbps == 0.0F)
+                    if (ingestserver.bitrateKbps == 0.0F)
                     {
-                        var9 = EnumChatFormatting.RED + "Down!";
+                        s1 = EnumChatFormatting.RED + "Down!";
                     }
                 }
                 else
                 {
-                    var9 = EnumChatFormatting.OBFUSCATED + "1234" + EnumChatFormatting.RESET + " kbps";
+                    s1 = EnumChatFormatting.OBFUSCATED + "1234" + EnumChatFormatting.RESET + " kbps";
                 }
             }
-            else if (var7.bitrateKbps == 0.0F)
+            else if (ingestserver.bitrateKbps == 0.0F)
             {
-                var9 = EnumChatFormatting.RED + "Down!";
+                s1 = EnumChatFormatting.RED + "Down!";
             }
 
-            p_180791_2_ -= 15;
+            p_180791_2_ = p_180791_2_ - 15;
 
-            if (this.isSelected(p_180791_1_))
+            if (this.isSelected(entryID))
             {
-                var10 = EnumChatFormatting.BLUE + "(Preferred)";
+                s2 = EnumChatFormatting.BLUE + "(Preferred)";
             }
-            else if (var7.defaultServer)
+            else if (ingestserver.defaultServer)
             {
-                var10 = EnumChatFormatting.GREEN + "(Default)";
+                s2 = EnumChatFormatting.GREEN + "(Default)";
             }
 
-            GuiIngestServers.this.drawString(GuiIngestServers.this.fontRendererObj, var7.serverName, p_180791_2_ + 2, p_180791_3_ + 5, 16777215);
-            GuiIngestServers.this.drawString(GuiIngestServers.this.fontRendererObj, var8, p_180791_2_ + 2, p_180791_3_ + GuiIngestServers.this.fontRendererObj.FONT_HEIGHT + 5 + 3, 3158064);
-            GuiIngestServers.this.drawString(GuiIngestServers.this.fontRendererObj, var9, this.getScrollBarX() - 5 - GuiIngestServers.this.fontRendererObj.getStringWidth(var9), p_180791_3_ + 5, 8421504);
+            GuiIngestServers.this.drawString(GuiIngestServers.this.fontRendererObj, ingestserver.serverName, p_180791_2_ + 2, p_180791_3_ + 5, 16777215);
+            GuiIngestServers.this.drawString(GuiIngestServers.this.fontRendererObj, s, p_180791_2_ + 2, p_180791_3_ + GuiIngestServers.this.fontRendererObj.FONT_HEIGHT + 5 + 3, 3158064);
+            GuiIngestServers.this.drawString(GuiIngestServers.this.fontRendererObj, s1, this.getScrollBarX() - 5 - GuiIngestServers.this.fontRendererObj.getStringWidth(s1), p_180791_3_ + 5, 8421504);
 
-            if (var10 != null)
+            if (s2 != null)
             {
-                GuiIngestServers.this.drawString(GuiIngestServers.this.fontRendererObj, var10, this.getScrollBarX() - 5 - GuiIngestServers.this.fontRendererObj.getStringWidth(var10), p_180791_3_ + 5 + 3 + GuiIngestServers.this.fontRendererObj.FONT_HEIGHT, 8421504);
+                GuiIngestServers.this.drawString(GuiIngestServers.this.fontRendererObj, s2, this.getScrollBarX() - 5 - GuiIngestServers.this.fontRendererObj.getStringWidth(s2), p_180791_3_ + 5 + 3 + GuiIngestServers.this.fontRendererObj.FONT_HEIGHT, 8421504);
             }
         }
 

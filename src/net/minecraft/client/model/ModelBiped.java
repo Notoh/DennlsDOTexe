@@ -37,86 +37,85 @@ public class ModelBiped extends ModelBase
 
     /** Records whether the model should be rendered aiming a bow. */
     public boolean aimedBow;
-    private static final String __OBFID = "CL_00000840";
 
     public ModelBiped()
     {
         this(0.0F);
     }
 
-    public ModelBiped(float p_i1148_1_)
+    public ModelBiped(float modelSize)
     {
-        this(p_i1148_1_, 0.0F, 64, 32);
+        this(modelSize, 0.0F, 64, 32);
     }
 
-    public ModelBiped(float p_i1149_1_, float p_i1149_2_, int p_i1149_3_, int p_i1149_4_)
+    public ModelBiped(float modelSize, float p_i1149_2_, int textureWidthIn, int textureHeightIn)
     {
-        this.textureWidth = p_i1149_3_;
-        this.textureHeight = p_i1149_4_;
+        this.textureWidth = textureWidthIn;
+        this.textureHeight = textureHeightIn;
         this.bipedHead = new ModelRenderer(this, 0, 0);
-        this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, p_i1149_1_);
+        this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, modelSize);
         this.bipedHead.setRotationPoint(0.0F, 0.0F + p_i1149_2_, 0.0F);
         this.bipedHeadwear = new ModelRenderer(this, 32, 0);
-        this.bipedHeadwear.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, p_i1149_1_ + 0.5F);
+        this.bipedHeadwear.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, modelSize + 0.5F);
         this.bipedHeadwear.setRotationPoint(0.0F, 0.0F + p_i1149_2_, 0.0F);
         this.bipedBody = new ModelRenderer(this, 16, 16);
-        this.bipedBody.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, p_i1149_1_);
+        this.bipedBody.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, modelSize);
         this.bipedBody.setRotationPoint(0.0F, 0.0F + p_i1149_2_, 0.0F);
         this.bipedRightArm = new ModelRenderer(this, 40, 16);
-        this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, p_i1149_1_);
+        this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, modelSize);
         this.bipedRightArm.setRotationPoint(-5.0F, 2.0F + p_i1149_2_, 0.0F);
         this.bipedLeftArm = new ModelRenderer(this, 40, 16);
         this.bipedLeftArm.mirror = true;
-        this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, p_i1149_1_);
+        this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, modelSize);
         this.bipedLeftArm.setRotationPoint(5.0F, 2.0F + p_i1149_2_, 0.0F);
         this.bipedRightLeg = new ModelRenderer(this, 0, 16);
-        this.bipedRightLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, p_i1149_1_);
+        this.bipedRightLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, modelSize);
         this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F + p_i1149_2_, 0.0F);
         this.bipedLeftLeg = new ModelRenderer(this, 0, 16);
         this.bipedLeftLeg.mirror = true;
-        this.bipedLeftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, p_i1149_1_);
+        this.bipedLeftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, modelSize);
         this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F + p_i1149_2_, 0.0F);
     }
 
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float p_78088_7_)
+    public void render(Entity entityIn, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float scale)
     {
-        this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_, p_78088_1_);
+        this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, scale, entityIn);
         GlStateManager.pushMatrix();
 
         if (this.isChild)
         {
-            float var8 = 2.0F;
-            GlStateManager.scale(1.5F / var8, 1.5F / var8, 1.5F / var8);
-            GlStateManager.translate(0.0F, 16.0F * p_78088_7_, 0.0F);
-            this.bipedHead.render(p_78088_7_);
+            float f = 2.0F;
+            GlStateManager.scale(1.5F / f, 1.5F / f, 1.5F / f);
+            GlStateManager.translate(0.0F, 16.0F * scale, 0.0F);
+            this.bipedHead.render(scale);
             GlStateManager.popMatrix();
             GlStateManager.pushMatrix();
-            GlStateManager.scale(1.0F / var8, 1.0F / var8, 1.0F / var8);
-            GlStateManager.translate(0.0F, 24.0F * p_78088_7_, 0.0F);
-            this.bipedBody.render(p_78088_7_);
-            this.bipedRightArm.render(p_78088_7_);
-            this.bipedLeftArm.render(p_78088_7_);
-            this.bipedRightLeg.render(p_78088_7_);
-            this.bipedLeftLeg.render(p_78088_7_);
-            this.bipedHeadwear.render(p_78088_7_);
+            GlStateManager.scale(1.0F / f, 1.0F / f, 1.0F / f);
+            GlStateManager.translate(0.0F, 24.0F * scale, 0.0F);
+            this.bipedBody.render(scale);
+            this.bipedRightArm.render(scale);
+            this.bipedLeftArm.render(scale);
+            this.bipedRightLeg.render(scale);
+            this.bipedLeftLeg.render(scale);
+            this.bipedHeadwear.render(scale);
         }
         else
         {
-            if (p_78088_1_.isSneaking())
+            if (entityIn.isSneaking())
             {
                 GlStateManager.translate(0.0F, 0.2F, 0.0F);
             }
 
-            this.bipedHead.render(p_78088_7_);
-            this.bipedBody.render(p_78088_7_);
-            this.bipedRightArm.render(p_78088_7_);
-            this.bipedLeftArm.render(p_78088_7_);
-            this.bipedRightLeg.render(p_78088_7_);
-            this.bipedLeftLeg.render(p_78088_7_);
-            this.bipedHeadwear.render(p_78088_7_);
+            this.bipedHead.render(scale);
+            this.bipedBody.render(scale);
+            this.bipedRightArm.render(scale);
+            this.bipedLeftArm.render(scale);
+            this.bipedRightLeg.render(scale);
+            this.bipedLeftLeg.render(scale);
+            this.bipedHeadwear.render(scale);
         }
 
         GlStateManager.popMatrix();
@@ -127,7 +126,7 @@ public class ModelBiped extends ModelBase
      * and legs, where par1 represents the time(so that arms and legs swing back and forth) and par2 represents how
      * "far" arms and legs can swing at most.
      */
-    public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity p_78087_7_)
+    public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity entityIn)
     {
         this.bipedHead.rotateAngleY = p_78087_4_ / (180F / (float)Math.PI);
         this.bipedHead.rotateAngleX = p_78087_5_ / (180F / (float)Math.PI);
@@ -175,13 +174,11 @@ public class ModelBiped extends ModelBase
         }
 
         this.bipedLeftArm.rotateAngleY = 0.0F;
-        float var8;
-        float var9;
 
         if (this.swingProgress > -9990.0F)
         {
-            var8 = this.swingProgress;
-            this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt_float(var8) * (float)Math.PI * 2.0F) * 0.2F;
+            float f = this.swingProgress;
+            this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt_float(f) * (float)Math.PI * 2.0F) * 0.2F;
             this.bipedRightArm.rotationPointZ = MathHelper.sin(this.bipedBody.rotateAngleY) * 5.0F;
             this.bipedRightArm.rotationPointX = -MathHelper.cos(this.bipedBody.rotateAngleY) * 5.0F;
             this.bipedLeftArm.rotationPointZ = -MathHelper.sin(this.bipedBody.rotateAngleY) * 5.0F;
@@ -189,13 +186,13 @@ public class ModelBiped extends ModelBase
             this.bipedRightArm.rotateAngleY += this.bipedBody.rotateAngleY;
             this.bipedLeftArm.rotateAngleY += this.bipedBody.rotateAngleY;
             this.bipedLeftArm.rotateAngleX += this.bipedBody.rotateAngleY;
-            var8 = 1.0F - this.swingProgress;
-            var8 *= var8;
-            var8 *= var8;
-            var8 = 1.0F - var8;
-            var9 = MathHelper.sin(var8 * (float)Math.PI);
-            float var10 = MathHelper.sin(this.swingProgress * (float)Math.PI) * -(this.bipedHead.rotateAngleX - 0.7F) * 0.75F;
-            this.bipedRightArm.rotateAngleX = (float)((double)this.bipedRightArm.rotateAngleX - ((double)var9 * 1.2D + (double)var10));
+            f = 1.0F - this.swingProgress;
+            f = f * f;
+            f = f * f;
+            f = 1.0F - f;
+            float f1 = MathHelper.sin(f * (float)Math.PI);
+            float f2 = MathHelper.sin(this.swingProgress * (float)Math.PI) * -(this.bipedHead.rotateAngleX - 0.7F) * 0.75F;
+            this.bipedRightArm.rotateAngleX = (float)((double)this.bipedRightArm.rotateAngleX - ((double)f1 * 1.2D + (double)f2));
             this.bipedRightArm.rotateAngleY += this.bipedBody.rotateAngleY * 2.0F;
             this.bipedRightArm.rotateAngleZ += MathHelper.sin(this.swingProgress * (float)Math.PI) * -0.4F;
         }
@@ -228,52 +225,52 @@ public class ModelBiped extends ModelBase
 
         if (this.aimedBow)
         {
-            var8 = 0.0F;
-            var9 = 0.0F;
+            float f3 = 0.0F;
+            float f4 = 0.0F;
             this.bipedRightArm.rotateAngleZ = 0.0F;
             this.bipedLeftArm.rotateAngleZ = 0.0F;
-            this.bipedRightArm.rotateAngleY = -(0.1F - var8 * 0.6F) + this.bipedHead.rotateAngleY;
-            this.bipedLeftArm.rotateAngleY = 0.1F - var8 * 0.6F + this.bipedHead.rotateAngleY + 0.4F;
+            this.bipedRightArm.rotateAngleY = -(0.1F - f3 * 0.6F) + this.bipedHead.rotateAngleY;
+            this.bipedLeftArm.rotateAngleY = 0.1F - f3 * 0.6F + this.bipedHead.rotateAngleY + 0.4F;
             this.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
             this.bipedLeftArm.rotateAngleX = -((float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
-            this.bipedRightArm.rotateAngleX -= var8 * 1.2F - var9 * 0.4F;
-            this.bipedLeftArm.rotateAngleX -= var8 * 1.2F - var9 * 0.4F;
+            this.bipedRightArm.rotateAngleX -= f3 * 1.2F - f4 * 0.4F;
+            this.bipedLeftArm.rotateAngleX -= f3 * 1.2F - f4 * 0.4F;
             this.bipedRightArm.rotateAngleZ += MathHelper.cos(p_78087_3_ * 0.09F) * 0.05F + 0.05F;
             this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(p_78087_3_ * 0.09F) * 0.05F + 0.05F;
             this.bipedRightArm.rotateAngleX += MathHelper.sin(p_78087_3_ * 0.067F) * 0.05F;
             this.bipedLeftArm.rotateAngleX -= MathHelper.sin(p_78087_3_ * 0.067F) * 0.05F;
         }
 
-        func_178685_a(this.bipedHead, this.bipedHeadwear);
+        copyModelAngles(this.bipedHead, this.bipedHeadwear);
     }
 
-    public void setModelAttributes(ModelBase p_178686_1_)
+    public void setModelAttributes(ModelBase model)
     {
-        super.setModelAttributes(p_178686_1_);
+        super.setModelAttributes(model);
 
-        if (p_178686_1_ instanceof ModelBiped)
+        if (model instanceof ModelBiped)
         {
-            ModelBiped var2 = (ModelBiped)p_178686_1_;
-            this.heldItemLeft = var2.heldItemLeft;
-            this.heldItemRight = var2.heldItemRight;
-            this.isSneak = var2.isSneak;
-            this.aimedBow = var2.aimedBow;
+            ModelBiped modelbiped = (ModelBiped)model;
+            this.heldItemLeft = modelbiped.heldItemLeft;
+            this.heldItemRight = modelbiped.heldItemRight;
+            this.isSneak = modelbiped.isSneak;
+            this.aimedBow = modelbiped.aimedBow;
         }
     }
 
-    public void func_178719_a(boolean p_178719_1_)
+    public void setInvisible(boolean invisible)
     {
-        this.bipedHead.showModel = p_178719_1_;
-        this.bipedHeadwear.showModel = p_178719_1_;
-        this.bipedBody.showModel = p_178719_1_;
-        this.bipedRightArm.showModel = p_178719_1_;
-        this.bipedLeftArm.showModel = p_178719_1_;
-        this.bipedRightLeg.showModel = p_178719_1_;
-        this.bipedLeftLeg.showModel = p_178719_1_;
+        this.bipedHead.showModel = invisible;
+        this.bipedHeadwear.showModel = invisible;
+        this.bipedBody.showModel = invisible;
+        this.bipedRightArm.showModel = invisible;
+        this.bipedLeftArm.showModel = invisible;
+        this.bipedRightLeg.showModel = invisible;
+        this.bipedLeftLeg.showModel = invisible;
     }
 
-    public void postRenderHiddenArm(float p_178718_1_)
+    public void postRenderArm(float scale)
     {
-        this.bipedRightArm.postRender(p_178718_1_);
+        this.bipedRightArm.postRender(scale);
     }
 }

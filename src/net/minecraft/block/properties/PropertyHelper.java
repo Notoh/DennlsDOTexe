@@ -2,13 +2,12 @@ package net.minecraft.block.properties;
 
 import com.google.common.base.Objects;
 
-public abstract class PropertyHelper implements IProperty
+public abstract class PropertyHelper<T extends Comparable<T>> implements IProperty<T>
 {
-    private final Class valueClass;
+    private final Class<T> valueClass;
     private final String name;
-    private static final String __OBFID = "CL_00002018";
 
-    protected PropertyHelper(String name, Class valueClass)
+    protected PropertyHelper(String name, Class<T> valueClass)
     {
         this.valueClass = valueClass;
         this.name = name;
@@ -19,10 +18,7 @@ public abstract class PropertyHelper implements IProperty
         return this.name;
     }
 
-    /**
-     * The class of the values of this property
-     */
-    public Class getValueClass()
+    public Class<T> getValueClass()
     {
         return this.valueClass;
     }
@@ -40,8 +36,8 @@ public abstract class PropertyHelper implements IProperty
         }
         else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass())
         {
-            PropertyHelper var2 = (PropertyHelper)p_equals_1_;
-            return this.valueClass.equals(var2.valueClass) && this.name.equals(var2.name);
+            PropertyHelper propertyhelper = (PropertyHelper)p_equals_1_;
+            return this.valueClass.equals(propertyhelper.valueClass) && this.name.equals(propertyhelper.name);
         }
         else
         {

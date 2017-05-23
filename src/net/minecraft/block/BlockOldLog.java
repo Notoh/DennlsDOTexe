@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.google.common.base.Predicate;
 import java.util.List;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockState;
@@ -12,34 +13,62 @@ import net.minecraft.item.ItemStack;
 
 public class BlockOldLog extends BlockLog
 {
-    public static final PropertyEnum VARIANT_PROP = PropertyEnum.create("variant", BlockPlanks.EnumType.class, new Predicate()
+    public static final PropertyEnum<BlockPlanks.EnumType> VARIANT = PropertyEnum.<BlockPlanks.EnumType>create("variant", BlockPlanks.EnumType.class, new Predicate<BlockPlanks.EnumType>()
     {
-        private static final String __OBFID = "CL_00002084";
-        public boolean func_180200_a(BlockPlanks.EnumType p_180200_1_)
+        public boolean apply(BlockPlanks.EnumType p_apply_1_)
         {
-            return p_180200_1_.func_176839_a() < 4;
-        }
-        public boolean apply(Object p_apply_1_)
-        {
-            return this.func_180200_a((BlockPlanks.EnumType)p_apply_1_);
+            return p_apply_1_.getMetadata() < 4;
         }
     });
-    private static final String __OBFID = "CL_00000281";
 
     public BlockOldLog()
     {
-        this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT_PROP, BlockPlanks.EnumType.OAK).withProperty(AXIS_PROP, BlockLog.EnumAxis.Y));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, BlockPlanks.EnumType.OAK).withProperty(LOG_AXIS, BlockLog.EnumAxis.Y));
+    }
+
+    /**
+     * Get the MapColor for this Block and the given BlockState
+     */
+    public MapColor getMapColor(IBlockState state)
+    {
+        BlockPlanks.EnumType blockplanks$enumtype = (BlockPlanks.EnumType)state.getValue(VARIANT);
+
+        switch ((BlockLog.EnumAxis)state.getValue(LOG_AXIS))
+        {
+            case X:
+            case Z:
+            case NONE:
+            default:
+                switch (blockplanks$enumtype)
+                {
+                    case OAK:
+                    default:
+                        return BlockPlanks.EnumType.SPRUCE.func_181070_c();
+
+                    case SPRUCE:
+                        return BlockPlanks.EnumType.DARK_OAK.func_181070_c();
+
+                    case BIRCH:
+                        return MapColor.quartzColor;
+
+                    case JUNGLE:
+                        return BlockPlanks.EnumType.SPRUCE.func_181070_c();
+                }
+
+            case Y:
+                return blockplanks$enumtype.func_181070_c();
+        }
     }
 
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
     {
-        list.add(new ItemStack(itemIn, 1, BlockPlanks.EnumType.OAK.func_176839_a()));
-        list.add(new ItemStack(itemIn, 1, BlockPlanks.EnumType.SPRUCE.func_176839_a()));
-        list.add(new ItemStack(itemIn, 1, BlockPlanks.EnumType.BIRCH.func_176839_a()));
-        list.add(new ItemStack(itemIn, 1, BlockPlanks.EnumType.JUNGLE.func_176839_a()));
+        list.add(new ItemStack(itemIn, 1, BlockPlanks.EnumType.OAK.getMetadata()));
+        list.add(new ItemStack(itemIn, 1, BlockPlanks.EnumType.SPRUCE.getMetadata()));
+        list.add(new ItemStack(itemIn, 1, BlockPlanks.EnumType.BIRCH.getMetadata()));
+        list.add(new ItemStack(itemIn, 1, BlockPlanks.EnumType.JUNGLE.getMetadata()));
     }
 
     /**
@@ -47,105 +76,72 @@ public class BlockOldLog extends BlockLog
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        IBlockState var2 = this.getDefaultState().withProperty(VARIANT_PROP, BlockPlanks.EnumType.func_176837_a((meta & 3) % 4));
+        IBlockState iblockstate = this.getDefaultState().withProperty(VARIANT, BlockPlanks.EnumType.byMetadata((meta & 3) % 4));
 
         switch (meta & 12)
         {
             case 0:
-                var2 = var2.withProperty(AXIS_PROP, BlockLog.EnumAxis.Y);
+                iblockstate = iblockstate.withProperty(LOG_AXIS, BlockLog.EnumAxis.Y);
                 break;
 
             case 4:
-                var2 = var2.withProperty(AXIS_PROP, BlockLog.EnumAxis.X);
+                iblockstate = iblockstate.withProperty(LOG_AXIS, BlockLog.EnumAxis.X);
                 break;
 
             case 8:
-                var2 = var2.withProperty(AXIS_PROP, BlockLog.EnumAxis.Z);
+                iblockstate = iblockstate.withProperty(LOG_AXIS, BlockLog.EnumAxis.Z);
                 break;
 
             default:
-                var2 = var2.withProperty(AXIS_PROP, BlockLog.EnumAxis.NONE);
+                iblockstate = iblockstate.withProperty(LOG_AXIS, BlockLog.EnumAxis.NONE);
         }
 
-        return var2;
+        return iblockstate;
     }
+
+    @SuppressWarnings("incomplete-switch")
 
     /**
      * Convert the BlockState into the correct metadata value
      */
     public int getMetaFromState(IBlockState state)
     {
-        byte var2 = 0;
-        int var3 = var2 | ((BlockPlanks.EnumType)state.getValue(VARIANT_PROP)).func_176839_a();
+        int i = 0;
+        i = i | ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata();
 
-        switch (BlockOldLog.SwitchEnumAxis.field_180203_a[((BlockLog.EnumAxis)state.getValue(AXIS_PROP)).ordinal()])
+        switch ((BlockLog.EnumAxis)state.getValue(LOG_AXIS))
         {
-            case 1:
-                var3 |= 4;
+            case X:
+                i |= 4;
                 break;
 
-            case 2:
-                var3 |= 8;
+            case Z:
+                i |= 8;
                 break;
 
-            case 3:
-                var3 |= 12;
+            case NONE:
+                i |= 12;
         }
 
-        return var3;
+        return i;
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {VARIANT_PROP, AXIS_PROP});
+        return new BlockState(this, new IProperty[] {VARIANT, LOG_AXIS});
     }
 
     protected ItemStack createStackedBlock(IBlockState state)
     {
-        return new ItemStack(Item.getItemFromBlock(this), 1, ((BlockPlanks.EnumType)state.getValue(VARIANT_PROP)).func_176839_a());
+        return new ItemStack(Item.getItemFromBlock(this), 1, ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata());
     }
 
     /**
-     * Get the damage value that this Block should drop
+     * Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It
+     * returns the metadata of the dropped item based on the old metadata of the block.
      */
     public int damageDropped(IBlockState state)
     {
-        return ((BlockPlanks.EnumType)state.getValue(VARIANT_PROP)).func_176839_a();
-    }
-
-    static final class SwitchEnumAxis
-    {
-        static final int[] field_180203_a = new int[BlockLog.EnumAxis.values().length];
-        private static final String __OBFID = "CL_00002083";
-
-        static
-        {
-            try
-            {
-                field_180203_a[BlockLog.EnumAxis.X.ordinal()] = 1;
-            }
-            catch (NoSuchFieldError var3)
-            {
-                ;
-            }
-
-            try
-            {
-                field_180203_a[BlockLog.EnumAxis.Z.ordinal()] = 2;
-            }
-            catch (NoSuchFieldError var2)
-            {
-                ;
-            }
-
-            try
-            {
-                field_180203_a[BlockLog.EnumAxis.NONE.ordinal()] = 3;
-            }
-            catch (NoSuchFieldError var1)
-            {
-                ;
-            }
-        }
+        return ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata();
     }
 }

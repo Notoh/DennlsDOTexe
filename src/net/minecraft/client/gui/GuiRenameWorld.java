@@ -8,15 +8,14 @@ import org.lwjgl.input.Keyboard;
 
 public class GuiRenameWorld extends GuiScreen
 {
-    private GuiScreen field_146585_a;
+    private GuiScreen parentScreen;
     private GuiTextField field_146583_f;
-    private final String field_146584_g;
-    private static final String __OBFID = "CL_00000709";
+    private final String saveName;
 
-    public GuiRenameWorld(GuiScreen p_i46317_1_, String p_i46317_2_)
+    public GuiRenameWorld(GuiScreen parentScreenIn, String saveNameIn)
     {
-        this.field_146585_a = p_i46317_1_;
-        this.field_146584_g = p_i46317_2_;
+        this.parentScreen = parentScreenIn;
+        this.saveName = saveNameIn;
     }
 
     /**
@@ -28,7 +27,8 @@ public class GuiRenameWorld extends GuiScreen
     }
 
     /**
-     * Adds the buttons (and other controls) to the screen in question.
+     * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
+     * window resizes, the buttonList is cleared beforehand.
      */
     public void initGui()
     {
@@ -36,12 +36,12 @@ public class GuiRenameWorld extends GuiScreen
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 12, I18n.format("selectWorld.renameButton", new Object[0])));
         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + 12, I18n.format("gui.cancel", new Object[0])));
-        ISaveFormat var1 = this.mc.getSaveLoader();
-        WorldInfo var2 = var1.getWorldInfo(this.field_146584_g);
-        String var3 = var2.getWorldName();
+        ISaveFormat isaveformat = this.mc.getSaveLoader();
+        WorldInfo worldinfo = isaveformat.getWorldInfo(this.saveName);
+        String s = worldinfo.getWorldName();
         this.field_146583_f = new GuiTextField(2, this.fontRendererObj, this.width / 2 - 100, 60, 200, 20);
         this.field_146583_f.setFocused(true);
-        this.field_146583_f.setText(var3);
+        this.field_146583_f.setText(s);
     }
 
     /**
@@ -52,25 +52,28 @@ public class GuiRenameWorld extends GuiScreen
         Keyboard.enableRepeatEvents(false);
     }
 
+    /**
+     * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
+     */
     protected void actionPerformed(GuiButton button) throws IOException
     {
         if (button.enabled)
         {
             if (button.id == 1)
             {
-                this.mc.displayGuiScreen(this.field_146585_a);
+                this.mc.displayGuiScreen(this.parentScreen);
             }
             else if (button.id == 0)
             {
-                ISaveFormat var2 = this.mc.getSaveLoader();
-                var2.renameWorld(this.field_146584_g, this.field_146583_f.getText().trim());
-                this.mc.displayGuiScreen(this.field_146585_a);
+                ISaveFormat isaveformat = this.mc.getSaveLoader();
+                isaveformat.renameWorld(this.saveName, this.field_146583_f.getText().trim());
+                this.mc.displayGuiScreen(this.parentScreen);
             }
         }
     }
 
     /**
-     * Fired when a key is typed (except F11 who toggle full screen). This is the equivalent of
+     * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
     protected void keyTyped(char typedChar, int keyCode) throws IOException

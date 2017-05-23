@@ -1,165 +1,147 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.IChatComponent;
 
-public class S45PacketTitle implements Packet
+public class S45PacketTitle implements Packet<INetHandlerPlayClient>
 {
-    private S45PacketTitle.Type field_179812_a;
-    private IChatComponent field_179810_b;
-    private int field_179811_c;
-    private int field_179808_d;
-    private int field_179809_e;
-    private static final String __OBFID = "CL_00002287";
+    private S45PacketTitle.Type type;
+    private IChatComponent message;
+    private int fadeInTime;
+    private int displayTime;
+    private int fadeOutTime;
 
-    public S45PacketTitle() {}
-
-    public S45PacketTitle(S45PacketTitle.Type p_i45953_1_, IChatComponent p_i45953_2_)
+    public S45PacketTitle()
     {
-        this(p_i45953_1_, p_i45953_2_, -1, -1, -1);
     }
 
-    public S45PacketTitle(int p_i45954_1_, int p_i45954_2_, int p_i45954_3_)
+    public S45PacketTitle(S45PacketTitle.Type type, IChatComponent message)
     {
-        this(S45PacketTitle.Type.TIMES, (IChatComponent)null, p_i45954_1_, p_i45954_2_, p_i45954_3_);
+        this(type, message, -1, -1, -1);
     }
 
-    public S45PacketTitle(S45PacketTitle.Type p_i45955_1_, IChatComponent p_i45955_2_, int p_i45955_3_, int p_i45955_4_, int p_i45955_5_)
+    public S45PacketTitle(int fadeInTime, int displayTime, int fadeOutTime)
     {
-        this.field_179812_a = p_i45955_1_;
-        this.field_179810_b = p_i45955_2_;
-        this.field_179811_c = p_i45955_3_;
-        this.field_179808_d = p_i45955_4_;
-        this.field_179809_e = p_i45955_5_;
+        this(S45PacketTitle.Type.TIMES, (IChatComponent)null, fadeInTime, displayTime, fadeOutTime);
+    }
+
+    public S45PacketTitle(S45PacketTitle.Type type, IChatComponent message, int fadeInTime, int displayTime, int fadeOutTime)
+    {
+        this.type = type;
+        this.message = message;
+        this.fadeInTime = fadeInTime;
+        this.displayTime = displayTime;
+        this.fadeOutTime = fadeOutTime;
     }
 
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.field_179812_a = (S45PacketTitle.Type)data.readEnumValue(S45PacketTitle.Type.class);
+        this.type = (S45PacketTitle.Type)buf.readEnumValue(S45PacketTitle.Type.class);
 
-        if (this.field_179812_a == S45PacketTitle.Type.TITLE || this.field_179812_a == S45PacketTitle.Type.SUBTITLE)
+        if (this.type == S45PacketTitle.Type.TITLE || this.type == S45PacketTitle.Type.SUBTITLE)
         {
-            this.field_179810_b = data.readChatComponent();
+            this.message = buf.readChatComponent();
         }
 
-        if (this.field_179812_a == S45PacketTitle.Type.TIMES)
+        if (this.type == S45PacketTitle.Type.TIMES)
         {
-            this.field_179811_c = data.readInt();
-            this.field_179808_d = data.readInt();
-            this.field_179809_e = data.readInt();
+            this.fadeInTime = buf.readInt();
+            this.displayTime = buf.readInt();
+            this.fadeOutTime = buf.readInt();
         }
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeEnumValue(this.field_179812_a);
+        buf.writeEnumValue(this.type);
 
-        if (this.field_179812_a == S45PacketTitle.Type.TITLE || this.field_179812_a == S45PacketTitle.Type.SUBTITLE)
+        if (this.type == S45PacketTitle.Type.TITLE || this.type == S45PacketTitle.Type.SUBTITLE)
         {
-            data.writeChatComponent(this.field_179810_b);
+            buf.writeChatComponent(this.message);
         }
 
-        if (this.field_179812_a == S45PacketTitle.Type.TIMES)
+        if (this.type == S45PacketTitle.Type.TIMES)
         {
-            data.writeInt(this.field_179811_c);
-            data.writeInt(this.field_179808_d);
-            data.writeInt(this.field_179809_e);
+            buf.writeInt(this.fadeInTime);
+            buf.writeInt(this.displayTime);
+            buf.writeInt(this.fadeOutTime);
         }
-    }
-
-    public void func_179802_a(INetHandlerPlayClient p_179802_1_)
-    {
-        p_179802_1_.func_175099_a(this);
-    }
-
-    public S45PacketTitle.Type func_179807_a()
-    {
-        return this.field_179812_a;
-    }
-
-    public IChatComponent func_179805_b()
-    {
-        return this.field_179810_b;
-    }
-
-    public int func_179806_c()
-    {
-        return this.field_179811_c;
-    }
-
-    public int func_179804_d()
-    {
-        return this.field_179808_d;
-    }
-
-    public int func_179803_e()
-    {
-        return this.field_179809_e;
     }
 
     /**
      * Passes this Packet on to the NetHandler for processing.
      */
-    public void processPacket(INetHandler handler)
+    public void processPacket(INetHandlerPlayClient handler)
     {
-        this.func_179802_a((INetHandlerPlayClient)handler);
+        handler.handleTitle(this);
+    }
+
+    public S45PacketTitle.Type getType()
+    {
+        return this.type;
+    }
+
+    public IChatComponent getMessage()
+    {
+        return this.message;
+    }
+
+    public int getFadeInTime()
+    {
+        return this.fadeInTime;
+    }
+
+    public int getDisplayTime()
+    {
+        return this.displayTime;
+    }
+
+    public int getFadeOutTime()
+    {
+        return this.fadeOutTime;
     }
 
     public static enum Type
     {
-        TITLE("TITLE", 0),
-        SUBTITLE("SUBTITLE", 1),
-        TIMES("TIMES", 2),
-        CLEAR("CLEAR", 3),
-        RESET("RESET", 4);
+        TITLE,
+        SUBTITLE,
+        TIMES,
+        CLEAR,
+        RESET;
 
-        private static final S45PacketTitle.Type[] $VALUES = new S45PacketTitle.Type[]{TITLE, SUBTITLE, TIMES, CLEAR, RESET};
-        private static final String __OBFID = "CL_00002286";
-
-        private Type(String p_i45952_1_, int p_i45952_2_) {}
-
-        public static S45PacketTitle.Type func_179969_a(String p_179969_0_)
+        public static S45PacketTitle.Type byName(String name)
         {
-            S45PacketTitle.Type[] var1 = values();
-            int var2 = var1.length;
-
-            for (int var3 = 0; var3 < var2; ++var3)
+            for (S45PacketTitle.Type s45packettitle$type : values())
             {
-                S45PacketTitle.Type var4 = var1[var3];
-
-                if (var4.name().equalsIgnoreCase(p_179969_0_))
+                if (s45packettitle$type.name().equalsIgnoreCase(name))
                 {
-                    return var4;
+                    return s45packettitle$type;
                 }
             }
 
             return TITLE;
         }
 
-        public static String[] func_179971_a()
+        public static String[] getNames()
         {
-            String[] var0 = new String[values().length];
-            int var1 = 0;
-            S45PacketTitle.Type[] var2 = values();
-            int var3 = var2.length;
+            String[] astring = new String[values().length];
+            int i = 0;
 
-            for (int var4 = 0; var4 < var3; ++var4)
+            for (S45PacketTitle.Type s45packettitle$type : values())
             {
-                S45PacketTitle.Type var5 = var2[var4];
-                var0[var1++] = var5.name().toLowerCase();
+                astring[i++] = s45packettitle$type.name().toLowerCase();
             }
 
-            return var0;
+            return astring;
         }
     }
 }

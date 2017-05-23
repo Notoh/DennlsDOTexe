@@ -1,6 +1,7 @@
 package io.notoh.dennls.mods.ghost;
 
 import io.notoh.dennls.mods.Module;
+import io.notoh.dennls.util.ModCategory;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityMob;
@@ -20,24 +21,32 @@ public class Triggerbot extends Module {
     private boolean toggle = false;
 
     private Random random = new Random();
-
+    private int keycode = Keyboard.KEY_T;
 
     @Override
-    public int getKeyCode() {
-        return Keyboard.KEY_T;
+    public void setKeyCode(int keyCode) {
+        this.keycode = keyCode;
     }
+    @Override
+    public int getKeyCode() {
+        return keycode;
+    }
+
 
     @Override
     public String getName() {
         return "Triggerbot";
     }
-
+    @Override
+    public ModCategory getCategory() {
+        return ModCategory.COMBAT;
+    }
     @Override
     public void onUpdate() {
         if(!this.toggle) {
             return;
         }
-        double delay = random.nextDouble() / 8;
+        double delay = random.nextDouble() / 12;
         if(getMC().objectMouseOver != null) {
             if(getMC().objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                 Entity entity = getMC().objectMouseOver.entityHit;

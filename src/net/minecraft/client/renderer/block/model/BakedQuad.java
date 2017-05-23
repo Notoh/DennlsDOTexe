@@ -4,31 +4,34 @@ import net.minecraft.util.EnumFacing;
 
 public class BakedQuad
 {
-    protected final int[] field_178215_a;
-    protected final int field_178213_b;
+    /**
+     * Joined 4 vertex records, each has 7 fields (x, y, z, shadeColor, u, v, <unused>), see
+     * FaceBakery.storeVertexData()
+     */
+    protected final int[] vertexData;
+    protected final int tintIndex;
     protected final EnumFacing face;
-    private static final String __OBFID = "CL_00002512";
 
-    public BakedQuad(int[] p_i46232_1_, int p_i46232_2_, EnumFacing p_i46232_3_)
+    public BakedQuad(int[] vertexDataIn, int tintIndexIn, EnumFacing faceIn)
     {
-        this.field_178215_a = p_i46232_1_;
-        this.field_178213_b = p_i46232_2_;
-        this.face = p_i46232_3_;
+        this.vertexData = vertexDataIn;
+        this.tintIndex = tintIndexIn;
+        this.face = faceIn;
     }
 
-    public int[] func_178209_a()
+    public int[] getVertexData()
     {
-        return this.field_178215_a;
+        return this.vertexData;
     }
 
-    public boolean func_178212_b()
+    public boolean hasTintIndex()
     {
-        return this.field_178213_b != -1;
+        return this.tintIndex != -1;
     }
 
-    public int func_178211_c()
+    public int getTintIndex()
     {
-        return this.field_178213_b;
+        return this.tintIndex;
     }
 
     public EnumFacing getFace()

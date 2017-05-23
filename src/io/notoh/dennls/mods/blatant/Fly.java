@@ -1,6 +1,7 @@
 package io.notoh.dennls.mods.blatant;
 
 import io.notoh.dennls.mods.Module;
+import io.notoh.dennls.util.ModCategory;
 import org.lwjgl.input.Keyboard;
 
 /**
@@ -9,6 +10,7 @@ import org.lwjgl.input.Keyboard;
 public class Fly extends Module {
 
     private boolean toggle = false;
+    private int keycode = Keyboard.KEY_F;
 
     @Override
     public void onUpdate() {
@@ -17,9 +19,14 @@ public class Fly extends Module {
 
 
     @Override
-    public int getKeyCode() {
-        return Keyboard.KEY_F;
+    public void setKeyCode(int keyCode) {
+        this.keycode = keyCode;
     }
+    @Override
+    public int getKeyCode() {
+        return keycode;
+    }
+
 
     @Override
     public String getName() {
@@ -29,6 +36,11 @@ public class Fly extends Module {
     @Override
     public void onEnable() {
         getMC().thePlayer.capabilities.isFlying = toggle;
+    }
+
+    @Override
+    public ModCategory getCategory() {
+        return ModCategory.MOVEMENT;
     }
 
     @Override

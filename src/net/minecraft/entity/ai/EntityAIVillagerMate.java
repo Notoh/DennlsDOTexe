@@ -13,12 +13,11 @@ public class EntityAIVillagerMate extends EntityAIBase
     private World worldObj;
     private int matingTimeout;
     Village villageObj;
-    private static final String __OBFID = "CL_00001594";
 
-    public EntityAIVillagerMate(EntityVillager p_i1634_1_)
+    public EntityAIVillagerMate(EntityVillager villagerIn)
     {
-        this.villagerObj = p_i1634_1_;
-        this.worldObj = p_i1634_1_.worldObj;
+        this.villagerObj = villagerIn;
+        this.worldObj = villagerIn.worldObj;
         this.setMutexBits(3);
     }
 
@@ -37,24 +36,24 @@ public class EntityAIVillagerMate extends EntityAIBase
         }
         else
         {
-            this.villageObj = this.worldObj.getVillageCollection().func_176056_a(new BlockPos(this.villagerObj), 0);
+            this.villageObj = this.worldObj.getVillageCollection().getNearestVillage(new BlockPos(this.villagerObj), 0);
 
             if (this.villageObj == null)
             {
                 return false;
             }
-            else if (this.checkSufficientDoorsPresentForNewVillager() && this.villagerObj.func_175550_n(true))
+            else if (this.checkSufficientDoorsPresentForNewVillager() && this.villagerObj.getIsWillingToMate(true))
             {
-                Entity var1 = this.worldObj.findNearestEntityWithinAABB(EntityVillager.class, this.villagerObj.getEntityBoundingBox().expand(8.0D, 3.0D, 8.0D), this.villagerObj);
+                Entity entity = this.worldObj.findNearestEntityWithinAABB(EntityVillager.class, this.villagerObj.getEntityBoundingBox().expand(8.0D, 3.0D, 8.0D), this.villagerObj);
 
-                if (var1 == null)
+                if (entity == null)
                 {
                     return false;
                 }
                 else
                 {
-                    this.mate = (EntityVillager)var1;
-                    return this.mate.getGrowingAge() == 0 && this.mate.func_175550_n(true);
+                    this.mate = (EntityVillager)entity;
+                    return this.mate.getGrowingAge() == 0 && this.mate.getIsWillingToMate(true);
                 }
             }
             else
@@ -88,7 +87,7 @@ public class EntityAIVillagerMate extends EntityAIBase
      */
     public boolean continueExecuting()
     {
-        return this.matingTimeout >= 0 && this.checkSufficientDoorsPresentForNewVillager() && this.villagerObj.getGrowingAge() == 0 && this.villagerObj.func_175550_n(false);
+        return this.matingTimeout >= 0 && this.checkSufficientDoorsPresentForNewVillager() && this.villagerObj.getGrowingAge() == 0 && this.villagerObj.getIsWillingToMate(false);
     }
 
     /**
@@ -122,21 +121,21 @@ public class EntityAIVillagerMate extends EntityAIBase
         }
         else
         {
-            int var1 = (int)((double)((float)this.villageObj.getNumVillageDoors()) * 0.35D);
-            return this.villageObj.getNumVillagers() < var1;
+            int i = (int)((double)((float)this.villageObj.getNumVillageDoors()) * 0.35D);
+            return this.villageObj.getNumVillagers() < i;
         }
     }
 
     private void giveBirth()
     {
-        EntityVillager var1 = this.villagerObj.func_180488_b(this.mate);
+        EntityVillager entityvillager = this.villagerObj.createChild(this.mate);
         this.mate.setGrowingAge(6000);
         this.villagerObj.setGrowingAge(6000);
-        this.mate.func_175549_o(false);
-        this.villagerObj.func_175549_o(false);
-        var1.setGrowingAge(-24000);
-        var1.setLocationAndAngles(this.villagerObj.posX, this.villagerObj.posY, this.villagerObj.posZ, 0.0F, 0.0F);
-        this.worldObj.spawnEntityInWorld(var1);
-        this.worldObj.setEntityState(var1, (byte)12);
+        this.mate.setIsWillingToMate(false);
+        this.villagerObj.setIsWillingToMate(false);
+        entityvillager.setGrowingAge(-24000);
+        entityvillager.setLocationAndAngles(this.villagerObj.posX, this.villagerObj.posY, this.villagerObj.posZ, 0.0F, 0.0F);
+        this.worldObj.spawnEntityInWorld(entityvillager);
+        this.worldObj.setEntityState(entityvillager, (byte)12);
     }
 }

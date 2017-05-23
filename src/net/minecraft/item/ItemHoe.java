@@ -14,49 +14,47 @@ import net.minecraft.world.World;
 public class ItemHoe extends Item
 {
     protected Item.ToolMaterial theToolMaterial;
-    private static final String __OBFID = "CL_00000039";
 
-    public ItemHoe(Item.ToolMaterial p_i45343_1_)
+    public ItemHoe(Item.ToolMaterial material)
     {
-        this.theToolMaterial = p_i45343_1_;
+        this.theToolMaterial = material;
         this.maxStackSize = 1;
-        this.setMaxDamage(p_i45343_1_.getMaxUses());
+        this.setMaxDamage(material.getMaxUses());
         this.setCreativeTab(CreativeTabs.tabTools);
     }
 
+    @SuppressWarnings("incomplete-switch")
+
     /**
      * Called when a Block is right-clicked with this Item
-     *  
-     * @param pos The block being right-clicked
-     * @param side The side being right-clicked
      */
     public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        if (!playerIn.func_175151_a(pos.offset(side), side, stack))
+        if (!playerIn.canPlayerEdit(pos.offset(side), side, stack))
         {
             return false;
         }
         else
         {
-            IBlockState var9 = worldIn.getBlockState(pos);
-            Block var10 = var9.getBlock();
+            IBlockState iblockstate = worldIn.getBlockState(pos);
+            Block block = iblockstate.getBlock();
 
-            if (side != EnumFacing.DOWN && worldIn.getBlockState(pos.offsetUp()).getBlock().getMaterial() == Material.air)
+            if (side != EnumFacing.DOWN && worldIn.getBlockState(pos.up()).getBlock().getMaterial() == Material.air)
             {
-                if (var10 == Blocks.grass)
+                if (block == Blocks.grass)
                 {
-                    return this.func_179232_a(stack, playerIn, worldIn, pos, Blocks.farmland.getDefaultState());
+                    return this.useHoe(stack, playerIn, worldIn, pos, Blocks.farmland.getDefaultState());
                 }
 
-                if (var10 == Blocks.dirt)
+                if (block == Blocks.dirt)
                 {
-                    switch (ItemHoe.SwitchDirtType.field_179590_a[((BlockDirt.DirtType)var9.getValue(BlockDirt.VARIANT)).ordinal()])
+                    switch ((BlockDirt.DirtType)iblockstate.getValue(BlockDirt.VARIANT))
                     {
-                        case 1:
-                            return this.func_179232_a(stack, playerIn, worldIn, pos, Blocks.farmland.getDefaultState());
+                        case DIRT:
+                            return this.useHoe(stack, playerIn, worldIn, pos, Blocks.farmland.getDefaultState());
 
-                        case 2:
-                            return this.func_179232_a(stack, playerIn, worldIn, pos, Blocks.dirt.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT));
+                        case COARSE_DIRT:
+                            return this.useHoe(stack, playerIn, worldIn, pos, Blocks.dirt.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT));
                     }
                 }
             }
@@ -65,9 +63,9 @@ public class ItemHoe extends Item
         }
     }
 
-    protected boolean func_179232_a(ItemStack p_179232_1_, EntityPlayer p_179232_2_, World worldIn, BlockPos p_179232_4_, IBlockState p_179232_5_)
+    protected boolean useHoe(ItemStack stack, EntityPlayer player, World worldIn, BlockPos target, IBlockState newState)
     {
-        worldIn.playSoundEffect((double)((float)p_179232_4_.getX() + 0.5F), (double)((float)p_179232_4_.getY() + 0.5F), (double)((float)p_179232_4_.getZ() + 0.5F), p_179232_5_.getBlock().stepSound.getStepSound(), (p_179232_5_.getBlock().stepSound.getVolume() + 1.0F) / 2.0F, p_179232_5_.getBlock().stepSound.getFrequency() * 0.8F);
+        worldIn.playSoundEffect((double)((float)target.getX() + 0.5F), (double)((float)target.getY() + 0.5F), (double)((float)target.getZ() + 0.5F), newState.getBlock().stepSound.getStepSound(), (newState.getBlock().stepSound.getVolume() + 1.0F) / 2.0F, newState.getBlock().stepSound.getFrequency() * 0.8F);
 
         if (worldIn.isRemote)
         {
@@ -75,8 +73,8 @@ public class ItemHoe extends Item
         }
         else
         {
-            worldIn.setBlockState(p_179232_4_, p_179232_5_);
-            p_179232_1_.damageItem(1, p_179232_2_);
+            worldIn.setBlockState(target, newState);
+            stack.damageItem(1, player);
             return true;
         }
     }
@@ -96,32 +94,5 @@ public class ItemHoe extends Item
     public String getMaterialName()
     {
         return this.theToolMaterial.toString();
-    }
-
-    static final class SwitchDirtType
-    {
-        static final int[] field_179590_a = new int[BlockDirt.DirtType.values().length];
-        private static final String __OBFID = "CL_00002179";
-
-        static
-        {
-            try
-            {
-                field_179590_a[BlockDirt.DirtType.DIRT.ordinal()] = 1;
-            }
-            catch (NoSuchFieldError var2)
-            {
-                ;
-            }
-
-            try
-            {
-                field_179590_a[BlockDirt.DirtType.COARSE_DIRT.ordinal()] = 2;
-            }
-            catch (NoSuchFieldError var1)
-            {
-                ;
-            }
-        }
     }
 }

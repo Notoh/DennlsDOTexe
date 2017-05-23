@@ -1,22 +1,22 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 
-public class S3CPacketUpdateScore implements Packet
+public class S3CPacketUpdateScore implements Packet<INetHandlerPlayClient>
 {
     private String name = "";
     private String objective = "";
     private int value;
     private S3CPacketUpdateScore.Action action;
-    private static final String __OBFID = "CL_00001335";
 
-    public S3CPacketUpdateScore() {}
+    public S3CPacketUpdateScore()
+    {
+    }
 
     public S3CPacketUpdateScore(Score scoreIn)
     {
@@ -45,30 +45,30 @@ public class S3CPacketUpdateScore implements Packet
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.name = data.readStringFromBuffer(40);
-        this.action = (S3CPacketUpdateScore.Action)data.readEnumValue(S3CPacketUpdateScore.Action.class);
-        this.objective = data.readStringFromBuffer(16);
+        this.name = buf.readStringFromBuffer(40);
+        this.action = (S3CPacketUpdateScore.Action)buf.readEnumValue(S3CPacketUpdateScore.Action.class);
+        this.objective = buf.readStringFromBuffer(16);
 
         if (this.action != S3CPacketUpdateScore.Action.REMOVE)
         {
-            this.value = data.readVarIntFromBuffer();
+            this.value = buf.readVarIntFromBuffer();
         }
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeString(this.name);
-        data.writeEnumValue(this.action);
-        data.writeString(this.objective);
+        buf.writeString(this.name);
+        buf.writeEnumValue(this.action);
+        buf.writeString(this.objective);
 
         if (this.action != S3CPacketUpdateScore.Action.REMOVE)
         {
-            data.writeVarIntToBuffer(this.value);
+            buf.writeVarIntToBuffer(this.value);
         }
     }
 
@@ -80,42 +80,29 @@ public class S3CPacketUpdateScore implements Packet
         handler.handleUpdateScore(this);
     }
 
-    public String func_149324_c()
+    public String getPlayerName()
     {
         return this.name;
     }
 
-    public String func_149321_d()
+    public String getObjectiveName()
     {
         return this.objective;
     }
 
-    public int func_149323_e()
+    public int getScoreValue()
     {
         return this.value;
     }
 
-    public S3CPacketUpdateScore.Action func_180751_d()
+    public S3CPacketUpdateScore.Action getScoreAction()
     {
         return this.action;
     }
 
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.processPacket((INetHandlerPlayClient)handler);
-    }
-
     public static enum Action
     {
-        CHANGE("CHANGE", 0),
-        REMOVE("REMOVE", 1);
-
-        private static final S3CPacketUpdateScore.Action[] $VALUES = new S3CPacketUpdateScore.Action[]{CHANGE, REMOVE};
-        private static final String __OBFID = "CL_00002288";
-
-        private Action(String p_i45957_1_, int p_i45957_2_) {}
+        CHANGE,
+        REMOVE;
     }
 }

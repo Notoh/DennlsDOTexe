@@ -2,6 +2,7 @@ package io.notoh.dennls.mods.render;
 
 import io.notoh.dennls.mods.Module;
 import io.notoh.dennls.util.CanRender;
+import io.notoh.dennls.util.ModCategory;
 import io.notoh.dennls.util.RenderUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -16,11 +17,17 @@ import org.lwjgl.input.Keyboard;
 public class Tracers extends Module implements CanRender {
 
     private boolean toggle;
+    private int keycode = Keyboard.KEY_Y;
 
     @Override
-    public int getKeyCode() {
-        return Keyboard.KEY_Y;
+    public void setKeyCode(int keyCode) {
+        this.keycode = keyCode;
     }
+    @Override
+    public int getKeyCode() {
+        return keycode;
+    }
+
 
     @Override
     public String getName() {
@@ -70,10 +77,13 @@ public class Tracers extends Module implements CanRender {
         }
     }
 
-
+    @Override
+    public ModCategory getCategory() {
+        return ModCategory.RENDER;
+    }
 
     public void render(float red, float green, float blue, double x, double y, double z) {
-        RenderUtils.drawTracerLine(x,y,z,red,green,blue,0.45f,1.0f);
+        RenderUtils.drawTracerLine(x,y,z,red,green,blue,0.5f,1.0f);
     }
 
 }

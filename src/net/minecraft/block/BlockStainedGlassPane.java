@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.List;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -16,33 +17,41 @@ import net.minecraft.world.World;
 
 public class BlockStainedGlassPane extends BlockPane
 {
-    public static final PropertyEnum field_176245_a = PropertyEnum.create("color", EnumDyeColor.class);
-    private static final String __OBFID = "CL_00000313";
+    public static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.<EnumDyeColor>create("color", EnumDyeColor.class);
 
     public BlockStainedGlassPane()
     {
         super(Material.glass, false);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false)).withProperty(field_176245_a, EnumDyeColor.WHITE));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false)).withProperty(COLOR, EnumDyeColor.WHITE));
         this.setCreativeTab(CreativeTabs.tabDecorations);
     }
 
     /**
-     * Get the damage value that this Block should drop
+     * Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It
+     * returns the metadata of the dropped item based on the old metadata of the block.
      */
     public int damageDropped(IBlockState state)
     {
-        return ((EnumDyeColor)state.getValue(field_176245_a)).func_176765_a();
+        return ((EnumDyeColor)state.getValue(COLOR)).getMetadata();
     }
 
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
     {
-        for (int var4 = 0; var4 < EnumDyeColor.values().length; ++var4)
+        for (int i = 0; i < EnumDyeColor.values().length; ++i)
         {
-            list.add(new ItemStack(itemIn, 1, var4));
+            list.add(new ItemStack(itemIn, 1, i));
         }
+    }
+
+    /**
+     * Get the MapColor for this Block and the given BlockState
+     */
+    public MapColor getMapColor(IBlockState state)
+    {
+        return ((EnumDyeColor)state.getValue(COLOR)).getMapColor();
     }
 
     public EnumWorldBlockLayer getBlockLayer()
@@ -55,7 +64,7 @@ public class BlockStainedGlassPane extends BlockPane
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(field_176245_a, EnumDyeColor.func_176764_b(meta));
+        return this.getDefaultState().withProperty(COLOR, EnumDyeColor.byMetadata(meta));
     }
 
     /**
@@ -63,19 +72,19 @@ public class BlockStainedGlassPane extends BlockPane
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((EnumDyeColor)state.getValue(field_176245_a)).func_176765_a();
+        return ((EnumDyeColor)state.getValue(COLOR)).getMetadata();
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {NORTH, EAST, WEST, SOUTH, field_176245_a});
+        return new BlockState(this, new IProperty[] {NORTH, EAST, WEST, SOUTH, COLOR});
     }
 
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
         if (!worldIn.isRemote)
         {
-            BlockBeacon.func_176450_d(worldIn, pos);
+            BlockBeacon.updateColorAsync(worldIn, pos);
         }
     }
 
@@ -83,7 +92,7 @@ public class BlockStainedGlassPane extends BlockPane
     {
         if (!worldIn.isRemote)
         {
-            BlockBeacon.func_176450_d(worldIn, pos);
+            BlockBeacon.updateColorAsync(worldIn, pos);
         }
     }
 }

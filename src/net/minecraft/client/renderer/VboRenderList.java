@@ -1,6 +1,5 @@
 package net.minecraft.client.renderer;
 
-import java.util.Iterator;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.util.EnumWorldBlockLayer;
@@ -8,34 +7,29 @@ import org.lwjgl.opengl.GL11;
 
 public class VboRenderList extends ChunkRenderContainer
 {
-    private static final String __OBFID = "CL_00002533";
-
-    public void func_178001_a(EnumWorldBlockLayer p_178001_1_)
+    public void renderChunkLayer(EnumWorldBlockLayer layer)
     {
-        if (this.field_178007_b)
+        if (this.initialized)
         {
-            Iterator var2 = this.field_178009_a.iterator();
-
-            while (var2.hasNext())
+            for (RenderChunk renderchunk : this.renderChunks)
             {
-                RenderChunk var3 = (RenderChunk)var2.next();
-                VertexBuffer var4 = var3.func_178565_b(p_178001_1_.ordinal());
+                VertexBuffer vertexbuffer = renderchunk.getVertexBufferByLayer(layer.ordinal());
                 GlStateManager.pushMatrix();
-                this.func_178003_a(var3);
-                var3.func_178572_f();
-                var4.func_177359_a();
-                this.func_178010_a();
-                var4.func_177358_a(7);
+                this.preRenderChunk(renderchunk);
+                renderchunk.multModelviewMatrix();
+                vertexbuffer.bindBuffer();
+                this.setupArrayPointers();
+                vertexbuffer.drawArrays(7);
                 GlStateManager.popMatrix();
             }
 
-            OpenGlHelper.func_176072_g(OpenGlHelper.field_176089_P, 0);
-            GlStateManager.func_179117_G();
-            this.field_178009_a.clear();
+            OpenGlHelper.glBindBuffer(OpenGlHelper.GL_ARRAY_BUFFER, 0);
+            GlStateManager.resetColor();
+            this.renderChunks.clear();
         }
     }
 
-    private void func_178010_a()
+    private void setupArrayPointers()
     {
         GL11.glVertexPointer(3, GL11.GL_FLOAT, 28, 0L);
         GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 28, 12L);

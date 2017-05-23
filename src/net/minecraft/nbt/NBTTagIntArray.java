@@ -9,9 +9,10 @@ public class NBTTagIntArray extends NBTBase
 {
     /** The array of saved integers */
     private int[] intArray;
-    private static final String __OBFID = "CL_00001221";
 
-    NBTTagIntArray() {}
+    NBTTagIntArray()
+    {
+    }
 
     public NBTTagIntArray(int[] p_i45132_1_)
     {
@@ -25,21 +26,22 @@ public class NBTTagIntArray extends NBTBase
     {
         output.writeInt(this.intArray.length);
 
-        for (int var2 = 0; var2 < this.intArray.length; ++var2)
+        for (int i = 0; i < this.intArray.length; ++i)
         {
-            output.writeInt(this.intArray[var2]);
+            output.writeInt(this.intArray[i]);
         }
     }
 
     void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
     {
-        int var4 = input.readInt();
-        sizeTracker.read((long)(32 * var4));
-        this.intArray = new int[var4];
+        sizeTracker.read(192L);
+        int i = input.readInt();
+        sizeTracker.read((long)(32 * i));
+        this.intArray = new int[i];
 
-        for (int var5 = 0; var5 < var4; ++var5)
+        for (int j = 0; j < i; ++j)
         {
-            this.intArray[var5] = input.readInt();
+            this.intArray[j] = input.readInt();
         }
     }
 
@@ -53,17 +55,14 @@ public class NBTTagIntArray extends NBTBase
 
     public String toString()
     {
-        String var1 = "[";
-        int[] var2 = this.intArray;
-        int var3 = var2.length;
+        String s = "[";
 
-        for (int var4 = 0; var4 < var3; ++var4)
+        for (int i : this.intArray)
         {
-            int var5 = var2[var4];
-            var1 = var1 + var5 + ",";
+            s = s + i + ",";
         }
 
-        return var1 + "]";
+        return s + "]";
     }
 
     /**
@@ -71,9 +70,9 @@ public class NBTTagIntArray extends NBTBase
      */
     public NBTBase copy()
     {
-        int[] var1 = new int[this.intArray.length];
-        System.arraycopy(this.intArray, 0, var1, 0, this.intArray.length);
-        return new NBTTagIntArray(var1);
+        int[] aint = new int[this.intArray.length];
+        System.arraycopy(this.intArray, 0, aint, 0, this.intArray.length);
+        return new NBTTagIntArray(aint);
     }
 
     public boolean equals(Object p_equals_1_)

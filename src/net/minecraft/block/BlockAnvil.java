@@ -29,7 +29,6 @@ public class BlockAnvil extends BlockFalling
 {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
     public static final PropertyInteger DAMAGE = PropertyInteger.create("damage", 0, 2);
-    private static final String __OBFID = "CL_00000192";
 
     protected BlockAnvil()
     {
@@ -44,15 +43,22 @@ public class BlockAnvil extends BlockFalling
         return false;
     }
 
+    /**
+     * Used to determine ambient occlusion and culling when rebuilding chunks for render
+     */
     public boolean isOpaqueCube()
     {
         return false;
     }
 
+    /**
+     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
+     * IBlockstate
+     */
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        EnumFacing var9 = placer.func_174811_aO().rotateY();
-        return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(FACING, var9).withProperty(DAMAGE, Integer.valueOf(meta >> 2));
+        EnumFacing enumfacing = placer.getHorizontalFacing().rotateY();
+        return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(FACING, enumfacing).withProperty(DAMAGE, Integer.valueOf(meta >> 2));
     }
 
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
@@ -66,18 +72,19 @@ public class BlockAnvil extends BlockFalling
     }
 
     /**
-     * Get the damage value that this Block should drop
+     * Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It
+     * returns the metadata of the dropped item based on the old metadata of the block.
      */
     public int damageDropped(IBlockState state)
     {
         return ((Integer)state.getValue(DAMAGE)).intValue();
     }
 
-    public void setBlockBoundsBasedOnState(IBlockAccess access, BlockPos pos)
+    public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
     {
-        EnumFacing var3 = (EnumFacing)access.getBlockState(pos).getValue(FACING);
+        EnumFacing enumfacing = (EnumFacing)worldIn.getBlockState(pos).getValue(FACING);
 
-        if (var3.getAxis() == EnumFacing.Axis.X)
+        if (enumfacing.getAxis() == EnumFacing.Axis.X)
         {
             this.setBlockBounds(0.0F, 0.0F, 0.125F, 1.0F, 1.0F, 0.875F);
         }
@@ -90,7 +97,7 @@ public class BlockAnvil extends BlockFalling
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
     {
         list.add(new ItemStack(itemIn, 1, 0));
         list.add(new ItemStack(itemIn, 1, 1));
@@ -133,10 +140,10 @@ public class BlockAnvil extends BlockFalling
      */
     public int getMetaFromState(IBlockState state)
     {
-        byte var2 = 0;
-        int var3 = var2 | ((EnumFacing)state.getValue(FACING)).getHorizontalIndex();
-        var3 |= ((Integer)state.getValue(DAMAGE)).intValue() << 2;
-        return var3;
+        int i = 0;
+        i = i | ((EnumFacing)state.getValue(FACING)).getHorizontalIndex();
+        i = i | ((Integer)state.getValue(DAMAGE)).intValue() << 2;
+        return i;
     }
 
     protected BlockState createBlockState()
@@ -148,7 +155,6 @@ public class BlockAnvil extends BlockFalling
     {
         private final World world;
         private final BlockPos position;
-        private static final String __OBFID = "CL_00002144";
 
         public Anvil(World worldIn, BlockPos pos)
         {

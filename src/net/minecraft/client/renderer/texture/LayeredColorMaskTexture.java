@@ -16,77 +16,79 @@ import org.apache.logging.log4j.Logger;
 
 public class LayeredColorMaskTexture extends AbstractTexture
 {
-    private static final Logger field_174947_f = LogManager.getLogger();
-    private final ResourceLocation field_174948_g;
-    private final List field_174949_h;
-    private final List field_174950_i;
-    private static final String __OBFID = "CL_00002404";
+    /** Access to the Logger, for all your logging needs. */
+    private static final Logger LOG = LogManager.getLogger();
 
-    public LayeredColorMaskTexture(ResourceLocation p_i46101_1_, List p_i46101_2_, List p_i46101_3_)
+    /** The location of the texture. */
+    private final ResourceLocation textureLocation;
+    private final List<String> field_174949_h;
+    private final List<EnumDyeColor> field_174950_i;
+
+    public LayeredColorMaskTexture(ResourceLocation textureLocationIn, List<String> p_i46101_2_, List<EnumDyeColor> p_i46101_3_)
     {
-        this.field_174948_g = p_i46101_1_;
+        this.textureLocation = textureLocationIn;
         this.field_174949_h = p_i46101_2_;
         this.field_174950_i = p_i46101_3_;
     }
 
-    public void loadTexture(IResourceManager p_110551_1_) throws IOException
+    public void loadTexture(IResourceManager resourceManager) throws IOException
     {
         this.deleteGlTexture();
-        BufferedImage var2;
+        BufferedImage bufferedimage;
 
         try
         {
-            BufferedImage var3 = TextureUtil.func_177053_a(p_110551_1_.getResource(this.field_174948_g).getInputStream());
-            int var4 = var3.getType();
+            BufferedImage bufferedimage1 = TextureUtil.readBufferedImage(resourceManager.getResource(this.textureLocation).getInputStream());
+            int i = bufferedimage1.getType();
 
-            if (var4 == 0)
+            if (i == 0)
             {
-                var4 = 6;
+                i = 6;
             }
 
-            var2 = new BufferedImage(var3.getWidth(), var3.getHeight(), var4);
-            Graphics var5 = var2.getGraphics();
-            var5.drawImage(var3, 0, 0, (ImageObserver)null);
+            bufferedimage = new BufferedImage(bufferedimage1.getWidth(), bufferedimage1.getHeight(), i);
+            Graphics graphics = bufferedimage.getGraphics();
+            graphics.drawImage(bufferedimage1, 0, 0, (ImageObserver)null);
 
-            for (int var6 = 0; var6 < this.field_174949_h.size() && var6 < this.field_174950_i.size(); ++var6)
+            for (int j = 0; j < 17 && j < this.field_174949_h.size() && j < this.field_174950_i.size(); ++j)
             {
-                String var7 = (String)this.field_174949_h.get(var6);
-                MapColor var8 = ((EnumDyeColor)this.field_174950_i.get(var6)).func_176768_e();
+                String s = (String)this.field_174949_h.get(j);
+                MapColor mapcolor = ((EnumDyeColor)this.field_174950_i.get(j)).getMapColor();
 
-                if (var7 != null)
+                if (s != null)
                 {
-                    InputStream var9 = p_110551_1_.getResource(new ResourceLocation(var7)).getInputStream();
-                    BufferedImage var10 = TextureUtil.func_177053_a(var9);
+                    InputStream inputstream = resourceManager.getResource(new ResourceLocation(s)).getInputStream();
+                    BufferedImage bufferedimage2 = TextureUtil.readBufferedImage(inputstream);
 
-                    if (var10.getWidth() == var2.getWidth() && var10.getHeight() == var2.getHeight() && var10.getType() == 6)
+                    if (bufferedimage2.getWidth() == bufferedimage.getWidth() && bufferedimage2.getHeight() == bufferedimage.getHeight() && bufferedimage2.getType() == 6)
                     {
-                        for (int var11 = 0; var11 < var10.getHeight(); ++var11)
+                        for (int k = 0; k < bufferedimage2.getHeight(); ++k)
                         {
-                            for (int var12 = 0; var12 < var10.getWidth(); ++var12)
+                            for (int l = 0; l < bufferedimage2.getWidth(); ++l)
                             {
-                                int var13 = var10.getRGB(var12, var11);
+                                int i1 = bufferedimage2.getRGB(l, k);
 
-                                if ((var13 & -16777216) != 0)
+                                if ((i1 & -16777216) != 0)
                                 {
-                                    int var14 = (var13 & 16711680) << 8 & -16777216;
-                                    int var15 = var3.getRGB(var12, var11);
-                                    int var16 = MathHelper.func_180188_d(var15, var8.colorValue) & 16777215;
-                                    var10.setRGB(var12, var11, var14 | var16);
+                                    int j1 = (i1 & 16711680) << 8 & -16777216;
+                                    int k1 = bufferedimage1.getRGB(l, k);
+                                    int l1 = MathHelper.func_180188_d(k1, mapcolor.colorValue) & 16777215;
+                                    bufferedimage2.setRGB(l, k, j1 | l1);
                                 }
                             }
                         }
 
-                        var2.getGraphics().drawImage(var10, 0, 0, (ImageObserver)null);
+                        bufferedimage.getGraphics().drawImage(bufferedimage2, 0, 0, (ImageObserver)null);
                     }
                 }
             }
         }
-        catch (IOException var17)
+        catch (IOException ioexception)
         {
-            field_174947_f.error("Couldn\'t load layered image", var17);
+            LOG.error((String)"Couldn\'t load layered image", (Throwable)ioexception);
             return;
         }
 
-        TextureUtil.uploadTextureImage(this.getGlTextureId(), var2);
+        TextureUtil.uploadTextureImage(this.getGlTextureId(), bufferedimage);
     }
 }

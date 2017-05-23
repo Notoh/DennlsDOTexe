@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockState;
@@ -14,12 +15,10 @@ import net.minecraft.world.World;
 
 public class BlockHay extends BlockRotatedPillar
 {
-    private static final String __OBFID = "CL_00000256";
-
     public BlockHay()
     {
-        super(Material.grass);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(field_176298_M, EnumFacing.Axis.Y));
+        super(Material.grass, MapColor.yellowColor);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(AXIS, EnumFacing.Axis.Y));
         this.setCreativeTab(CreativeTabs.tabBlock);
     }
 
@@ -28,19 +27,19 @@ public class BlockHay extends BlockRotatedPillar
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        EnumFacing.Axis var2 = EnumFacing.Axis.Y;
-        int var3 = meta & 12;
+        EnumFacing.Axis enumfacing$axis = EnumFacing.Axis.Y;
+        int i = meta & 12;
 
-        if (var3 == 4)
+        if (i == 4)
         {
-            var2 = EnumFacing.Axis.X;
+            enumfacing$axis = EnumFacing.Axis.X;
         }
-        else if (var3 == 8)
+        else if (i == 8)
         {
-            var2 = EnumFacing.Axis.Z;
+            enumfacing$axis = EnumFacing.Axis.Z;
         }
 
-        return this.getDefaultState().withProperty(field_176298_M, var2);
+        return this.getDefaultState().withProperty(AXIS, enumfacing$axis);
     }
 
     /**
@@ -48,24 +47,24 @@ public class BlockHay extends BlockRotatedPillar
      */
     public int getMetaFromState(IBlockState state)
     {
-        int var2 = 0;
-        EnumFacing.Axis var3 = (EnumFacing.Axis)state.getValue(field_176298_M);
+        int i = 0;
+        EnumFacing.Axis enumfacing$axis = (EnumFacing.Axis)state.getValue(AXIS);
 
-        if (var3 == EnumFacing.Axis.X)
+        if (enumfacing$axis == EnumFacing.Axis.X)
         {
-            var2 |= 4;
+            i |= 4;
         }
-        else if (var3 == EnumFacing.Axis.Z)
+        else if (enumfacing$axis == EnumFacing.Axis.Z)
         {
-            var2 |= 8;
+            i |= 8;
         }
 
-        return var2;
+        return i;
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {field_176298_M});
+        return new BlockState(this, new IProperty[] {AXIS});
     }
 
     protected ItemStack createStackedBlock(IBlockState state)
@@ -73,8 +72,12 @@ public class BlockHay extends BlockRotatedPillar
         return new ItemStack(Item.getItemFromBlock(this), 1, 0);
     }
 
+    /**
+     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
+     * IBlockstate
+     */
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(field_176298_M, facing.getAxis());
+        return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(AXIS, facing.getAxis());
     }
 }

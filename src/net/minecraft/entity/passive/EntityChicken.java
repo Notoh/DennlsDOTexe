@@ -23,16 +23,15 @@ import net.minecraft.world.World;
 
 public class EntityChicken extends EntityAnimal
 {
-    public float field_70886_e;
+    public float wingRotation;
     public float destPos;
     public float field_70884_g;
     public float field_70888_h;
-    public float field_70889_i = 1.0F;
+    public float wingRotDelta = 1.0F;
 
     /** The time until the next egg is spawned. */
     public int timeUntilNextEgg;
-    public boolean field_152118_bv;
-    private static final String __OBFID = "CL_00001639";
+    public boolean chickenJockey;
 
     public EntityChicken(World worldIn)
     {
@@ -68,26 +67,26 @@ public class EntityChicken extends EntityAnimal
     public void onLivingUpdate()
     {
         super.onLivingUpdate();
-        this.field_70888_h = this.field_70886_e;
+        this.field_70888_h = this.wingRotation;
         this.field_70884_g = this.destPos;
         this.destPos = (float)((double)this.destPos + (double)(this.onGround ? -1 : 4) * 0.3D);
         this.destPos = MathHelper.clamp_float(this.destPos, 0.0F, 1.0F);
 
-        if (!this.onGround && this.field_70889_i < 1.0F)
+        if (!this.onGround && this.wingRotDelta < 1.0F)
         {
-            this.field_70889_i = 1.0F;
+            this.wingRotDelta = 1.0F;
         }
 
-        this.field_70889_i = (float)((double)this.field_70889_i * 0.9D);
+        this.wingRotDelta = (float)((double)this.wingRotDelta * 0.9D);
 
         if (!this.onGround && this.motionY < 0.0D)
         {
             this.motionY *= 0.6D;
         }
 
-        this.field_70886_e += this.field_70889_i * 2.0F;
+        this.wingRotation += this.wingRotDelta * 2.0F;
 
-        if (!this.worldObj.isRemote && !this.isChild() && !this.func_152116_bZ() && --this.timeUntilNextEgg <= 0)
+        if (!this.worldObj.isRemote && !this.isChild() && !this.isChickenJockey() && --this.timeUntilNextEgg <= 0)
         {
             this.playSound("mob.chicken.plop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
             this.dropItem(Items.egg, 1);
@@ -95,7 +94,9 @@ public class EntityChicken extends EntityAnimal
         }
     }
 
-    public void fall(float distance, float damageMultiplier) {}
+    public void fall(float distance, float damageMultiplier)
+    {
+    }
 
     /**
      * Returns the sound this mob makes while it's alive.
@@ -121,7 +122,7 @@ public class EntityChicken extends EntityAnimal
         return "mob.chicken.hurt";
     }
 
-    protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
+    protected void playStepSound(BlockPos pos, Block blockIn)
     {
         this.playSound("mob.chicken.step", 0.15F, 1.0F);
     }
@@ -136,9 +137,9 @@ public class EntityChicken extends EntityAnimal
      */
     protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
     {
-        int var3 = this.rand.nextInt(3) + this.rand.nextInt(1 + p_70628_2_);
+        int i = this.rand.nextInt(3) + this.rand.nextInt(1 + p_70628_2_);
 
-        for (int var4 = 0; var4 < var3; ++var4)
+        for (int j = 0; j < i; ++j)
         {
             this.dropItem(Items.feather, 1);
         }
@@ -153,7 +154,7 @@ public class EntityChicken extends EntityAnimal
         }
     }
 
-    public EntityChicken createChild(EntityAgeable p_90011_1_)
+    public EntityChicken createChild(EntityAgeable ageable)
     {
         return new EntityChicken(this.worldObj);
     }
@@ -162,9 +163,9 @@ public class EntityChicken extends EntityAnimal
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
-    public boolean isBreedingItem(ItemStack p_70877_1_)
+    public boolean isBreedingItem(ItemStack stack)
     {
-        return p_70877_1_ != null && p_70877_1_.getItem() == Items.wheat_seeds;
+        return stack != null && stack.getItem() == Items.wheat_seeds;
     }
 
     /**
@@ -173,7 +174,7 @@ public class EntityChicken extends EntityAnimal
     public void readEntityFromNBT(NBTTagCompound tagCompund)
     {
         super.readEntityFromNBT(tagCompund);
-        this.field_152118_bv = tagCompund.getBoolean("IsChickenJockey");
+        this.chickenJockey = tagCompund.getBoolean("IsChickenJockey");
 
         if (tagCompund.hasKey("EggLayTime"))
         {
@@ -184,9 +185,9 @@ public class EntityChicken extends EntityAnimal
     /**
      * Get the experience points the entity currently has.
      */
-    protected int getExperiencePoints(EntityPlayer p_70693_1_)
+    protected int getExperiencePoints(EntityPlayer player)
     {
-        return this.func_152116_bZ() ? 10 : super.getExperiencePoints(p_70693_1_);
+        return this.isChickenJockey() ? 10 : super.getExperiencePoints(player);
     }
 
     /**
@@ -195,7 +196,7 @@ public class EntityChicken extends EntityAnimal
     public void writeEntityToNBT(NBTTagCompound tagCompound)
     {
         super.writeEntityToNBT(tagCompound);
-        tagCompound.setBoolean("IsChickenJockey", this.field_152118_bv);
+        tagCompound.setBoolean("IsChickenJockey", this.chickenJockey);
         tagCompound.setInteger("EggLayTime", this.timeUntilNextEgg);
     }
 
@@ -204,17 +205,17 @@ public class EntityChicken extends EntityAnimal
      */
     protected boolean canDespawn()
     {
-        return this.func_152116_bZ() && this.riddenByEntity == null;
+        return this.isChickenJockey() && this.riddenByEntity == null;
     }
 
     public void updateRiderPosition()
     {
         super.updateRiderPosition();
-        float var1 = MathHelper.sin(this.renderYawOffset * (float)Math.PI / 180.0F);
-        float var2 = MathHelper.cos(this.renderYawOffset * (float)Math.PI / 180.0F);
-        float var3 = 0.1F;
-        float var4 = 0.0F;
-        this.riddenByEntity.setPosition(this.posX + (double)(var3 * var1), this.posY + (double)(this.height * 0.5F) + this.riddenByEntity.getYOffset() + (double)var4, this.posZ - (double)(var3 * var2));
+        float f = MathHelper.sin(this.renderYawOffset * (float)Math.PI / 180.0F);
+        float f1 = MathHelper.cos(this.renderYawOffset * (float)Math.PI / 180.0F);
+        float f2 = 0.1F;
+        float f3 = 0.0F;
+        this.riddenByEntity.setPosition(this.posX + (double)(f2 * f), this.posY + (double)(this.height * 0.5F) + this.riddenByEntity.getYOffset() + (double)f3, this.posZ - (double)(f2 * f1));
 
         if (this.riddenByEntity instanceof EntityLivingBase)
         {
@@ -222,13 +223,19 @@ public class EntityChicken extends EntityAnimal
         }
     }
 
-    public boolean func_152116_bZ()
+    /**
+     * Determines if this chicken is a jokey with a zombie riding it.
+     */
+    public boolean isChickenJockey()
     {
-        return this.field_152118_bv;
+        return this.chickenJockey;
     }
 
-    public void func_152117_i(boolean p_152117_1_)
+    /**
+     * Sets whether this chicken is a jockey or not.
+     */
+    public void setChickenJockey(boolean jockey)
     {
-        this.field_152118_bv = p_152117_1_;
+        this.chickenJockey = jockey;
     }
 }

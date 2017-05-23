@@ -7,8 +7,9 @@ import net.minecraft.util.BlockPos;
 
 public class CommandServerKick extends CommandBase
 {
-    private static final String __OBFID = "CL_00000550";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "kick";
@@ -22,20 +23,26 @@ public class CommandServerKick extends CommandBase
         return 3;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.kick.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length > 0 && args[0].length() > 1)
         {
-            EntityPlayerMP var3 = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(args[0]);
-            String var4 = "Kicked by an operator.";
-            boolean var5 = false;
+            EntityPlayerMP entityplayermp = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(args[0]);
+            String s = "Kicked by an operator.";
+            boolean flag = false;
 
-            if (var3 == null)
+            if (entityplayermp == null)
             {
                 throw new PlayerNotFoundException();
             }
@@ -43,19 +50,19 @@ public class CommandServerKick extends CommandBase
             {
                 if (args.length >= 2)
                 {
-                    var4 = getChatComponentFromNthArg(sender, args, 1).getUnformattedText();
-                    var5 = true;
+                    s = getChatComponentFromNthArg(sender, args, 1).getUnformattedText();
+                    flag = true;
                 }
 
-                var3.playerNetServerHandler.kickPlayerFromServer(var4);
+                entityplayermp.playerNetServerHandler.kickPlayerFromServer(s);
 
-                if (var5)
+                if (flag)
                 {
-                    notifyOperators(sender, this, "commands.kick.success.reason", new Object[] {var3.getName(), var4});
+                    notifyOperators(sender, this, "commands.kick.success.reason", new Object[] {entityplayermp.getName(), s});
                 }
                 else
                 {
-                    notifyOperators(sender, this, "commands.kick.success", new Object[] {var3.getName()});
+                    notifyOperators(sender, this, "commands.kick.success", new Object[] {entityplayermp.getName()});
                 }
             }
         }
@@ -65,7 +72,7 @@ public class CommandServerKick extends CommandBase
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
         return args.length >= 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : null;
     }

@@ -16,14 +16,12 @@ import net.minecraft.world.World;
 
 public class BlockSign extends BlockContainer
 {
-    private static final String __OBFID = "CL_00000306";
-
     protected BlockSign()
     {
         super(Material.wood);
-        float var1 = 0.25F;
-        float var2 = 1.0F;
-        this.setBlockBounds(0.5F - var1, 0.0F, 0.5F - var1, 0.5F + var1, var2, 0.5F + var1);
+        float f = 0.25F;
+        float f1 = 1.0F;
+        this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f1, 0.5F + f);
     }
 
     public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
@@ -42,14 +40,22 @@ public class BlockSign extends BlockContainer
         return false;
     }
 
-    public boolean isPassable(IBlockAccess blockAccess, BlockPos pos)
+    public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
     {
         return true;
     }
 
+    /**
+     * Used to determine ambient occlusion and culling when rebuilding chunks for render
+     */
     public boolean isOpaqueCube()
     {
         return false;
+    }
+
+    public boolean func_181623_g()
+    {
+        return true;
     }
 
     /**
@@ -62,8 +68,6 @@ public class BlockSign extends BlockContainer
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
@@ -83,8 +87,13 @@ public class BlockSign extends BlockContainer
         }
         else
         {
-            TileEntity var9 = worldIn.getTileEntity(pos);
-            return var9 instanceof TileEntitySign ? ((TileEntitySign)var9).func_174882_b(playerIn) : false;
+            TileEntity tileentity = worldIn.getTileEntity(pos);
+            return tileentity instanceof TileEntitySign ? ((TileEntitySign)tileentity).executeCommand(playerIn) : false;
         }
+    }
+
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
+    {
+        return !this.func_181087_e(worldIn, pos) && super.canPlaceBlockAt(worldIn, pos);
     }
 }

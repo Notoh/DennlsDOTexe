@@ -5,11 +5,11 @@ package io.notoh.dennls.mods;
  */
 public enum Mode {
 
-    GHOST(3.05f),BLATANT(10f),BYPASS(3.15f);
+    GHOST(3.05f),BLATANT(10f), SAFE(3.15f);
 
 
     private float reach;
-    private Mode(float reach) {
+    Mode(float reach) {
         this.reach = reach;
     }
 

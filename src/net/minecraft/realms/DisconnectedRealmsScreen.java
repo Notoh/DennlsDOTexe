@@ -1,6 +1,5 @@
 package net.minecraft.realms;
 
-import java.util.Iterator;
 import java.util.List;
 import net.minecraft.util.IChatComponent;
 
@@ -8,9 +7,9 @@ public class DisconnectedRealmsScreen extends RealmsScreen
 {
     private String title;
     private IChatComponent reason;
-    private List lines;
+    private List<String> lines;
     private final RealmsScreen parent;
-    private static final String __OBFID = "CL_00002145";
+    private int textHeight;
 
     public DisconnectedRealmsScreen(RealmsScreen p_i45742_1_, String p_i45742_2_, IChatComponent p_i45742_3_)
     {
@@ -21,9 +20,11 @@ public class DisconnectedRealmsScreen extends RealmsScreen
 
     public void init()
     {
+        Realms.setConnectedToRealms(false);
         this.buttonsClear();
-        this.buttonsAdd(newButton(0, this.width() / 2 - 100, this.height() / 4 + 120 + 12, getLocalizedString("gui.back")));
         this.lines = this.fontSplit(this.reason.getFormattedText(), this.width() - 50);
+        this.textHeight = this.lines.size() * this.fontLineHeight();
+        this.buttonsAdd(newButton(0, this.width() / 2 - 100, this.height() / 2 + this.textHeight / 2 + this.fontLineHeight(), getLocalizedString("gui.back")));
     }
 
     public void keyPressed(char p_keyPressed_1_, int p_keyPressed_2_)
@@ -45,15 +46,15 @@ public class DisconnectedRealmsScreen extends RealmsScreen
     public void render(int p_render_1_, int p_render_2_, float p_render_3_)
     {
         this.renderBackground();
-        this.drawCenteredString(this.title, this.width() / 2, this.height() / 2 - 50, 11184810);
-        int var4 = this.height() / 2 - 30;
+        this.drawCenteredString(this.title, this.width() / 2, this.height() / 2 - this.textHeight / 2 - this.fontLineHeight() * 2, 11184810);
+        int i = this.height() / 2 - this.textHeight / 2;
 
         if (this.lines != null)
         {
-            for (Iterator var5 = this.lines.iterator(); var5.hasNext(); var4 += this.fontLineHeight())
+            for (String s : this.lines)
             {
-                String var6 = (String)var5.next();
-                this.drawCenteredString(var6, this.width() / 2, var4, 16777215);
+                this.drawCenteredString(s, this.width() / 2, i, 16777215);
+                i += this.fontLineHeight();
             }
         }
 

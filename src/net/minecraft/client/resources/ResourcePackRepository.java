@@ -13,7 +13,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -32,56 +31,60 @@ import net.minecraft.util.HttpUtil;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ResourcePackRepository
 {
-    private static final Logger field_177320_c = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
     private static final FileFilter resourcePackFilter = new FileFilter()
     {
-        private static final String __OBFID = "CL_00001088";
         public boolean accept(File p_accept_1_)
         {
-            boolean var2 = p_accept_1_.isFile() && p_accept_1_.getName().endsWith(".zip");
-            boolean var3 = p_accept_1_.isDirectory() && (new File(p_accept_1_, "pack.mcmeta")).isFile();
-            return var2 || var3;
+            boolean flag = p_accept_1_.isFile() && p_accept_1_.getName().endsWith(".zip");
+            boolean flag1 = p_accept_1_.isDirectory() && (new File(p_accept_1_, "pack.mcmeta")).isFile();
+            return flag || flag1;
         }
     };
     private final File dirResourcepacks;
     public final IResourcePack rprDefaultResourcePack;
-    private final File field_148534_e;
+    private final File dirServerResourcepacks;
     public final IMetadataSerializer rprMetadataSerializer;
-    private IResourcePack field_148532_f;
-    private final ReentrantLock field_177321_h = new ReentrantLock();
-    private ListenableFuture field_177322_i;
-    private List repositoryEntriesAll = Lists.newArrayList();
-    private List repositoryEntries = Lists.newArrayList();
-    private static final String __OBFID = "CL_00001087";
+    private IResourcePack resourcePackInstance;
+    private final ReentrantLock lock = new ReentrantLock();
+    private ListenableFuture<Object> field_177322_i;
+    private List<ResourcePackRepository.Entry> repositoryEntriesAll = Lists.<ResourcePackRepository.Entry>newArrayList();
+    private List<ResourcePackRepository.Entry> repositoryEntries = Lists.<ResourcePackRepository.Entry>newArrayList();
 
-    public ResourcePackRepository(File p_i45101_1_, File p_i45101_2_, IResourcePack p_i45101_3_, IMetadataSerializer p_i45101_4_, GameSettings p_i45101_5_)
+    public ResourcePackRepository(File dirResourcepacksIn, File dirServerResourcepacksIn, IResourcePack rprDefaultResourcePackIn, IMetadataSerializer rprMetadataSerializerIn, GameSettings settings)
     {
-        this.dirResourcepacks = p_i45101_1_;
-        this.field_148534_e = p_i45101_2_;
-        this.rprDefaultResourcePack = p_i45101_3_;
-        this.rprMetadataSerializer = p_i45101_4_;
+        this.dirResourcepacks = dirResourcepacksIn;
+        this.dirServerResourcepacks = dirServerResourcepacksIn;
+        this.rprDefaultResourcePack = rprDefaultResourcePackIn;
+        this.rprMetadataSerializer = rprMetadataSerializerIn;
         this.fixDirResourcepacks();
         this.updateRepositoryEntriesAll();
-        Iterator var6 = p_i45101_5_.resourcePacks.iterator();
+        Iterator<String> iterator = settings.resourcePacks.iterator();
 
-        while (var6.hasNext())
+        while (iterator.hasNext())
         {
-            String var7 = (String)var6.next();
-            Iterator var8 = this.repositoryEntriesAll.iterator();
+            String s = (String)iterator.next();
 
-            while (var8.hasNext())
+            for (ResourcePackRepository.Entry resourcepackrepository$entry : this.repositoryEntriesAll)
             {
-                ResourcePackRepository.Entry var9 = (ResourcePackRepository.Entry)var8.next();
-
-                if (var9.getResourcePackName().equals(var7))
+                if (resourcepackrepository$entry.getResourcePackName().equals(s))
                 {
-                    this.repositoryEntries.add(var9);
-                    break;
+                    if (resourcepackrepository$entry.func_183027_f() == 1 || settings.field_183018_l.contains(resourcepackrepository$entry.getResourcePackName()))
+                    {
+                        this.repositoryEntries.add(resourcepackrepository$entry);
+                        break;
+                    }
+
+                    iterator.remove();
+                    logger.warn("Removed selected resource pack {} because it\'s no longer compatible", new Object[] {resourcepackrepository$entry.getResourcePackName()});
                 }
             }
         }
@@ -89,73 +92,76 @@ public class ResourcePackRepository
 
     private void fixDirResourcepacks()
     {
-        if (!this.dirResourcepacks.isDirectory() && (!this.dirResourcepacks.delete() || !this.dirResourcepacks.mkdirs()))
+        if (this.dirResourcepacks.exists())
         {
-            field_177320_c.debug("Unable to create resourcepack folder: " + this.dirResourcepacks);
+            if (!this.dirResourcepacks.isDirectory() && (!this.dirResourcepacks.delete() || !this.dirResourcepacks.mkdirs()))
+            {
+                logger.warn("Unable to recreate resourcepack folder, it exists but is not a directory: " + this.dirResourcepacks);
+            }
+        }
+        else if (!this.dirResourcepacks.mkdirs())
+        {
+            logger.warn("Unable to create resourcepack folder: " + this.dirResourcepacks);
         }
     }
 
-    private List getResourcePackFiles()
+    private List<File> getResourcePackFiles()
     {
-        return this.dirResourcepacks.isDirectory() ? Arrays.asList(this.dirResourcepacks.listFiles(resourcePackFilter)) : Collections.emptyList();
+        return this.dirResourcepacks.isDirectory() ? Arrays.asList(this.dirResourcepacks.listFiles(resourcePackFilter)) : Collections.<File>emptyList();
     }
 
     public void updateRepositoryEntriesAll()
     {
-        ArrayList var1 = Lists.newArrayList();
-        Iterator var2 = this.getResourcePackFiles().iterator();
+        List<ResourcePackRepository.Entry> list = Lists.<ResourcePackRepository.Entry>newArrayList();
 
-        while (var2.hasNext())
+        for (File file1 : this.getResourcePackFiles())
         {
-            File var3 = (File)var2.next();
-            ResourcePackRepository.Entry var4 = new ResourcePackRepository.Entry(var3, null);
+            ResourcePackRepository.Entry resourcepackrepository$entry = new ResourcePackRepository.Entry(file1);
 
-            if (!this.repositoryEntriesAll.contains(var4))
+            if (!this.repositoryEntriesAll.contains(resourcepackrepository$entry))
             {
                 try
                 {
-                    var4.updateResourcePack();
-                    var1.add(var4);
+                    resourcepackrepository$entry.updateResourcePack();
+                    list.add(resourcepackrepository$entry);
                 }
                 catch (Exception var6)
                 {
-                    var1.remove(var4);
+                    list.remove(resourcepackrepository$entry);
                 }
             }
             else
             {
-                int var5 = this.repositoryEntriesAll.indexOf(var4);
+                int i = this.repositoryEntriesAll.indexOf(resourcepackrepository$entry);
 
-                if (var5 > -1 && var5 < this.repositoryEntriesAll.size())
+                if (i > -1 && i < this.repositoryEntriesAll.size())
                 {
-                    var1.add(this.repositoryEntriesAll.get(var5));
+                    list.add(this.repositoryEntriesAll.get(i));
                 }
             }
         }
 
-        this.repositoryEntriesAll.removeAll(var1);
-        var2 = this.repositoryEntriesAll.iterator();
+        this.repositoryEntriesAll.removeAll(list);
 
-        while (var2.hasNext())
+        for (ResourcePackRepository.Entry resourcepackrepository$entry1 : this.repositoryEntriesAll)
         {
-            ResourcePackRepository.Entry var7 = (ResourcePackRepository.Entry)var2.next();
-            var7.closeResourcePack();
+            resourcepackrepository$entry1.closeResourcePack();
         }
 
-        this.repositoryEntriesAll = var1;
+        this.repositoryEntriesAll = list;
     }
 
-    public List getRepositoryEntriesAll()
+    public List<ResourcePackRepository.Entry> getRepositoryEntriesAll()
     {
         return ImmutableList.copyOf(this.repositoryEntriesAll);
     }
 
-    public List getRepositoryEntries()
+    public List<ResourcePackRepository.Entry> getRepositoryEntries()
     {
         return ImmutableList.copyOf(this.repositoryEntries);
     }
 
-    public void func_148527_a(List p_148527_1_)
+    public void setRepositories(List<ResourcePackRepository.Entry> p_148527_1_)
     {
         this.repositoryEntries.clear();
         this.repositoryEntries.addAll(p_148527_1_);
@@ -166,99 +172,102 @@ public class ResourcePackRepository
         return this.dirResourcepacks;
     }
 
-    public ListenableFuture func_180601_a(String p_180601_1_, String p_180601_2_)
+    public ListenableFuture<Object> downloadResourcePack(String url, String hash)
     {
-        String var3;
+        String s;
 
-        if (p_180601_2_.matches("^[a-f0-9]{40}$"))
+        if (hash.matches("^[a-f0-9]{40}$"))
         {
-            var3 = p_180601_2_;
+            s = hash;
         }
         else
         {
-            var3 = p_180601_1_.substring(p_180601_1_.lastIndexOf("/") + 1);
-
-            if (var3.contains("?"))
-            {
-                var3 = var3.substring(0, var3.indexOf("?"));
-            }
-
-            if (!var3.endsWith(".zip"))
-            {
-                return Futures.immediateFailedFuture(new IllegalArgumentException("Invalid filename; must end in .zip"));
-            }
-
-            var3 = "legacy_" + var3.replaceAll("\\W", "");
+            s = "legacy";
         }
 
-        final File var4 = new File(this.field_148534_e, var3);
-        this.field_177321_h.lock();
+        final File file1 = new File(this.dirServerResourcepacks, s);
+        this.lock.lock();
 
         try
         {
             this.func_148529_f();
 
-            if (var4.exists() && p_180601_2_.length() == 40)
+            if (file1.exists() && hash.length() == 40)
             {
                 try
                 {
-                    String var5 = Hashing.sha1().hashBytes(Files.toByteArray(var4)).toString();
+                    String s1 = Hashing.sha1().hashBytes(Files.toByteArray(file1)).toString();
 
-                    if (var5.equals(p_180601_2_))
+                    if (s1.equals(hash))
                     {
-                        ListenableFuture var16 = this.func_177319_a(var4);
-                        return var16;
+                        ListenableFuture listenablefuture1 = this.setResourcePackInstance(file1);
+                        return listenablefuture1;
                     }
 
-                    field_177320_c.warn("File " + var4 + " had wrong hash (expected " + p_180601_2_ + ", found " + var5 + "). Deleting it.");
-                    FileUtils.deleteQuietly(var4);
+                    logger.warn("File " + file1 + " had wrong hash (expected " + hash + ", found " + s1 + "). Deleting it.");
+                    FileUtils.deleteQuietly(file1);
                 }
-                catch (IOException var13)
+                catch (IOException ioexception)
                 {
-                    field_177320_c.warn("File " + var4 + " couldn\'t be hashed. Deleting it.", var13);
-                    FileUtils.deleteQuietly(var4);
+                    logger.warn((String)("File " + file1 + " couldn\'t be hashed. Deleting it."), (Throwable)ioexception);
+                    FileUtils.deleteQuietly(file1);
                 }
             }
 
-            final GuiScreenWorking var15 = new GuiScreenWorking();
-            Map var6 = Minecraft.func_175596_ai();
-            final Minecraft var7 = Minecraft.getMC();
-            Futures.getUnchecked(var7.addScheduledTask(new Runnable()
+            this.func_183028_i();
+            final GuiScreenWorking guiscreenworking = new GuiScreenWorking();
+            Map<String, String> map = Minecraft.getSessionInfo();
+            final Minecraft minecraft = Minecraft.getMinecraft();
+            Futures.getUnchecked(minecraft.addScheduledTask(new Runnable()
             {
-                private static final String __OBFID = "CL_00001089";
                 public void run()
                 {
-                    var7.displayGuiScreen(var15);
+                    minecraft.displayGuiScreen(guiscreenworking);
                 }
             }));
-            final SettableFuture var8 = SettableFuture.create();
-            this.field_177322_i = HttpUtil.func_180192_a(var4, p_180601_1_, var6, 52428800, var15, var7.getProxy());
-            Futures.addCallback(this.field_177322_i, new FutureCallback()
+            final SettableFuture<Object> settablefuture = SettableFuture.<Object>create();
+            this.field_177322_i = HttpUtil.downloadResourcePack(file1, url, map, 52428800, guiscreenworking, minecraft.getProxy());
+            Futures.addCallback(this.field_177322_i, new FutureCallback<Object>()
             {
-                private static final String __OBFID = "CL_00002394";
                 public void onSuccess(Object p_onSuccess_1_)
                 {
-                    ResourcePackRepository.this.func_177319_a(var4);
-                    var8.set((Object)null);
+                    ResourcePackRepository.this.setResourcePackInstance(file1);
+                    settablefuture.set((Object)null);
                 }
                 public void onFailure(Throwable p_onFailure_1_)
                 {
-                    var8.setException(p_onFailure_1_);
+                    settablefuture.setException(p_onFailure_1_);
                 }
             });
-            ListenableFuture var9 = this.field_177322_i;
-            return var9;
+            ListenableFuture listenablefuture = this.field_177322_i;
+            return listenablefuture;
         }
         finally
         {
-            this.field_177321_h.unlock();
+            this.lock.unlock();
         }
     }
 
-    public ListenableFuture func_177319_a(File p_177319_1_)
+    private void func_183028_i()
     {
-        this.field_148532_f = new FileResourcePack(p_177319_1_);
-        return Minecraft.getMC().func_175603_A();
+        List<File> list = Lists.newArrayList(FileUtils.listFiles(this.dirServerResourcepacks, TrueFileFilter.TRUE, (IOFileFilter)null));
+        Collections.sort(list, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
+        int i = 0;
+
+        for (File file1 : list)
+        {
+            if (i++ >= 10)
+            {
+                logger.info("Deleting old server resource pack " + file1.getName());
+                FileUtils.deleteQuietly(file1);
+            }
+        }
+    }
+
+    public ListenableFuture<Object> setResourcePackInstance(File p_177319_1_)
+    {
+        this.resourcePackInstance = new FileResourcePack(p_177319_1_);
+        return Minecraft.getMinecraft().scheduleResourcesRefresh();
     }
 
     /**
@@ -266,12 +275,12 @@ public class ResourcePackRepository
      */
     public IResourcePack getResourcePackInstance()
     {
-        return this.field_148532_f;
+        return this.resourcePackInstance;
     }
 
     public void func_148529_f()
     {
-        this.field_177321_h.lock();
+        this.lock.lock();
 
         try
         {
@@ -281,11 +290,16 @@ public class ResourcePackRepository
             }
 
             this.field_177322_i = null;
-            this.field_148532_f = null;
+
+            if (this.resourcePackInstance != null)
+            {
+                this.resourcePackInstance = null;
+                Minecraft.getMinecraft().scheduleResourcesRefresh();
+            }
         }
         finally
         {
-            this.field_177321_h.unlock();
+            this.lock.unlock();
         }
     }
 
@@ -296,11 +310,10 @@ public class ResourcePackRepository
         private PackMetadataSection rePackMetadataSection;
         private BufferedImage texturePackIcon;
         private ResourceLocation locationTexturePackIcon;
-        private static final String __OBFID = "CL_00001090";
 
-        private Entry(File p_i1295_2_)
+        private Entry(File resourcePackFileIn)
         {
-            this.resourcePackFile = p_i1295_2_;
+            this.resourcePackFile = resourcePackFileIn;
         }
 
         public void updateResourcePack() throws IOException
@@ -325,14 +338,14 @@ public class ResourcePackRepository
             this.closeResourcePack();
         }
 
-        public void bindTexturePackIcon(TextureManager p_110518_1_)
+        public void bindTexturePackIcon(TextureManager textureManagerIn)
         {
             if (this.locationTexturePackIcon == null)
             {
-                this.locationTexturePackIcon = p_110518_1_.getDynamicTextureLocation("texturepackicon", new DynamicTexture(this.texturePackIcon));
+                this.locationTexturePackIcon = textureManagerIn.getDynamicTextureLocation("texturepackicon", new DynamicTexture(this.texturePackIcon));
             }
 
-            p_110518_1_.bindTexture(this.locationTexturePackIcon);
+            textureManagerIn.bindTexture(this.locationTexturePackIcon);
         }
 
         public void closeResourcePack()
@@ -355,7 +368,12 @@ public class ResourcePackRepository
 
         public String getTexturePackDescription()
         {
-            return this.rePackMetadataSection == null ? EnumChatFormatting.RED + "Invalid pack.mcmeta (or missing \'pack\' section)" : this.rePackMetadataSection.func_152805_a().getFormattedText();
+            return this.rePackMetadataSection == null ? EnumChatFormatting.RED + "Invalid pack.mcmeta (or missing \'pack\' section)" : this.rePackMetadataSection.getPackDescription().getFormattedText();
+        }
+
+        public int func_183027_f()
+        {
+            return this.rePackMetadataSection.getPackFormat();
         }
 
         public boolean equals(Object p_equals_1_)
@@ -371,11 +389,6 @@ public class ResourcePackRepository
         public String toString()
         {
             return String.format("%s:%s:%d", new Object[] {this.resourcePackFile.getName(), this.resourcePackFile.isDirectory() ? "folder" : "zip", Long.valueOf(this.resourcePackFile.lastModified())});
-        }
-
-        Entry(File p_i1296_2_, Object p_i1296_3_)
-        {
-            this(p_i1296_2_);
         }
     }
 }

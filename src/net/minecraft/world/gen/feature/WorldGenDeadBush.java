@@ -9,24 +9,22 @@ import net.minecraft.world.World;
 
 public class WorldGenDeadBush extends WorldGenerator
 {
-    private static final String __OBFID = "CL_00000406";
-
-    public boolean generate(World worldIn, Random p_180709_2_, BlockPos p_180709_3_)
+    public boolean generate(World worldIn, Random rand, BlockPos position)
     {
-        Block var4;
+        Block block;
 
-        while (((var4 = worldIn.getBlockState(p_180709_3_).getBlock()).getMaterial() == Material.air || var4.getMaterial() == Material.leaves) && p_180709_3_.getY() > 0)
+        while (((block = worldIn.getBlockState(position).getBlock()).getMaterial() == Material.air || block.getMaterial() == Material.leaves) && position.getY() > 0)
         {
-            p_180709_3_ = p_180709_3_.offsetDown();
+            position = position.down();
         }
 
-        for (int var5 = 0; var5 < 4; ++var5)
+        for (int i = 0; i < 4; ++i)
         {
-            BlockPos var6 = p_180709_3_.add(p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8), p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4), p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8));
+            BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
 
-            if (worldIn.isAirBlock(var6) && Blocks.deadbush.canBlockStay(worldIn, var6, Blocks.deadbush.getDefaultState()))
+            if (worldIn.isAirBlock(blockpos) && Blocks.deadbush.canBlockStay(worldIn, blockpos, Blocks.deadbush.getDefaultState()))
             {
-                worldIn.setBlockState(var6, Blocks.deadbush.getDefaultState(), 2);
+                worldIn.setBlockState(blockpos, Blocks.deadbush.getDefaultState(), 2);
             }
         }
 

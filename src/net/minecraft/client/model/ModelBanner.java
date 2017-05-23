@@ -5,7 +5,6 @@ public class ModelBanner extends ModelBase
     public ModelRenderer bannerSlate;
     public ModelRenderer bannerStand;
     public ModelRenderer bannerTop;
-    private static final String __OBFID = "CL_00002630";
 
     public ModelBanner()
     {
@@ -19,7 +18,10 @@ public class ModelBanner extends ModelBase
         this.bannerTop.addBox(-10.0F, -32.0F, -1.0F, 20, 2, 2, 0.0F);
     }
 
-    public void func_178687_a()
+    /**
+     * Renders the banner model in.
+     */
+    public void renderBanner()
     {
         this.bannerSlate.rotationPointY = -32.0F;
         this.bannerSlate.render(0.0625F);

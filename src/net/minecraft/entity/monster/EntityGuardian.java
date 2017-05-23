@@ -1,8 +1,6 @@
 package net.minecraft.entity.monster;
 
 import com.google.common.base.Predicate;
-import java.util.Iterator;
-import java.util.List;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -46,28 +44,27 @@ public class EntityGuardian extends EntityMob
     private float field_175483_bk;
     private float field_175485_bl;
     private float field_175486_bm;
-    private EntityLivingBase field_175478_bn;
+    private EntityLivingBase targetedEntity;
     private int field_175479_bo;
     private boolean field_175480_bp;
-    private EntityAIWander field_175481_bq;
-    private static final String __OBFID = "CL_00002213";
+    private EntityAIWander wander;
 
     public EntityGuardian(World worldIn)
     {
         super(worldIn);
         this.experienceValue = 10;
         this.setSize(0.85F, 0.85F);
-        this.tasks.addTask(4, new EntityGuardian.AIGuardianAttack());
-        EntityAIMoveTowardsRestriction var2;
-        this.tasks.addTask(5, var2 = new EntityAIMoveTowardsRestriction(this, 1.0D));
-        this.tasks.addTask(7, this.field_175481_bq = new EntityAIWander(this, 1.0D, 80));
+        this.tasks.addTask(4, new EntityGuardian.AIGuardianAttack(this));
+        EntityAIMoveTowardsRestriction entityaimovetowardsrestriction;
+        this.tasks.addTask(5, entityaimovetowardsrestriction = new EntityAIMoveTowardsRestriction(this, 1.0D));
+        this.tasks.addTask(7, this.wander = new EntityAIWander(this, 1.0D, 80));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityGuardian.class, 12.0F, 0.01F));
         this.tasks.addTask(9, new EntityAILookIdle(this));
-        this.field_175481_bq.setMutexBits(3);
-        var2.setMutexBits(3);
-        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityLivingBase.class, 10, true, false, new EntityGuardian.GuardianTargetSelector()));
-        this.moveHelper = new EntityGuardian.GuardianMoveHelper();
+        this.wander.setMutexBits(3);
+        entityaimovetowardsrestriction.setMutexBits(3);
+        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityLivingBase.class, 10, true, false, new EntityGuardian.GuardianTargetSelector(this)));
+        this.moveHelper = new EntityGuardian.GuardianMoveHelper(this);
         this.field_175484_c = this.field_175482_b = this.rand.nextFloat();
     }
 
@@ -86,7 +83,7 @@ public class EntityGuardian extends EntityMob
     public void readEntityFromNBT(NBTTagCompound tagCompund)
     {
         super.readEntityFromNBT(tagCompund);
-        this.func_175467_a(tagCompund.getBoolean("Elder"));
+        this.setElder(tagCompund.getBoolean("Elder"));
     }
 
     /**
@@ -95,10 +92,13 @@ public class EntityGuardian extends EntityMob
     public void writeEntityToNBT(NBTTagCompound tagCompound)
     {
         super.writeEntityToNBT(tagCompound);
-        tagCompound.setBoolean("Elder", this.func_175461_cl());
+        tagCompound.setBoolean("Elder", this.isElder());
     }
 
-    protected PathNavigate func_175447_b(World worldIn)
+    /**
+     * Returns new PathNavigateGround instance
+     */
+    protected PathNavigate getNewNavigator(World worldIn)
     {
         return new PathNavigateSwimmer(this, worldIn);
     }
@@ -110,96 +110,105 @@ public class EntityGuardian extends EntityMob
         this.dataWatcher.addObject(17, Integer.valueOf(0));
     }
 
-    private boolean func_175468_a(int p_175468_1_)
+    /**
+     * Returns true if given flag is set
+     */
+    private boolean isSyncedFlagSet(int flagId)
     {
-        return (this.dataWatcher.getWatchableObjectInt(16) & p_175468_1_) != 0;
+        return (this.dataWatcher.getWatchableObjectInt(16) & flagId) != 0;
     }
 
-    private void func_175473_a(int p_175473_1_, boolean p_175473_2_)
+    /**
+     * Sets a flag state "on/off" on both sides (client/server) by using DataWatcher
+     */
+    private void setSyncedFlag(int flagId, boolean state)
     {
-        int var3 = this.dataWatcher.getWatchableObjectInt(16);
+        int i = this.dataWatcher.getWatchableObjectInt(16);
 
-        if (p_175473_2_)
+        if (state)
         {
-            this.dataWatcher.updateObject(16, Integer.valueOf(var3 | p_175473_1_));
+            this.dataWatcher.updateObject(16, Integer.valueOf(i | flagId));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Integer.valueOf(var3 & ~p_175473_1_));
+            this.dataWatcher.updateObject(16, Integer.valueOf(i & ~flagId));
         }
     }
 
     public boolean func_175472_n()
     {
-        return this.func_175468_a(2);
+        return this.isSyncedFlagSet(2);
     }
 
     private void func_175476_l(boolean p_175476_1_)
     {
-        this.func_175473_a(2, p_175476_1_);
+        this.setSyncedFlag(2, p_175476_1_);
     }
 
     public int func_175464_ck()
     {
-        return this.func_175461_cl() ? 60 : 80;
+        return this.isElder() ? 60 : 80;
     }
 
-    public boolean func_175461_cl()
+    public boolean isElder()
     {
-        return this.func_175468_a(4);
+        return this.isSyncedFlagSet(4);
     }
 
-    public void func_175467_a(boolean p_175467_1_)
+    /**
+     * Sets this Guardian to be an elder or not.
+     */
+    public void setElder(boolean elder)
     {
-        this.func_175473_a(4, p_175467_1_);
+        this.setSyncedFlag(4, elder);
 
-        if (p_175467_1_)
+        if (elder)
         {
             this.setSize(1.9975F, 1.9975F);
             this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
             this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(8.0D);
             this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(80.0D);
             this.enablePersistence();
-            this.field_175481_bq.func_179479_b(400);
+            this.wander.setExecutionChance(400);
         }
     }
 
-    public void func_175465_cm()
+    public void setElder()
     {
-        this.func_175467_a(true);
+        this.setElder(true);
         this.field_175486_bm = this.field_175485_bl = 1.0F;
     }
 
-    private void func_175463_b(int p_175463_1_)
+    private void setTargetedEntity(int entityId)
     {
-        this.dataWatcher.updateObject(17, Integer.valueOf(p_175463_1_));
+        this.dataWatcher.updateObject(17, Integer.valueOf(entityId));
     }
 
-    public boolean func_175474_cn()
+    public boolean hasTargetedEntity()
     {
         return this.dataWatcher.getWatchableObjectInt(17) != 0;
     }
 
-    public EntityLivingBase func_175466_co()
+    public EntityLivingBase getTargetedEntity()
     {
-        if (!this.func_175474_cn())
+        if (!this.hasTargetedEntity())
         {
             return null;
         }
         else if (this.worldObj.isRemote)
         {
-            if (this.field_175478_bn != null)
+            if (this.targetedEntity != null)
             {
-                return this.field_175478_bn;
+                return this.targetedEntity;
             }
             else
             {
-                Entity var1 = this.worldObj.getEntityByID(this.dataWatcher.getWatchableObjectInt(17));
+                Entity entity = this.worldObj.getEntityByID(this.dataWatcher.getWatchableObjectInt(17));
 
-                if (var1 instanceof EntityLivingBase)
+                if (entity instanceof EntityLivingBase)
                 {
-                    this.field_175478_bn = (EntityLivingBase)var1;
-                    return this.field_175478_bn;
+                    this.targetedEntity = (EntityLivingBase)entity;
+                    return this.targetedEntity;
                 }
                 else
                 {
@@ -213,21 +222,21 @@ public class EntityGuardian extends EntityMob
         }
     }
 
-    public void func_145781_i(int p_145781_1_)
+    public void onDataWatcherUpdate(int dataID)
     {
-        super.func_145781_i(p_145781_1_);
+        super.onDataWatcherUpdate(dataID);
 
-        if (p_145781_1_ == 16)
+        if (dataID == 16)
         {
-            if (this.func_175461_cl() && this.width < 1.0F)
+            if (this.isElder() && this.width < 1.0F)
             {
                 this.setSize(1.9975F, 1.9975F);
             }
         }
-        else if (p_145781_1_ == 17)
+        else if (dataID == 17)
         {
             this.field_175479_bo = 0;
-            this.field_175478_bn = null;
+            this.targetedEntity = null;
         }
     }
 
@@ -244,7 +253,7 @@ public class EntityGuardian extends EntityMob
      */
     protected String getLivingSound()
     {
-        return !this.isInWater() ? "mob.guardian.land.idle" : (this.func_175461_cl() ? "mob.guardian.elder.idle" : "mob.guardian.idle");
+        return !this.isInWater() ? "mob.guardian.land.idle" : (this.isElder() ? "mob.guardian.elder.idle" : "mob.guardian.idle");
     }
 
     /**
@@ -252,7 +261,7 @@ public class EntityGuardian extends EntityMob
      */
     protected String getHurtSound()
     {
-        return !this.isInWater() ? "mob.guardian.land.hit" : (this.func_175461_cl() ? "mob.guardian.elder.hit" : "mob.guardian.hit");
+        return !this.isInWater() ? "mob.guardian.land.hit" : (this.isElder() ? "mob.guardian.elder.hit" : "mob.guardian.hit");
     }
 
     /**
@@ -260,7 +269,7 @@ public class EntityGuardian extends EntityMob
      */
     protected String getDeathSound()
     {
-        return !this.isInWater() ? "mob.guardian.land.death" : (this.func_175461_cl() ? "mob.guardian.elder.death" : "mob.guardian.death");
+        return !this.isInWater() ? "mob.guardian.land.death" : (this.isElder() ? "mob.guardian.elder.death" : "mob.guardian.death");
     }
 
     /**
@@ -277,9 +286,9 @@ public class EntityGuardian extends EntityMob
         return this.height * 0.5F;
     }
 
-    public float func_180484_a(BlockPos p_180484_1_)
+    public float getBlockPathWeight(BlockPos pos)
     {
-        return this.worldObj.getBlockState(p_180484_1_).getBlock().getMaterial() == Material.water ? 10.0F + this.worldObj.getLightBrightness(p_180484_1_) - 0.5F : super.func_180484_a(p_180484_1_);
+        return this.worldObj.getBlockState(pos).getBlock().getMaterial() == Material.water ? 10.0F + this.worldObj.getLightBrightness(pos) - 0.5F : super.getBlockPathWeight(pos);
     }
 
     /**
@@ -296,12 +305,12 @@ public class EntityGuardian extends EntityMob
             {
                 this.field_175483_bk = 2.0F;
 
-                if (this.motionY > 0.0D && this.field_175480_bp && !this.isSlient())
+                if (this.motionY > 0.0D && this.field_175480_bp && !this.isSilent())
                 {
                     this.worldObj.playSound(this.posX, this.posY, this.posZ, "mob.guardian.flop", 1.0F, 1.0F, false);
                 }
 
-                this.field_175480_bp = this.motionY < 0.0D && this.worldObj.func_175677_d((new BlockPos(this)).offsetDown(), false);
+                this.field_175480_bp = this.motionY < 0.0D && this.worldObj.isBlockNormalCube((new BlockPos(this)).down(), false);
             }
             else if (this.func_175472_n())
             {
@@ -337,41 +346,41 @@ public class EntityGuardian extends EntityMob
 
             if (this.func_175472_n() && this.isInWater())
             {
-                Vec3 var1 = this.getLook(0.0F);
+                Vec3 vec3 = this.getLook(0.0F);
 
-                for (int var2 = 0; var2 < 2; ++var2)
+                for (int i = 0; i < 2; ++i)
                 {
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width - var1.xCoord * 1.5D, this.posY + this.rand.nextDouble() * (double)this.height - var1.yCoord * 1.5D, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width - var1.zCoord * 1.5D, 0.0D, 0.0D, 0.0D, new int[0]);
+                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width - vec3.xCoord * 1.5D, this.posY + this.rand.nextDouble() * (double)this.height - vec3.yCoord * 1.5D, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width - vec3.zCoord * 1.5D, 0.0D, 0.0D, 0.0D, new int[0]);
                 }
             }
 
-            if (this.func_175474_cn())
+            if (this.hasTargetedEntity())
             {
                 if (this.field_175479_bo < this.func_175464_ck())
                 {
                     ++this.field_175479_bo;
                 }
 
-                EntityLivingBase var14 = this.func_175466_co();
+                EntityLivingBase entitylivingbase = this.getTargetedEntity();
 
-                if (var14 != null)
+                if (entitylivingbase != null)
                 {
-                    this.getLookHelper().setLookPositionWithEntity(var14, 90.0F, 90.0F);
+                    this.getLookHelper().setLookPositionWithEntity(entitylivingbase, 90.0F, 90.0F);
                     this.getLookHelper().onUpdateLook();
-                    double var15 = (double)this.func_175477_p(0.0F);
-                    double var4 = var14.posX - this.posX;
-                    double var6 = var14.posY + (double)(var14.height * 0.5F) - (this.posY + (double)this.getEyeHeight());
-                    double var8 = var14.posZ - this.posZ;
-                    double var10 = Math.sqrt(var4 * var4 + var6 * var6 + var8 * var8);
-                    var4 /= var10;
-                    var6 /= var10;
-                    var8 /= var10;
-                    double var12 = this.rand.nextDouble();
+                    double d5 = (double)this.func_175477_p(0.0F);
+                    double d0 = entitylivingbase.posX - this.posX;
+                    double d1 = entitylivingbase.posY + (double)(entitylivingbase.height * 0.5F) - (this.posY + (double)this.getEyeHeight());
+                    double d2 = entitylivingbase.posZ - this.posZ;
+                    double d3 = Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+                    d0 = d0 / d3;
+                    d1 = d1 / d3;
+                    d2 = d2 / d3;
+                    double d4 = this.rand.nextDouble();
 
-                    while (var12 < var10)
+                    while (d4 < d3)
                     {
-                        var12 += 1.8D - var15 + this.rand.nextDouble() * (1.7D - var15);
-                        this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + var4 * var12, this.posY + var6 * var12 + (double)this.getEyeHeight(), this.posZ + var8 * var12, 0.0D, 0.0D, 0.0D, new int[0]);
+                        d4 += 1.8D - d5 + this.rand.nextDouble() * (1.7D - d5);
+                        this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + d0 * d4, this.posY + d1 * d4 + (double)this.getEyeHeight(), this.posZ + d2 * d4, 0.0D, 0.0D, 0.0D, new int[0]);
                     }
                 }
             }
@@ -391,7 +400,7 @@ public class EntityGuardian extends EntityMob
             this.isAirBorne = true;
         }
 
-        if (this.func_175474_cn())
+        if (this.hasTargetedEntity())
         {
             this.rotationYaw = this.rotationYawHead;
         }
@@ -418,45 +427,36 @@ public class EntityGuardian extends EntityMob
     {
         super.updateAITasks();
 
-        if (this.func_175461_cl())
+        if (this.isElder())
         {
-            boolean var1 = true;
-            boolean var2 = true;
-            boolean var3 = true;
-            boolean var4 = true;
+            int i = 1200;
+            int j = 1200;
+            int k = 6000;
+            int l = 2;
 
             if ((this.ticksExisted + this.getEntityId()) % 1200 == 0)
             {
-                Potion var5 = Potion.digSlowdown;
-                List var6 = this.worldObj.func_175661_b(EntityPlayerMP.class, new Predicate()
-                {
-                    private static final String __OBFID = "CL_00002212";
-                    public boolean func_179913_a(EntityPlayerMP p_179913_1_)
-                    {
-                        return EntityGuardian.this.getDistanceSqToEntity(p_179913_1_) < 2500.0D && p_179913_1_.theItemInWorldManager.func_180239_c();
-                    }
-                    public boolean apply(Object p_apply_1_)
-                    {
-                        return this.func_179913_a((EntityPlayerMP)p_apply_1_);
-                    }
-                });
-                Iterator var7 = var6.iterator();
+                Potion potion = Potion.digSlowdown;
 
-                while (var7.hasNext())
-                {
-                    EntityPlayerMP var8 = (EntityPlayerMP)var7.next();
-
-                    if (!var8.isPotionActive(var5) || var8.getActivePotionEffect(var5).getAmplifier() < 2 || var8.getActivePotionEffect(var5).getDuration() < 1200)
+                for (EntityPlayerMP entityplayermp : this.worldObj.getPlayers(EntityPlayerMP.class, new Predicate<EntityPlayerMP>()
+            {
+                public boolean apply(EntityPlayerMP p_apply_1_)
                     {
-                        var8.playerNetServerHandler.sendPacket(new S2BPacketChangeGameState(10, 0.0F));
-                        var8.addPotionEffect(new PotionEffect(var5.id, 6000, 2));
+                        return EntityGuardian.this.getDistanceSqToEntity(p_apply_1_) < 2500.0D && p_apply_1_.theItemInWorldManager.survivalOrAdventure();
+                    }
+                }))
+                {
+                    if (!entityplayermp.isPotionActive(potion) || entityplayermp.getActivePotionEffect(potion).getAmplifier() < 2 || entityplayermp.getActivePotionEffect(potion).getDuration() < 1200)
+                    {
+                        entityplayermp.playerNetServerHandler.sendPacket(new S2BPacketChangeGameState(10, 0.0F));
+                        entityplayermp.addPotionEffect(new PotionEffect(potion.id, 6000, 2));
                     }
                 }
             }
 
             if (!this.hasHome())
             {
-                this.func_175449_a(new BlockPos(this), 16);
+                this.setHomePosAndDistance(new BlockPos(this), 16);
             }
         }
     }
@@ -466,35 +466,35 @@ public class EntityGuardian extends EntityMob
      */
     protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
     {
-        int var3 = this.rand.nextInt(3) + this.rand.nextInt(p_70628_2_ + 1);
+        int i = this.rand.nextInt(3) + this.rand.nextInt(p_70628_2_ + 1);
 
-        if (var3 > 0)
+        if (i > 0)
         {
-            this.entityDropItem(new ItemStack(Items.prismarine_shard, var3, 0), 1.0F);
+            this.entityDropItem(new ItemStack(Items.prismarine_shard, i, 0), 1.0F);
         }
 
         if (this.rand.nextInt(3 + p_70628_2_) > 1)
         {
-            this.entityDropItem(new ItemStack(Items.fish, 1, ItemFishFood.FishType.COD.getItemDamage()), 1.0F);
+            this.entityDropItem(new ItemStack(Items.fish, 1, ItemFishFood.FishType.COD.getMetadata()), 1.0F);
         }
         else if (this.rand.nextInt(3 + p_70628_2_) > 1)
         {
             this.entityDropItem(new ItemStack(Items.prismarine_crystals, 1, 0), 1.0F);
         }
 
-        if (p_70628_1_ && this.func_175461_cl())
+        if (p_70628_1_ && this.isElder())
         {
             this.entityDropItem(new ItemStack(Blocks.sponge, 1, 1), 1.0F);
         }
     }
 
     /**
-     * Makes entity wear random armor based on difficulty
+     * Causes this Entity to drop a random item.
      */
-    protected void addRandomArmor()
+    protected void addRandomDrop()
     {
-        ItemStack var1 = ((WeightedRandomFishable)WeightedRandom.getRandomItem(this.rand, EntityFishHook.func_174855_j())).getItemStack(this.rand);
-        this.entityDropItem(var1, 1.0F);
+        ItemStack itemstack = ((WeightedRandomFishable)WeightedRandom.getRandomItem(this.rand, EntityFishHook.func_174855_j())).getItemStack(this.rand);
+        this.entityDropItem(itemstack, 1.0F);
     }
 
     /**
@@ -506,9 +506,9 @@ public class EntityGuardian extends EntityMob
     }
 
     /**
-     * Whether or not the current entity is in lava
+     * Checks that the entity is not colliding with any blocks / liquids
      */
-    public boolean handleLavaMovement()
+    public boolean isNotColliding()
     {
         return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCollidingBoundingBoxes(this, this.getEntityBoundingBox()).isEmpty();
     }
@@ -528,16 +528,16 @@ public class EntityGuardian extends EntityMob
     {
         if (!this.func_175472_n() && !source.isMagicDamage() && source.getSourceOfDamage() instanceof EntityLivingBase)
         {
-            EntityLivingBase var3 = (EntityLivingBase)source.getSourceOfDamage();
+            EntityLivingBase entitylivingbase = (EntityLivingBase)source.getSourceOfDamage();
 
             if (!source.isExplosion())
             {
-                var3.attackEntityFrom(DamageSource.causeThornsDamage(this), 2.0F);
-                var3.playSound("damage.thorns", 0.5F, 1.0F);
+                entitylivingbase.attackEntityFrom(DamageSource.causeThornsDamage(this), 2.0F);
+                entitylivingbase.playSound("damage.thorns", 0.5F, 1.0F);
             }
         }
 
-        this.field_175481_bq.func_179480_f();
+        this.wander.makeUpdate();
         return super.attackEntityFrom(source, amount);
     }
 
@@ -553,13 +553,13 @@ public class EntityGuardian extends EntityMob
     /**
      * Moves the entity based on the specified heading.  Args: strafe, forward
      */
-    public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_)
+    public void moveEntityWithHeading(float strafe, float forward)
     {
         if (this.isServerWorld())
         {
             if (this.isInWater())
             {
-                this.moveFlying(p_70612_1_, p_70612_2_, 0.1F);
+                this.moveFlying(strafe, forward, 0.1F);
                 this.moveEntity(this.motionX, this.motionY, this.motionZ);
                 this.motionX *= 0.8999999761581421D;
                 this.motionY *= 0.8999999761581421D;
@@ -572,90 +572,90 @@ public class EntityGuardian extends EntityMob
             }
             else
             {
-                super.moveEntityWithHeading(p_70612_1_, p_70612_2_);
+                super.moveEntityWithHeading(strafe, forward);
             }
         }
         else
         {
-            super.moveEntityWithHeading(p_70612_1_, p_70612_2_);
+            super.moveEntityWithHeading(strafe, forward);
         }
     }
 
-    class AIGuardianAttack extends EntityAIBase
+    static class AIGuardianAttack extends EntityAIBase
     {
-        private EntityGuardian field_179456_a = EntityGuardian.this;
-        private int field_179455_b;
-        private static final String __OBFID = "CL_00002211";
+        private EntityGuardian theEntity;
+        private int tickCounter;
 
-        public AIGuardianAttack()
+        public AIGuardianAttack(EntityGuardian p_i45833_1_)
         {
+            this.theEntity = p_i45833_1_;
             this.setMutexBits(3);
         }
 
         public boolean shouldExecute()
         {
-            EntityLivingBase var1 = this.field_179456_a.getAttackTarget();
-            return var1 != null && var1.isEntityAlive();
+            EntityLivingBase entitylivingbase = this.theEntity.getAttackTarget();
+            return entitylivingbase != null && entitylivingbase.isEntityAlive();
         }
 
         public boolean continueExecuting()
         {
-            return super.continueExecuting() && (this.field_179456_a.func_175461_cl() || this.field_179456_a.getDistanceSqToEntity(this.field_179456_a.getAttackTarget()) > 9.0D);
+            return super.continueExecuting() && (this.theEntity.isElder() || this.theEntity.getDistanceSqToEntity(this.theEntity.getAttackTarget()) > 9.0D);
         }
 
         public void startExecuting()
         {
-            this.field_179455_b = -10;
-            this.field_179456_a.getNavigator().clearPathEntity();
-            this.field_179456_a.getLookHelper().setLookPositionWithEntity(this.field_179456_a.getAttackTarget(), 90.0F, 90.0F);
-            this.field_179456_a.isAirBorne = true;
+            this.tickCounter = -10;
+            this.theEntity.getNavigator().clearPathEntity();
+            this.theEntity.getLookHelper().setLookPositionWithEntity(this.theEntity.getAttackTarget(), 90.0F, 90.0F);
+            this.theEntity.isAirBorne = true;
         }
 
         public void resetTask()
         {
-            this.field_179456_a.func_175463_b(0);
-            this.field_179456_a.setAttackTarget((EntityLivingBase)null);
-            this.field_179456_a.field_175481_bq.func_179480_f();
+            this.theEntity.setTargetedEntity(0);
+            this.theEntity.setAttackTarget((EntityLivingBase)null);
+            this.theEntity.wander.makeUpdate();
         }
 
         public void updateTask()
         {
-            EntityLivingBase var1 = this.field_179456_a.getAttackTarget();
-            this.field_179456_a.getNavigator().clearPathEntity();
-            this.field_179456_a.getLookHelper().setLookPositionWithEntity(var1, 90.0F, 90.0F);
+            EntityLivingBase entitylivingbase = this.theEntity.getAttackTarget();
+            this.theEntity.getNavigator().clearPathEntity();
+            this.theEntity.getLookHelper().setLookPositionWithEntity(entitylivingbase, 90.0F, 90.0F);
 
-            if (!this.field_179456_a.canEntityBeSeen(var1))
+            if (!this.theEntity.canEntityBeSeen(entitylivingbase))
             {
-                this.field_179456_a.setAttackTarget((EntityLivingBase)null);
+                this.theEntity.setAttackTarget((EntityLivingBase)null);
             }
             else
             {
-                ++this.field_179455_b;
+                ++this.tickCounter;
 
-                if (this.field_179455_b == 0)
+                if (this.tickCounter == 0)
                 {
-                    this.field_179456_a.func_175463_b(this.field_179456_a.getAttackTarget().getEntityId());
-                    this.field_179456_a.worldObj.setEntityState(this.field_179456_a, (byte)21);
+                    this.theEntity.setTargetedEntity(this.theEntity.getAttackTarget().getEntityId());
+                    this.theEntity.worldObj.setEntityState(this.theEntity, (byte)21);
                 }
-                else if (this.field_179455_b >= this.field_179456_a.func_175464_ck())
+                else if (this.tickCounter >= this.theEntity.func_175464_ck())
                 {
-                    float var2 = 1.0F;
+                    float f = 1.0F;
 
-                    if (this.field_179456_a.worldObj.getDifficulty() == EnumDifficulty.HARD)
+                    if (this.theEntity.worldObj.getDifficulty() == EnumDifficulty.HARD)
                     {
-                        var2 += 2.0F;
+                        f += 2.0F;
                     }
 
-                    if (this.field_179456_a.func_175461_cl())
+                    if (this.theEntity.isElder())
                     {
-                        var2 += 2.0F;
+                        f += 2.0F;
                     }
 
-                    var1.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this.field_179456_a, this.field_179456_a), var2);
-                    var1.attackEntityFrom(DamageSource.causeMobDamage(this.field_179456_a), (float)this.field_179456_a.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
-                    this.field_179456_a.setAttackTarget((EntityLivingBase)null);
+                    entitylivingbase.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this.theEntity, this.theEntity), f);
+                    entitylivingbase.attackEntityFrom(DamageSource.causeMobDamage(this.theEntity), (float)this.theEntity.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
+                    this.theEntity.setAttackTarget((EntityLivingBase)null);
                 }
-                else if (this.field_179455_b >= 60 && this.field_179455_b % 20 == 0)
+                else if (this.tickCounter >= 60 && this.tickCounter % 20 == 0)
                 {
                     ;
                 }
@@ -665,78 +665,77 @@ public class EntityGuardian extends EntityMob
         }
     }
 
-    class GuardianMoveHelper extends EntityMoveHelper
+    static class GuardianMoveHelper extends EntityMoveHelper
     {
-        private EntityGuardian field_179930_g = EntityGuardian.this;
-        private static final String __OBFID = "CL_00002209";
+        private EntityGuardian entityGuardian;
 
-        public GuardianMoveHelper()
+        public GuardianMoveHelper(EntityGuardian p_i45831_1_)
         {
-            super(EntityGuardian.this);
+            super(p_i45831_1_);
+            this.entityGuardian = p_i45831_1_;
         }
 
         public void onUpdateMoveHelper()
         {
-            if (this.update && !this.field_179930_g.getNavigator().noPath())
+            if (this.update && !this.entityGuardian.getNavigator().noPath())
             {
-                double var1 = this.posX - this.field_179930_g.posX;
-                double var3 = this.posY - this.field_179930_g.posY;
-                double var5 = this.posZ - this.field_179930_g.posZ;
-                double var7 = var1 * var1 + var3 * var3 + var5 * var5;
-                var7 = (double)MathHelper.sqrt_double(var7);
-                var3 /= var7;
-                float var9 = (float)(Math.atan2(var5, var1) * 180.0D / Math.PI) - 90.0F;
-                this.field_179930_g.rotationYaw = this.limitAngle(this.field_179930_g.rotationYaw, var9, 30.0F);
-                this.field_179930_g.renderYawOffset = this.field_179930_g.rotationYaw;
-                float var10 = (float)(this.speed * this.field_179930_g.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
-                this.field_179930_g.setAIMoveSpeed(this.field_179930_g.getAIMoveSpeed() + (var10 - this.field_179930_g.getAIMoveSpeed()) * 0.125F);
-                double var11 = Math.sin((double)(this.field_179930_g.ticksExisted + this.field_179930_g.getEntityId()) * 0.5D) * 0.05D;
-                double var13 = Math.cos((double)(this.field_179930_g.rotationYaw * (float)Math.PI / 180.0F));
-                double var15 = Math.sin((double)(this.field_179930_g.rotationYaw * (float)Math.PI / 180.0F));
-                this.field_179930_g.motionX += var11 * var13;
-                this.field_179930_g.motionZ += var11 * var15;
-                var11 = Math.sin((double)(this.field_179930_g.ticksExisted + this.field_179930_g.getEntityId()) * 0.75D) * 0.05D;
-                this.field_179930_g.motionY += var11 * (var15 + var13) * 0.25D;
-                this.field_179930_g.motionY += (double)this.field_179930_g.getAIMoveSpeed() * var3 * 0.1D;
-                EntityLookHelper var17 = this.field_179930_g.getLookHelper();
-                double var18 = this.field_179930_g.posX + var1 / var7 * 2.0D;
-                double var20 = (double)this.field_179930_g.getEyeHeight() + this.field_179930_g.posY + var3 / var7 * 1.0D;
-                double var22 = this.field_179930_g.posZ + var5 / var7 * 2.0D;
-                double var24 = var17.func_180423_e();
-                double var26 = var17.func_180422_f();
-                double var28 = var17.func_180421_g();
+                double d0 = this.posX - this.entityGuardian.posX;
+                double d1 = this.posY - this.entityGuardian.posY;
+                double d2 = this.posZ - this.entityGuardian.posZ;
+                double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+                d3 = (double)MathHelper.sqrt_double(d3);
+                d1 = d1 / d3;
+                float f = (float)(MathHelper.func_181159_b(d2, d0) * 180.0D / Math.PI) - 90.0F;
+                this.entityGuardian.rotationYaw = this.limitAngle(this.entityGuardian.rotationYaw, f, 30.0F);
+                this.entityGuardian.renderYawOffset = this.entityGuardian.rotationYaw;
+                float f1 = (float)(this.speed * this.entityGuardian.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
+                this.entityGuardian.setAIMoveSpeed(this.entityGuardian.getAIMoveSpeed() + (f1 - this.entityGuardian.getAIMoveSpeed()) * 0.125F);
+                double d4 = Math.sin((double)(this.entityGuardian.ticksExisted + this.entityGuardian.getEntityId()) * 0.5D) * 0.05D;
+                double d5 = Math.cos((double)(this.entityGuardian.rotationYaw * (float)Math.PI / 180.0F));
+                double d6 = Math.sin((double)(this.entityGuardian.rotationYaw * (float)Math.PI / 180.0F));
+                this.entityGuardian.motionX += d4 * d5;
+                this.entityGuardian.motionZ += d4 * d6;
+                d4 = Math.sin((double)(this.entityGuardian.ticksExisted + this.entityGuardian.getEntityId()) * 0.75D) * 0.05D;
+                this.entityGuardian.motionY += d4 * (d6 + d5) * 0.25D;
+                this.entityGuardian.motionY += (double)this.entityGuardian.getAIMoveSpeed() * d1 * 0.1D;
+                EntityLookHelper entitylookhelper = this.entityGuardian.getLookHelper();
+                double d7 = this.entityGuardian.posX + d0 / d3 * 2.0D;
+                double d8 = (double)this.entityGuardian.getEyeHeight() + this.entityGuardian.posY + d1 / d3 * 1.0D;
+                double d9 = this.entityGuardian.posZ + d2 / d3 * 2.0D;
+                double d10 = entitylookhelper.getLookPosX();
+                double d11 = entitylookhelper.getLookPosY();
+                double d12 = entitylookhelper.getLookPosZ();
 
-                if (!var17.func_180424_b())
+                if (!entitylookhelper.getIsLooking())
                 {
-                    var24 = var18;
-                    var26 = var20;
-                    var28 = var22;
+                    d10 = d7;
+                    d11 = d8;
+                    d12 = d9;
                 }
 
-                this.field_179930_g.getLookHelper().setLookPosition(var24 + (var18 - var24) * 0.125D, var26 + (var20 - var26) * 0.125D, var28 + (var22 - var28) * 0.125D, 10.0F, 40.0F);
-                this.field_179930_g.func_175476_l(true);
+                this.entityGuardian.getLookHelper().setLookPosition(d10 + (d7 - d10) * 0.125D, d11 + (d8 - d11) * 0.125D, d12 + (d9 - d12) * 0.125D, 10.0F, 40.0F);
+                this.entityGuardian.func_175476_l(true);
             }
             else
             {
-                this.field_179930_g.setAIMoveSpeed(0.0F);
-                this.field_179930_g.func_175476_l(false);
+                this.entityGuardian.setAIMoveSpeed(0.0F);
+                this.entityGuardian.func_175476_l(false);
             }
         }
     }
 
-    class GuardianTargetSelector implements Predicate
+    static class GuardianTargetSelector implements Predicate<EntityLivingBase>
     {
-        private EntityGuardian field_179916_a = EntityGuardian.this;
-        private static final String __OBFID = "CL_00002210";
+        private EntityGuardian parentEntity;
 
-        public boolean func_179915_a(EntityLivingBase p_179915_1_)
+        public GuardianTargetSelector(EntityGuardian p_i45832_1_)
         {
-            return (p_179915_1_ instanceof EntityPlayer || p_179915_1_ instanceof EntitySquid) && p_179915_1_.getDistanceSqToEntity(this.field_179916_a) > 9.0D;
+            this.parentEntity = p_i45832_1_;
         }
 
-        public boolean apply(Object p_apply_1_)
+        public boolean apply(EntityLivingBase p_apply_1_)
         {
-            return this.func_179915_a((EntityLivingBase)p_apply_1_);
+            return (p_apply_1_ instanceof EntityPlayer || p_apply_1_ instanceof EntitySquid) && p_apply_1_.getDistanceSqToEntity(this.parentEntity) > 9.0D;
         }
     }
 }

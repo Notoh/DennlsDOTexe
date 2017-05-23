@@ -1,18 +1,18 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.IChatComponent;
 
-public class S40PacketDisconnect implements Packet
+public class S40PacketDisconnect implements Packet<INetHandlerPlayClient>
 {
     private IChatComponent reason;
-    private static final String __OBFID = "CL_00001298";
 
-    public S40PacketDisconnect() {}
+    public S40PacketDisconnect()
+    {
+    }
 
     public S40PacketDisconnect(IChatComponent reasonIn)
     {
@@ -22,17 +22,17 @@ public class S40PacketDisconnect implements Packet
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.reason = data.readChatComponent();
+        this.reason = buf.readChatComponent();
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeChatComponent(this.reason);
+        buf.writeChatComponent(this.reason);
     }
 
     /**
@@ -43,16 +43,8 @@ public class S40PacketDisconnect implements Packet
         handler.handleDisconnect(this);
     }
 
-    public IChatComponent func_149165_c()
+    public IChatComponent getReason()
     {
         return this.reason;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.processPacket((INetHandlerPlayClient)handler);
     }
 }

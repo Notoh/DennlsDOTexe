@@ -7,36 +7,33 @@ public class ContainerChest extends Container
 {
     private IInventory lowerChestInventory;
     private int numRows;
-    private static final String __OBFID = "CL_00001742";
 
-    public ContainerChest(IInventory p_i45801_1_, IInventory p_i45801_2_, EntityPlayer p_i45801_3_)
+    public ContainerChest(IInventory playerInventory, IInventory chestInventory, EntityPlayer player)
     {
-        this.lowerChestInventory = p_i45801_2_;
-        this.numRows = p_i45801_2_.getSizeInventory() / 9;
-        p_i45801_2_.openInventory(p_i45801_3_);
-        int var4 = (this.numRows - 4) * 18;
-        int var5;
-        int var6;
+        this.lowerChestInventory = chestInventory;
+        this.numRows = chestInventory.getSizeInventory() / 9;
+        chestInventory.openInventory(player);
+        int i = (this.numRows - 4) * 18;
 
-        for (var5 = 0; var5 < this.numRows; ++var5)
+        for (int j = 0; j < this.numRows; ++j)
         {
-            for (var6 = 0; var6 < 9; ++var6)
+            for (int k = 0; k < 9; ++k)
             {
-                this.addSlotToContainer(new Slot(p_i45801_2_, var6 + var5 * 9, 8 + var6 * 18, 18 + var5 * 18));
+                this.addSlotToContainer(new Slot(chestInventory, k + j * 9, 8 + k * 18, 18 + j * 18));
             }
         }
 
-        for (var5 = 0; var5 < 3; ++var5)
+        for (int l = 0; l < 3; ++l)
         {
-            for (var6 = 0; var6 < 9; ++var6)
+            for (int j1 = 0; j1 < 9; ++j1)
             {
-                this.addSlotToContainer(new Slot(p_i45801_1_, var6 + var5 * 9 + 9, 8 + var6 * 18, 103 + var5 * 18 + var4));
+                this.addSlotToContainer(new Slot(playerInventory, j1 + l * 9 + 9, 8 + j1 * 18, 103 + l * 18 + i));
             }
         }
 
-        for (var5 = 0; var5 < 9; ++var5)
+        for (int i1 = 0; i1 < 9; ++i1)
         {
-            this.addSlotToContainer(new Slot(p_i45801_1_, var5, 8 + var5 * 18, 161 + var4));
+            this.addSlotToContainer(new Slot(playerInventory, i1, 8 + i1 * 18, 161 + i));
         }
     }
 
@@ -50,46 +47,46 @@ public class ContainerChest extends Container
      */
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack var3 = null;
-        Slot var4 = (Slot)this.inventorySlots.get(index);
+        ItemStack itemstack = null;
+        Slot slot = (Slot)this.inventorySlots.get(index);
 
-        if (var4 != null && var4.getHasStack())
+        if (slot != null && slot.getHasStack())
         {
-            ItemStack var5 = var4.getStack();
-            var3 = var5.copy();
+            ItemStack itemstack1 = slot.getStack();
+            itemstack = itemstack1.copy();
 
             if (index < this.numRows * 9)
             {
-                if (!this.mergeItemStack(var5, this.numRows * 9, this.inventorySlots.size(), true))
+                if (!this.mergeItemStack(itemstack1, this.numRows * 9, this.inventorySlots.size(), true))
                 {
                     return null;
                 }
             }
-            else if (!this.mergeItemStack(var5, 0, this.numRows * 9, false))
+            else if (!this.mergeItemStack(itemstack1, 0, this.numRows * 9, false))
             {
                 return null;
             }
 
-            if (var5.stackSize == 0)
+            if (itemstack1.stackSize == 0)
             {
-                var4.putStack((ItemStack)null);
+                slot.putStack((ItemStack)null);
             }
             else
             {
-                var4.onSlotChanged();
+                slot.onSlotChanged();
             }
         }
 
-        return var3;
+        return itemstack;
     }
 
     /**
      * Called when the container is closed.
      */
-    public void onContainerClosed(EntityPlayer p_75134_1_)
+    public void onContainerClosed(EntityPlayer playerIn)
     {
-        super.onContainerClosed(p_75134_1_);
-        this.lowerChestInventory.closeInventory(p_75134_1_);
+        super.onContainerClosed(playerIn);
+        this.lowerChestInventory.closeInventory(playerIn);
     }
 
     /**

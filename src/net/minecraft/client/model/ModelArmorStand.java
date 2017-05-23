@@ -10,7 +10,6 @@ public class ModelArmorStand extends ModelArmorStandArmor
     public ModelRenderer standLeftSide;
     public ModelRenderer standWaist;
     public ModelRenderer standBase;
-    private static final String __OBFID = "CL_00002631";
 
     public ModelArmorStand()
     {
@@ -60,32 +59,32 @@ public class ModelArmorStand extends ModelArmorStandArmor
      * and legs, where par1 represents the time(so that arms and legs swing back and forth) and par2 represents how
      * "far" arms and legs can swing at most.
      */
-    public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity p_78087_7_)
+    public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity entityIn)
     {
-        super.setRotationAngles(p_78087_1_, p_78087_2_, p_78087_3_, p_78087_4_, p_78087_5_, p_78087_6_, p_78087_7_);
+        super.setRotationAngles(p_78087_1_, p_78087_2_, p_78087_3_, p_78087_4_, p_78087_5_, p_78087_6_, entityIn);
 
-        if (p_78087_7_ instanceof EntityArmorStand)
+        if (entityIn instanceof EntityArmorStand)
         {
-            EntityArmorStand var8 = (EntityArmorStand)p_78087_7_;
-            this.bipedLeftArm.showModel = var8.getShowArms();
-            this.bipedRightArm.showModel = var8.getShowArms();
-            this.standBase.showModel = !var8.hasNoBasePlate();
+            EntityArmorStand entityarmorstand = (EntityArmorStand)entityIn;
+            this.bipedLeftArm.showModel = entityarmorstand.getShowArms();
+            this.bipedRightArm.showModel = entityarmorstand.getShowArms();
+            this.standBase.showModel = !entityarmorstand.hasNoBasePlate();
             this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
             this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-            this.standRightSide.rotateAngleX = 0.017453292F * var8.getBodyRotation().func_179415_b();
-            this.standRightSide.rotateAngleY = 0.017453292F * var8.getBodyRotation().func_179416_c();
-            this.standRightSide.rotateAngleZ = 0.017453292F * var8.getBodyRotation().func_179413_d();
-            this.standLeftSide.rotateAngleX = 0.017453292F * var8.getBodyRotation().func_179415_b();
-            this.standLeftSide.rotateAngleY = 0.017453292F * var8.getBodyRotation().func_179416_c();
-            this.standLeftSide.rotateAngleZ = 0.017453292F * var8.getBodyRotation().func_179413_d();
-            this.standWaist.rotateAngleX = 0.017453292F * var8.getBodyRotation().func_179415_b();
-            this.standWaist.rotateAngleY = 0.017453292F * var8.getBodyRotation().func_179416_c();
-            this.standWaist.rotateAngleZ = 0.017453292F * var8.getBodyRotation().func_179413_d();
-            float var9 = (var8.getLeftLegRotation().func_179415_b() + var8.getRightLegRotation().func_179415_b()) / 2.0F;
-            float var10 = (var8.getLeftLegRotation().func_179416_c() + var8.getRightLegRotation().func_179416_c()) / 2.0F;
-            float var11 = (var8.getLeftLegRotation().func_179413_d() + var8.getRightLegRotation().func_179413_d()) / 2.0F;
+            this.standRightSide.rotateAngleX = 0.017453292F * entityarmorstand.getBodyRotation().getX();
+            this.standRightSide.rotateAngleY = 0.017453292F * entityarmorstand.getBodyRotation().getY();
+            this.standRightSide.rotateAngleZ = 0.017453292F * entityarmorstand.getBodyRotation().getZ();
+            this.standLeftSide.rotateAngleX = 0.017453292F * entityarmorstand.getBodyRotation().getX();
+            this.standLeftSide.rotateAngleY = 0.017453292F * entityarmorstand.getBodyRotation().getY();
+            this.standLeftSide.rotateAngleZ = 0.017453292F * entityarmorstand.getBodyRotation().getZ();
+            this.standWaist.rotateAngleX = 0.017453292F * entityarmorstand.getBodyRotation().getX();
+            this.standWaist.rotateAngleY = 0.017453292F * entityarmorstand.getBodyRotation().getY();
+            this.standWaist.rotateAngleZ = 0.017453292F * entityarmorstand.getBodyRotation().getZ();
+            float f = (entityarmorstand.getLeftLegRotation().getX() + entityarmorstand.getRightLegRotation().getX()) / 2.0F;
+            float f1 = (entityarmorstand.getLeftLegRotation().getY() + entityarmorstand.getRightLegRotation().getY()) / 2.0F;
+            float f2 = (entityarmorstand.getLeftLegRotation().getZ() + entityarmorstand.getRightLegRotation().getZ()) / 2.0F;
             this.standBase.rotateAngleX = 0.0F;
-            this.standBase.rotateAngleY = 0.017453292F * -p_78087_7_.rotationYaw;
+            this.standBase.rotateAngleY = 0.017453292F * -entityIn.rotationYaw;
             this.standBase.rotateAngleZ = 0.0F;
         }
     }
@@ -93,42 +92,42 @@ public class ModelArmorStand extends ModelArmorStandArmor
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float p_78088_7_)
+    public void render(Entity entityIn, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float scale)
     {
-        super.render(p_78088_1_, p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_);
+        super.render(entityIn, p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, scale);
         GlStateManager.pushMatrix();
 
         if (this.isChild)
         {
-            float var8 = 2.0F;
-            GlStateManager.scale(1.0F / var8, 1.0F / var8, 1.0F / var8);
-            GlStateManager.translate(0.0F, 24.0F * p_78088_7_, 0.0F);
-            this.standRightSide.render(p_78088_7_);
-            this.standLeftSide.render(p_78088_7_);
-            this.standWaist.render(p_78088_7_);
-            this.standBase.render(p_78088_7_);
+            float f = 2.0F;
+            GlStateManager.scale(1.0F / f, 1.0F / f, 1.0F / f);
+            GlStateManager.translate(0.0F, 24.0F * scale, 0.0F);
+            this.standRightSide.render(scale);
+            this.standLeftSide.render(scale);
+            this.standWaist.render(scale);
+            this.standBase.render(scale);
         }
         else
         {
-            if (p_78088_1_.isSneaking())
+            if (entityIn.isSneaking())
             {
                 GlStateManager.translate(0.0F, 0.2F, 0.0F);
             }
 
-            this.standRightSide.render(p_78088_7_);
-            this.standLeftSide.render(p_78088_7_);
-            this.standWaist.render(p_78088_7_);
-            this.standBase.render(p_78088_7_);
+            this.standRightSide.render(scale);
+            this.standLeftSide.render(scale);
+            this.standWaist.render(scale);
+            this.standBase.render(scale);
         }
 
         GlStateManager.popMatrix();
     }
 
-    public void postRenderHiddenArm(float p_178718_1_)
+    public void postRenderArm(float scale)
     {
-        boolean var2 = this.bipedRightArm.showModel;
+        boolean flag = this.bipedRightArm.showModel;
         this.bipedRightArm.showModel = true;
-        super.postRenderHiddenArm(p_178718_1_);
-        this.bipedRightArm.showModel = var2;
+        super.postRenderArm(scale);
+        this.bipedRightArm.showModel = flag;
     }
 }

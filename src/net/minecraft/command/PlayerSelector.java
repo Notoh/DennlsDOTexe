@@ -6,11 +6,8 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +27,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
@@ -52,120 +50,114 @@ public class PlayerSelector
      * This matches things like "rm=4,c=2" and is used for handling named token arguments.
      */
     private static final Pattern keyValueListPattern = Pattern.compile("\\G(\\w+)=([-!]?[\\w-]*)(?:$|,)");
-    private static final Set field_179666_d = Sets.newHashSet(new String[] {"x", "y", "z", "dx", "dy", "dz", "rm", "r"});
-    private static final String __OBFID = "CL_00000086";
+    private static final Set<String> WORLD_BINDING_ARGS = Sets.newHashSet(new String[] {"x", "y", "z", "dx", "dy", "dz", "rm", "r"});
 
     /**
      * Returns the one player that matches the given at-token.  Returns null if more than one player matches.
      */
-    public static EntityPlayerMP matchOnePlayer(ICommandSender p_82386_0_, String p_82386_1_)
+    public static EntityPlayerMP matchOnePlayer(ICommandSender sender, String token)
     {
-        return (EntityPlayerMP)func_179652_a(p_82386_0_, p_82386_1_, EntityPlayerMP.class);
+        return (EntityPlayerMP)matchOneEntity(sender, token, EntityPlayerMP.class);
     }
 
-    public static Entity func_179652_a(ICommandSender p_179652_0_, String p_179652_1_, Class p_179652_2_)
+    public static <T extends Entity> T matchOneEntity(ICommandSender sender, String token, Class <? extends T > targetClass)
     {
-        List var3 = func_179656_b(p_179652_0_, p_179652_1_, p_179652_2_);
-        return var3.size() == 1 ? (Entity)var3.get(0) : null;
+        List<T> list = matchEntities(sender, token, targetClass);
+        return (T)(list.size() == 1 ? (Entity)list.get(0) : null);
     }
 
-    public static IChatComponent func_150869_b(ICommandSender p_150869_0_, String p_150869_1_)
+    public static IChatComponent matchEntitiesToChatComponent(ICommandSender sender, String token)
     {
-        List var2 = func_179656_b(p_150869_0_, p_150869_1_, Entity.class);
+        List<Entity> list = matchEntities(sender, token, Entity.class);
 
-        if (var2.isEmpty())
+        if (list.isEmpty())
         {
             return null;
         }
         else
         {
-            ArrayList var3 = Lists.newArrayList();
-            Iterator var4 = var2.iterator();
+            List<IChatComponent> list1 = Lists.<IChatComponent>newArrayList();
 
-            while (var4.hasNext())
+            for (Entity entity : list)
             {
-                Entity var5 = (Entity)var4.next();
-                var3.add(var5.getDisplayName());
+                list1.add(entity.getDisplayName());
             }
 
-            return CommandBase.join(var3);
+            return CommandBase.join(list1);
         }
     }
 
-    public static List func_179656_b(ICommandSender p_179656_0_, String p_179656_1_, Class p_179656_2_)
+    public static <T extends Entity> List<T> matchEntities(ICommandSender sender, String token, Class <? extends T > targetClass)
     {
-        Matcher var3 = tokenPattern.matcher(p_179656_1_);
+        Matcher matcher = tokenPattern.matcher(token);
 
-        if (var3.matches() && p_179656_0_.canCommandSenderUseCommand(1, "@"))
+        if (matcher.matches() && sender.canCommandSenderUseCommand(1, "@"))
         {
-            Map var4 = getArgumentMap(var3.group(2));
+            Map<String, String> map = getArgumentMap(matcher.group(2));
 
-            if (!func_179655_b(p_179656_0_, var4))
+            if (!isEntityTypeValid(sender, map))
             {
-                return Collections.emptyList();
+                return Collections.<T>emptyList();
             }
             else
             {
-                String var5 = var3.group(1);
-                BlockPos var6 = func_179664_b(var4, p_179656_0_.getPosition());
-                List var7 = func_179654_a(p_179656_0_, var4);
-                ArrayList var8 = Lists.newArrayList();
-                Iterator var9 = var7.iterator();
+                String s = matcher.group(1);
+                BlockPos blockpos = func_179664_b(map, sender.getPosition());
+                List<World> list = getWorlds(sender, map);
+                List<T> list1 = Lists.<T>newArrayList();
 
-                while (var9.hasNext())
+                for (World world : list)
                 {
-                    World var10 = (World)var9.next();
-
-                    if (var10 != null)
+                    if (world != null)
                     {
-                        ArrayList var11 = Lists.newArrayList();
-                        var11.addAll(func_179663_a(var4, var5));
-                        var11.addAll(func_179648_b(var4));
-                        var11.addAll(func_179649_c(var4));
-                        var11.addAll(func_179659_d(var4));
-                        var11.addAll(func_179657_e(var4));
-                        var11.addAll(func_179647_f(var4));
-                        var11.addAll(func_180698_a(var4, var6));
-                        var11.addAll(func_179662_g(var4));
-                        var8.addAll(func_179660_a(var4, p_179656_2_, var11, var5, var10, var6));
+                        List<Predicate<Entity>> list2 = Lists.<Predicate<Entity>>newArrayList();
+                        list2.addAll(func_179663_a(map, s));
+                        list2.addAll(func_179648_b(map));
+                        list2.addAll(func_179649_c(map));
+                        list2.addAll(func_179659_d(map));
+                        list2.addAll(func_179657_e(map));
+                        list2.addAll(func_179647_f(map));
+                        list2.addAll(func_180698_a(map, blockpos));
+                        list2.addAll(func_179662_g(map));
+                        list1.addAll(filterResults(map, targetClass, list2, s, world, blockpos));
                     }
                 }
 
-                return func_179658_a(var8, var4, p_179656_0_, p_179656_2_, var5, var6);
+                return func_179658_a(list1, map, sender, targetClass, s, blockpos);
             }
         }
         else
         {
-            return Collections.emptyList();
+            return Collections.<T>emptyList();
         }
     }
 
-    private static List func_179654_a(ICommandSender p_179654_0_, Map p_179654_1_)
+    private static List<World> getWorlds(ICommandSender sender, Map<String, String> argumentMap)
     {
-        ArrayList var2 = Lists.newArrayList();
+        List<World> list = Lists.<World>newArrayList();
 
-        if (func_179665_h(p_179654_1_))
+        if (func_179665_h(argumentMap))
         {
-            var2.add(p_179654_0_.getEntityWorld());
+            list.add(sender.getEntityWorld());
         }
         else
         {
-            Collections.addAll(var2, MinecraftServer.getServer().worldServers);
+            Collections.addAll(list, MinecraftServer.getServer().worldServers);
         }
 
-        return var2;
+        return list;
     }
 
-    private static boolean func_179655_b(ICommandSender p_179655_0_, Map p_179655_1_)
+    private static <T extends Entity> boolean isEntityTypeValid(ICommandSender commandSender, Map<String, String> params)
     {
-        String var2 = func_179651_b(p_179655_1_, "type");
-        var2 = var2 != null && var2.startsWith("!") ? var2.substring(1) : var2;
+        String s = func_179651_b(params, "type");
+        s = s != null && s.startsWith("!") ? s.substring(1) : s;
 
-        if (var2 != null && !EntityList.func_180125_b(var2))
+        if (s != null && !EntityList.isStringValidEntityName(s))
         {
-            ChatComponentTranslation var3 = new ChatComponentTranslation("commands.generic.entity.invalidType", new Object[] {var2});
-            var3.getChatStyle().setColor(EnumChatFormatting.RED);
-            p_179655_0_.addChatMessage(var3);
+            ChatComponentTranslation chatcomponenttranslation = new ChatComponentTranslation("commands.generic.entity.invalidType", new Object[] {s});
+            chatcomponenttranslation.getChatStyle().setColor(EnumChatFormatting.RED);
+            commandSender.addChatMessage(chatcomponenttranslation);
             return false;
         }
         else
@@ -174,472 +166,405 @@ public class PlayerSelector
         }
     }
 
-    private static List func_179663_a(Map p_179663_0_, String p_179663_1_)
+    private static List<Predicate<Entity>> func_179663_a(Map<String, String> p_179663_0_, String p_179663_1_)
     {
-        ArrayList var2 = Lists.newArrayList();
-        String var3 = func_179651_b(p_179663_0_, "type");
-        final boolean var4 = var3 != null && var3.startsWith("!");
+        List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
+        String s = func_179651_b(p_179663_0_, "type");
+        final boolean flag = s != null && s.startsWith("!");
 
-        if (var4)
+        if (flag)
         {
-            var3 = var3.substring(1);
+            s = s.substring(1);
         }
 
-        boolean var6 = !p_179663_1_.equals("e");
-        boolean var7 = p_179663_1_.equals("r") && var3 != null;
+        boolean flag1 = !p_179663_1_.equals("e");
+        boolean flag2 = p_179663_1_.equals("r") && s != null;
 
-        if ((var3 == null || !p_179663_1_.equals("e")) && !var7)
+        if ((s == null || !p_179663_1_.equals("e")) && !flag2)
         {
-            if (var6)
+            if (flag1)
             {
-                var2.add(new Predicate()
+                list.add(new Predicate<Entity>()
                 {
-                    private static final String __OBFID = "CL_00002358";
-                    public boolean func_179624_a(Entity p_179624_1_)
+                    public boolean apply(Entity p_apply_1_)
                     {
-                        return p_179624_1_ instanceof EntityPlayer;
-                    }
-                    public boolean apply(Object p_apply_1_)
-                    {
-                        return this.func_179624_a((Entity)p_apply_1_);
+                        return p_apply_1_ instanceof EntityPlayer;
                     }
                 });
             }
         }
         else
         {
-            final String var3_f = var3;
-            var2.add(new Predicate()
+            final String s_f = s;
+            list.add(new Predicate<Entity>()
             {
-                private static final String __OBFID = "CL_00002362";
-                public boolean func_179613_a(Entity p_179613_1_)
+                public boolean apply(Entity p_apply_1_)
                 {
-                    return EntityList.func_180123_a(p_179613_1_, var3_f) != var4;
-                }
-                public boolean apply(Object p_apply_1_)
-                {
-                    return this.func_179613_a((Entity)p_apply_1_);
+                    return EntityList.isStringEntityName(p_apply_1_, s_f) != flag;
                 }
             });
         }
 
-        return var2;
+        return list;
     }
 
-    private static List func_179648_b(Map p_179648_0_)
+    private static List<Predicate<Entity>> func_179648_b(Map<String, String> p_179648_0_)
     {
-        ArrayList var1 = Lists.newArrayList();
-        final int var2 = func_179653_a(p_179648_0_, "lm", -1);
-        final int var3 = func_179653_a(p_179648_0_, "l", -1);
+        List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
+        final int i = parseIntWithDefault(p_179648_0_, "lm", -1);
+        final int j = parseIntWithDefault(p_179648_0_, "l", -1);
 
-        if (var2 > -1 || var3 > -1)
+        if (i > -1 || j > -1)
         {
-            var1.add(new Predicate()
+            list.add(new Predicate<Entity>()
             {
-                private static final String __OBFID = "CL_00002357";
-                public boolean func_179625_a(Entity p_179625_1_)
+                public boolean apply(Entity p_apply_1_)
                 {
-                    if (!(p_179625_1_ instanceof EntityPlayerMP))
+                    if (!(p_apply_1_ instanceof EntityPlayerMP))
                     {
                         return false;
                     }
                     else
                     {
-                        EntityPlayerMP var2x = (EntityPlayerMP)p_179625_1_;
-                        return (var2 <= -1 || var2x.experienceLevel >= var2) && (var3 <= -1 || var2x.experienceLevel <= var3);
+                        EntityPlayerMP entityplayermp = (EntityPlayerMP)p_apply_1_;
+                        return (i <= -1 || entityplayermp.experienceLevel >= i) && (j <= -1 || entityplayermp.experienceLevel <= j);
                     }
-                }
-                public boolean apply(Object p_apply_1_)
-                {
-                    return this.func_179625_a((Entity)p_apply_1_);
                 }
             });
         }
 
-        return var1;
+        return list;
     }
 
-    private static List func_179649_c(Map p_179649_0_)
+    private static List<Predicate<Entity>> func_179649_c(Map<String, String> p_179649_0_)
     {
-        ArrayList var1 = Lists.newArrayList();
-        final int var2 = func_179653_a(p_179649_0_, "m", WorldSettings.GameType.NOT_SET.getID());
+        List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
+        final int i = parseIntWithDefault(p_179649_0_, "m", WorldSettings.GameType.NOT_SET.getID());
 
-        if (var2 != WorldSettings.GameType.NOT_SET.getID())
+        if (i != WorldSettings.GameType.NOT_SET.getID())
         {
-            var1.add(new Predicate()
+            list.add(new Predicate<Entity>()
             {
-                private static final String __OBFID = "CL_00002356";
-                public boolean func_179619_a(Entity p_179619_1_)
+                public boolean apply(Entity p_apply_1_)
                 {
-                    if (!(p_179619_1_ instanceof EntityPlayerMP))
+                    if (!(p_apply_1_ instanceof EntityPlayerMP))
                     {
                         return false;
                     }
                     else
                     {
-                        EntityPlayerMP var2x = (EntityPlayerMP)p_179619_1_;
-                        return var2x.theItemInWorldManager.getGameType().getID() == var2;
+                        EntityPlayerMP entityplayermp = (EntityPlayerMP)p_apply_1_;
+                        return entityplayermp.theItemInWorldManager.getGameType().getID() == i;
                     }
-                }
-                public boolean apply(Object p_apply_1_)
-                {
-                    return this.func_179619_a((Entity)p_apply_1_);
                 }
             });
         }
 
-        return var1;
+        return list;
     }
 
-    private static List func_179659_d(Map p_179659_0_)
+    private static List<Predicate<Entity>> func_179659_d(Map<String, String> p_179659_0_)
     {
-        ArrayList var1 = Lists.newArrayList();
-        String var2 = func_179651_b(p_179659_0_, "team");
-        final boolean var3 = var2 != null && var2.startsWith("!");
+        List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
+        String s = func_179651_b(p_179659_0_, "team");
+        final boolean flag = s != null && s.startsWith("!");
 
-        if (var3)
+        if (flag)
         {
-            var2 = var2.substring(1);
+            s = s.substring(1);
         }
 
-        if (var2 != null)
+        if (s != null)
         {
-            final String var2_f = var2;
-            var1.add(new Predicate()
+            final String s_f = s;
+            list.add(new Predicate<Entity>()
             {
-                private static final String __OBFID = "CL_00002355";
-                public boolean func_179621_a(Entity p_179621_1_)
+                public boolean apply(Entity p_apply_1_)
                 {
-                    if (!(p_179621_1_ instanceof EntityLivingBase))
+                    if (!(p_apply_1_ instanceof EntityLivingBase))
                     {
                         return false;
                     }
                     else
                     {
-                        EntityLivingBase var2x = (EntityLivingBase)p_179621_1_;
-                        Team var3x = var2x.getTeam();
-                        String var4 = var3x == null ? "" : var3x.getRegisteredName();
-                        return var4.equals(var2_f) != var3;
+                        EntityLivingBase entitylivingbase = (EntityLivingBase)p_apply_1_;
+                        Team team = entitylivingbase.getTeam();
+                        String s1 = team == null ? "" : team.getRegisteredName();
+                        return s1.equals(s_f) != flag;
                     }
-                }
-                public boolean apply(Object p_apply_1_)
-                {
-                    return this.func_179621_a((Entity)p_apply_1_);
                 }
             });
         }
 
-        return var1;
+        return list;
     }
 
-    private static List func_179657_e(Map p_179657_0_)
+    private static List<Predicate<Entity>> func_179657_e(Map<String, String> p_179657_0_)
     {
-        ArrayList var1 = Lists.newArrayList();
-        final Map var2 = func_96560_a(p_179657_0_);
+        List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
+        final Map<String, Integer> map = func_96560_a(p_179657_0_);
 
-        if (var2 != null && var2.size() > 0)
+        if (map != null && map.size() > 0)
         {
-            var1.add(new Predicate()
+            list.add(new Predicate<Entity>()
             {
-                private static final String __OBFID = "CL_00002354";
-                public boolean func_179603_a(Entity p_179603_1_)
+                public boolean apply(Entity p_apply_1_)
                 {
-                    Scoreboard var2x = MinecraftServer.getServer().worldServerForDimension(0).getScoreboard();
-                    Iterator var3 = var2.entrySet().iterator();
-                    Entry var4;
-                    boolean var6;
-                    int var10;
+                    Scoreboard scoreboard = MinecraftServer.getServer().worldServerForDimension(0).getScoreboard();
 
-                    do
+                    for (Entry<String, Integer> entry : map.entrySet())
                     {
-                        if (!var3.hasNext())
+                        String s = (String)entry.getKey();
+                        boolean flag = false;
+
+                        if (s.endsWith("_min") && s.length() > 4)
                         {
-                            return true;
+                            flag = true;
+                            s = s.substring(0, s.length() - 4);
                         }
 
-                        var4 = (Entry)var3.next();
-                        String var5 = (String)var4.getKey();
-                        var6 = false;
+                        ScoreObjective scoreobjective = scoreboard.getObjective(s);
 
-                        if (var5.endsWith("_min") && var5.length() > 4)
-                        {
-                            var6 = true;
-                            var5 = var5.substring(0, var5.length() - 4);
-                        }
-
-                        ScoreObjective var7 = var2x.getObjective(var5);
-
-                        if (var7 == null)
+                        if (scoreobjective == null)
                         {
                             return false;
                         }
 
-                        String var8 = p_179603_1_ instanceof EntityPlayerMP ? p_179603_1_.getName() : p_179603_1_.getUniqueID().toString();
+                        String s1 = p_apply_1_ instanceof EntityPlayerMP ? p_apply_1_.getName() : p_apply_1_.getUniqueID().toString();
 
-                        if (!var2x.func_178819_b(var8, var7))
+                        if (!scoreboard.entityHasObjective(s1, scoreobjective))
                         {
                             return false;
                         }
 
-                        Score var9 = var2x.getValueFromObjective(var8, var7);
-                        var10 = var9.getScorePoints();
+                        Score score = scoreboard.getValueFromObjective(s1, scoreobjective);
+                        int i = score.getScorePoints();
 
-                        if (var10 < ((Integer)var4.getValue()).intValue() && var6)
+                        if (i < ((Integer)entry.getValue()).intValue() && flag)
+                        {
+                            return false;
+                        }
+
+                        if (i > ((Integer)entry.getValue()).intValue() && !flag)
                         {
                             return false;
                         }
                     }
-                    while (var10 <= ((Integer)var4.getValue()).intValue() || var6);
 
-                    return false;
-                }
-                public boolean apply(Object p_apply_1_)
-                {
-                    return this.func_179603_a((Entity)p_apply_1_);
+                    return true;
                 }
             });
         }
 
-        return var1;
+        return list;
     }
 
-    private static List func_179647_f(Map p_179647_0_)
+    private static List<Predicate<Entity>> func_179647_f(Map<String, String> p_179647_0_)
     {
-        ArrayList var1 = Lists.newArrayList();
-        String var2 = func_179651_b(p_179647_0_, "name");
-        final boolean var3 = var2 != null && var2.startsWith("!");
+        List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
+        String s = func_179651_b(p_179647_0_, "name");
+        final boolean flag = s != null && s.startsWith("!");
 
-        if (var3)
+        if (flag)
         {
-            var2 = var2.substring(1);
+            s = s.substring(1);
         }
 
-        if (var2 != null)
+        if (s != null)
         {
-            final String var2_f = var2;
-            var1.add(new Predicate()
+            final String s_f = s;
+            list.add(new Predicate<Entity>()
             {
-                private static final String __OBFID = "CL_00002353";
-                public boolean func_179600_a(Entity p_179600_1_)
+                public boolean apply(Entity p_apply_1_)
                 {
-                    return p_179600_1_.getName().equals(var2_f) != var3;
-                }
-                public boolean apply(Object p_apply_1_)
-                {
-                    return this.func_179600_a((Entity)p_apply_1_);
+                    return p_apply_1_.getName().equals(s_f) != flag;
                 }
             });
         }
 
-        return var1;
+        return list;
     }
 
-    private static List func_180698_a(Map p_180698_0_, final BlockPos p_180698_1_)
+    private static List<Predicate<Entity>> func_180698_a(Map<String, String> p_180698_0_, final BlockPos p_180698_1_)
     {
-        ArrayList var2 = Lists.newArrayList();
-        final int var3 = func_179653_a(p_180698_0_, "rm", -1);
-        final int var4 = func_179653_a(p_180698_0_, "r", -1);
+        List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
+        final int i = parseIntWithDefault(p_180698_0_, "rm", -1);
+        final int j = parseIntWithDefault(p_180698_0_, "r", -1);
 
-        if (p_180698_1_ != null && (var3 >= 0 || var4 >= 0))
+        if (p_180698_1_ != null && (i >= 0 || j >= 0))
         {
-            final int var5 = var3 * var3;
-            final int var6 = var4 * var4;
-            var2.add(new Predicate()
+            final int k = i * i;
+            final int l = j * j;
+            list.add(new Predicate<Entity>()
             {
-                private static final String __OBFID = "CL_00002352";
-                public boolean func_179594_a(Entity p_179594_1_)
+                public boolean apply(Entity p_apply_1_)
                 {
-                    int var2 = (int)p_179594_1_.func_174831_c(p_180698_1_);
-                    return (var3 < 0 || var2 >= var5) && (var4 < 0 || var2 <= var6);
-                }
-                public boolean apply(Object p_apply_1_)
-                {
-                    return this.func_179594_a((Entity)p_apply_1_);
+                    int i1 = (int)p_apply_1_.getDistanceSqToCenter(p_180698_1_);
+                    return (i < 0 || i1 >= k) && (j < 0 || i1 <= l);
                 }
             });
         }
 
-        return var2;
+        return list;
     }
 
-    private static List func_179662_g(Map p_179662_0_)
+    private static List<Predicate<Entity>> func_179662_g(Map<String, String> p_179662_0_)
     {
-        ArrayList var1 = Lists.newArrayList();
+        List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
 
         if (p_179662_0_.containsKey("rym") || p_179662_0_.containsKey("ry"))
         {
-            final int var2 = func_179650_a(func_179653_a(p_179662_0_, "rym", 0));
-            final int var3 = func_179650_a(func_179653_a(p_179662_0_, "ry", 359));
-            var1.add(new Predicate()
+            final int i = func_179650_a(parseIntWithDefault(p_179662_0_, "rym", 0));
+            final int j = func_179650_a(parseIntWithDefault(p_179662_0_, "ry", 359));
+            list.add(new Predicate<Entity>()
             {
-                private static final String __OBFID = "CL_00002351";
-                public boolean func_179591_a(Entity p_179591_1_)
+                public boolean apply(Entity p_apply_1_)
                 {
-                    int var2x = PlayerSelector.func_179650_a((int)Math.floor((double)p_179591_1_.rotationYaw));
-                    return var2 > var3 ? var2x >= var2 || var2x <= var3 : var2x >= var2 && var2x <= var3;
-                }
-                public boolean apply(Object p_apply_1_)
-                {
-                    return this.func_179591_a((Entity)p_apply_1_);
+                    int i1 = PlayerSelector.func_179650_a((int)Math.floor((double)p_apply_1_.rotationYaw));
+                    return i > j ? i1 >= i || i1 <= j : i1 >= i && i1 <= j;
                 }
             });
         }
 
         if (p_179662_0_.containsKey("rxm") || p_179662_0_.containsKey("rx"))
         {
-            final int var2 = func_179650_a(func_179653_a(p_179662_0_, "rxm", 0));
-            final int var3 = func_179650_a(func_179653_a(p_179662_0_, "rx", 359));
-            var1.add(new Predicate()
+            final int k = func_179650_a(parseIntWithDefault(p_179662_0_, "rxm", 0));
+            final int l = func_179650_a(parseIntWithDefault(p_179662_0_, "rx", 359));
+            list.add(new Predicate<Entity>()
             {
-                private static final String __OBFID = "CL_00002361";
-                public boolean func_179616_a(Entity p_179616_1_)
+                public boolean apply(Entity p_apply_1_)
                 {
-                    int var2x = PlayerSelector.func_179650_a((int)Math.floor((double)p_179616_1_.rotationPitch));
-                    return var2 > var3 ? var2x >= var2 || var2x <= var3 : var2x >= var2 && var2x <= var3;
-                }
-                public boolean apply(Object p_apply_1_)
-                {
-                    return this.func_179616_a((Entity)p_apply_1_);
+                    int i1 = PlayerSelector.func_179650_a((int)Math.floor((double)p_apply_1_.rotationPitch));
+                    return k > l ? i1 >= k || i1 <= l : i1 >= k && i1 <= l;
                 }
             });
         }
 
-        return var1;
+        return list;
     }
 
-    private static List func_179660_a(Map p_179660_0_, Class p_179660_1_, List p_179660_2_, String p_179660_3_, World worldIn, BlockPos p_179660_5_)
+    private static <T extends Entity> List<T> filterResults(Map<String, String> params, Class <? extends T > entityClass, List<Predicate<Entity>> inputList, String type, World worldIn, BlockPos position)
     {
-        ArrayList var6 = Lists.newArrayList();
-        String var7 = func_179651_b(p_179660_0_, "type");
-        var7 = var7 != null && var7.startsWith("!") ? var7.substring(1) : var7;
-        boolean var8 = !p_179660_3_.equals("e");
-        boolean var9 = p_179660_3_.equals("r") && var7 != null;
-        int var10 = func_179653_a(p_179660_0_, "dx", 0);
-        int var11 = func_179653_a(p_179660_0_, "dy", 0);
-        int var12 = func_179653_a(p_179660_0_, "dz", 0);
-        int var13 = func_179653_a(p_179660_0_, "r", -1);
-        Predicate var14 = Predicates.and(p_179660_2_);
-        Predicate var15 = Predicates.and(IEntitySelector.selectAnything, var14);
+        List<T> list = Lists.<T>newArrayList();
+        String s = func_179651_b(params, "type");
+        s = s != null && s.startsWith("!") ? s.substring(1) : s;
+        boolean flag = !type.equals("e");
+        boolean flag1 = type.equals("r") && s != null;
+        int i = parseIntWithDefault(params, "dx", 0);
+        int j = parseIntWithDefault(params, "dy", 0);
+        int k = parseIntWithDefault(params, "dz", 0);
+        int l = parseIntWithDefault(params, "r", -1);
+        Predicate<Entity> predicate = Predicates.and(inputList);
+        Predicate<Entity> predicate1 = Predicates.<Entity> and (EntitySelectors.selectAnything, predicate);
 
-        if (p_179660_5_ != null)
+        if (position != null)
         {
-            int var16 = worldIn.playerEntities.size();
-            int var17 = worldIn.loadedEntityList.size();
-            boolean var18 = var16 < var17 / 16;
-            final AxisAlignedBB var19;
+            int i1 = worldIn.playerEntities.size();
+            int j1 = worldIn.loadedEntityList.size();
+            boolean flag2 = i1 < j1 / 16;
 
-            if (!p_179660_0_.containsKey("dx") && !p_179660_0_.containsKey("dy") && !p_179660_0_.containsKey("dz"))
+            if (!params.containsKey("dx") && !params.containsKey("dy") && !params.containsKey("dz"))
             {
-                if (var13 >= 0)
+                if (l >= 0)
                 {
-                    var19 = new AxisAlignedBB((double)(p_179660_5_.getX() - var13), (double)(p_179660_5_.getY() - var13), (double)(p_179660_5_.getZ() - var13), (double)(p_179660_5_.getX() + var13 + 1), (double)(p_179660_5_.getY() + var13 + 1), (double)(p_179660_5_.getZ() + var13 + 1));
+                    AxisAlignedBB axisalignedbb1 = new AxisAlignedBB((double)(position.getX() - l), (double)(position.getY() - l), (double)(position.getZ() - l), (double)(position.getX() + l + 1), (double)(position.getY() + l + 1), (double)(position.getZ() + l + 1));
 
-                    if (var8 && var18 && !var9)
+                    if (flag && flag2 && !flag1)
                     {
-                        var6.addAll(worldIn.func_175661_b(p_179660_1_, var15));
+                        list.addAll(worldIn.<T>getPlayers(entityClass, predicate1));
                     }
                     else
                     {
-                        var6.addAll(worldIn.func_175647_a(p_179660_1_, var19, var15));
+                        list.addAll(worldIn.<T>getEntitiesWithinAABB(entityClass, axisalignedbb1, predicate1));
                     }
                 }
-                else if (p_179660_3_.equals("a"))
+                else if (type.equals("a"))
                 {
-                    var6.addAll(worldIn.func_175661_b(p_179660_1_, var14));
+                    list.addAll(worldIn.<T>getPlayers(entityClass, predicate));
                 }
-                else if (!p_179660_3_.equals("p") && (!p_179660_3_.equals("r") || var9))
+                else if (!type.equals("p") && (!type.equals("r") || flag1))
                 {
-                    var6.addAll(worldIn.func_175644_a(p_179660_1_, var15));
+                    list.addAll(worldIn.<T>getEntities(entityClass, predicate1));
                 }
                 else
                 {
-                    var6.addAll(worldIn.func_175661_b(p_179660_1_, var15));
+                    list.addAll(worldIn.<T>getPlayers(entityClass, predicate1));
                 }
             }
             else
             {
-                var19 = func_179661_a(p_179660_5_, var10, var11, var12);
+                final AxisAlignedBB axisalignedbb = func_179661_a(position, i, j, k);
 
-                if (var8 && var18 && !var9)
+                if (flag && flag2 && !flag1)
                 {
-                    Predicate var20 = new Predicate()
+                    Predicate<Entity> predicate2 = new Predicate<Entity>()
                     {
-                        private static final String __OBFID = "CL_00002360";
-                        public boolean func_179609_a(Entity p_179609_1_)
+                        public boolean apply(Entity p_apply_1_)
                         {
-                            return p_179609_1_.posX >= var19.minX && p_179609_1_.posY >= var19.minY && p_179609_1_.posZ >= var19.minZ ? p_179609_1_.posX < var19.maxX && p_179609_1_.posY < var19.maxY && p_179609_1_.posZ < var19.maxZ : false;
-                        }
-                        public boolean apply(Object p_apply_1_)
-                        {
-                            return this.func_179609_a((Entity)p_apply_1_);
+                            return p_apply_1_.posX >= axisalignedbb.minX && p_apply_1_.posY >= axisalignedbb.minY && p_apply_1_.posZ >= axisalignedbb.minZ ? p_apply_1_.posX < axisalignedbb.maxX && p_apply_1_.posY < axisalignedbb.maxY && p_apply_1_.posZ < axisalignedbb.maxZ : false;
                         }
                     };
-                    var6.addAll(worldIn.func_175661_b(p_179660_1_, Predicates.and(var15, var20)));
+                    list.addAll(worldIn.<T>getPlayers(entityClass, Predicates.<T> and (predicate1, predicate2)));
                 }
                 else
                 {
-                    var6.addAll(worldIn.func_175647_a(p_179660_1_, var19, var15));
+                    list.addAll(worldIn.<T>getEntitiesWithinAABB(entityClass, axisalignedbb, predicate1));
                 }
             }
         }
-        else if (p_179660_3_.equals("a"))
+        else if (type.equals("a"))
         {
-            var6.addAll(worldIn.func_175661_b(p_179660_1_, var14));
+            list.addAll(worldIn.<T>getPlayers(entityClass, predicate));
         }
-        else if (!p_179660_3_.equals("p") && (!p_179660_3_.equals("r") || var9))
+        else if (!type.equals("p") && (!type.equals("r") || flag1))
         {
-            var6.addAll(worldIn.func_175644_a(p_179660_1_, var15));
+            list.addAll(worldIn.<T>getEntities(entityClass, predicate1));
         }
         else
         {
-            var6.addAll(worldIn.func_175661_b(p_179660_1_, var15));
+            list.addAll(worldIn.<T>getPlayers(entityClass, predicate1));
         }
 
-        return var6;
+        return list;
     }
 
-    private static List func_179658_a(List p_179658_0_, Map p_179658_1_, ICommandSender p_179658_2_, Class p_179658_3_, String p_179658_4_, final BlockPos p_179658_5_)
+    private static <T extends Entity> List<T> func_179658_a(List<T> p_179658_0_, Map<String, String> p_179658_1_, ICommandSender p_179658_2_, Class <? extends T > p_179658_3_, String p_179658_4_, final BlockPos p_179658_5_)
     {
-        int var6 = func_179653_a(p_179658_1_, "c", !p_179658_4_.equals("a") && !p_179658_4_.equals("e") ? 1 : 0);
+        int i = parseIntWithDefault(p_179658_1_, "c", !p_179658_4_.equals("a") && !p_179658_4_.equals("e") ? 1 : 0);
 
         if (!p_179658_4_.equals("p") && !p_179658_4_.equals("a") && !p_179658_4_.equals("e"))
         {
             if (p_179658_4_.equals("r"))
             {
-                Collections.shuffle((List)p_179658_0_);
+                Collections.shuffle((List<?>)p_179658_0_);
             }
         }
         else if (p_179658_5_ != null)
         {
-            Collections.sort((List)p_179658_0_, new Comparator()
+            Collections.sort((List<T>)p_179658_0_, new Comparator<Entity>()
             {
-                private static final String __OBFID = "CL_00002359";
-                public int func_179611_a(Entity p_179611_1_, Entity p_179611_2_)
+                public int compare(Entity p_compare_1_, Entity p_compare_2_)
                 {
-                    return ComparisonChain.start().compare(p_179611_1_.getDistanceSq(p_179658_5_), p_179611_2_.getDistanceSq(p_179658_5_)).result();
-                }
-                public int compare(Object p_compare_1_, Object p_compare_2_)
-                {
-                    return this.func_179611_a((Entity)p_compare_1_, (Entity)p_compare_2_);
+                    return ComparisonChain.start().compare(p_compare_1_.getDistanceSq(p_179658_5_), p_compare_2_.getDistanceSq(p_179658_5_)).result();
                 }
             });
         }
 
-        Entity var7 = p_179658_2_.getCommandSenderEntity();
+        Entity entity = p_179658_2_.getCommandSenderEntity();
 
-        if (var7 != null && p_179658_3_.isAssignableFrom(var7.getClass()) && var6 == 1 && ((List)p_179658_0_).contains(var7) && !"r".equals(p_179658_4_))
+        if (entity != null && p_179658_3_.isAssignableFrom(entity.getClass()) && i == 1 && ((List)p_179658_0_).contains(entity) && !"r".equals(p_179658_4_))
         {
-            p_179658_0_ = Lists.newArrayList(new Entity[] {var7});
+            p_179658_0_ = Lists.newArrayList((T)entity);
         }
 
-        if (var6 != 0)
+        if (i != 0)
         {
-            if (var6 < 0)
+            if (i < 0)
             {
-                Collections.reverse((List)p_179658_0_);
+                Collections.reverse((List<?>)p_179658_0_);
             }
 
-            p_179658_0_ = ((List)p_179658_0_).subList(0, Math.min(Math.abs(var6), ((List)p_179658_0_).size()));
+            p_179658_0_ = ((List)p_179658_0_).subList(0, Math.min(Math.abs(i), ((List)p_179658_0_).size()));
         }
 
         return (List)p_179658_0_;
@@ -647,21 +572,21 @@ public class PlayerSelector
 
     private static AxisAlignedBB func_179661_a(BlockPos p_179661_0_, int p_179661_1_, int p_179661_2_, int p_179661_3_)
     {
-        boolean var4 = p_179661_1_ < 0;
-        boolean var5 = p_179661_2_ < 0;
-        boolean var6 = p_179661_3_ < 0;
-        int var7 = p_179661_0_.getX() + (var4 ? p_179661_1_ : 0);
-        int var8 = p_179661_0_.getY() + (var5 ? p_179661_2_ : 0);
-        int var9 = p_179661_0_.getZ() + (var6 ? p_179661_3_ : 0);
-        int var10 = p_179661_0_.getX() + (var4 ? 0 : p_179661_1_) + 1;
-        int var11 = p_179661_0_.getY() + (var5 ? 0 : p_179661_2_) + 1;
-        int var12 = p_179661_0_.getZ() + (var6 ? 0 : p_179661_3_) + 1;
-        return new AxisAlignedBB((double)var7, (double)var8, (double)var9, (double)var10, (double)var11, (double)var12);
+        boolean flag = p_179661_1_ < 0;
+        boolean flag1 = p_179661_2_ < 0;
+        boolean flag2 = p_179661_3_ < 0;
+        int i = p_179661_0_.getX() + (flag ? p_179661_1_ : 0);
+        int j = p_179661_0_.getY() + (flag1 ? p_179661_2_ : 0);
+        int k = p_179661_0_.getZ() + (flag2 ? p_179661_3_ : 0);
+        int l = p_179661_0_.getX() + (flag ? 0 : p_179661_1_) + 1;
+        int i1 = p_179661_0_.getY() + (flag1 ? 0 : p_179661_2_) + 1;
+        int j1 = p_179661_0_.getZ() + (flag2 ? 0 : p_179661_3_) + 1;
+        return new AxisAlignedBB((double)i, (double)j, (double)k, (double)l, (double)i1, (double)j1);
     }
 
     public static int func_179650_a(int p_179650_0_)
     {
-        p_179650_0_ %= 360;
+        p_179650_0_ = p_179650_0_ % 360;
 
         if (p_179650_0_ >= 160)
         {
@@ -676,56 +601,47 @@ public class PlayerSelector
         return p_179650_0_;
     }
 
-    private static BlockPos func_179664_b(Map p_179664_0_, BlockPos p_179664_1_)
+    private static BlockPos func_179664_b(Map<String, String> p_179664_0_, BlockPos p_179664_1_)
     {
-        return new BlockPos(func_179653_a(p_179664_0_, "x", p_179664_1_.getX()), func_179653_a(p_179664_0_, "y", p_179664_1_.getY()), func_179653_a(p_179664_0_, "z", p_179664_1_.getZ()));
+        return new BlockPos(parseIntWithDefault(p_179664_0_, "x", p_179664_1_.getX()), parseIntWithDefault(p_179664_0_, "y", p_179664_1_.getY()), parseIntWithDefault(p_179664_0_, "z", p_179664_1_.getZ()));
     }
 
-    private static boolean func_179665_h(Map p_179665_0_)
+    private static boolean func_179665_h(Map<String, String> p_179665_0_)
     {
-        Iterator var1 = field_179666_d.iterator();
-        String var2;
-
-        do
+        for (String s : WORLD_BINDING_ARGS)
         {
-            if (!var1.hasNext())
+            if (p_179665_0_.containsKey(s))
             {
-                return false;
+                return true;
             }
-
-            var2 = (String)var1.next();
         }
-        while (!p_179665_0_.containsKey(var2));
 
-        return true;
+        return false;
     }
 
-    private static int func_179653_a(Map p_179653_0_, String p_179653_1_, int p_179653_2_)
+    private static int parseIntWithDefault(Map<String, String> p_179653_0_, String p_179653_1_, int p_179653_2_)
     {
         return p_179653_0_.containsKey(p_179653_1_) ? MathHelper.parseIntWithDefault((String)p_179653_0_.get(p_179653_1_), p_179653_2_) : p_179653_2_;
     }
 
-    private static String func_179651_b(Map p_179651_0_, String p_179651_1_)
+    private static String func_179651_b(Map<String, String> p_179651_0_, String p_179651_1_)
     {
         return (String)p_179651_0_.get(p_179651_1_);
     }
 
-    public static Map func_96560_a(Map p_96560_0_)
+    public static Map<String, Integer> func_96560_a(Map<String, String> p_96560_0_)
     {
-        HashMap var1 = Maps.newHashMap();
-        Iterator var2 = p_96560_0_.keySet().iterator();
+        Map<String, Integer> map = Maps.<String, Integer>newHashMap();
 
-        while (var2.hasNext())
+        for (String s : p_96560_0_.keySet())
         {
-            String var3 = (String)var2.next();
-
-            if (var3.startsWith("score_") && var3.length() > "score_".length())
+            if (s.startsWith("score_") && s.length() > "score_".length())
             {
-                var1.put(var3.substring("score_".length()), Integer.valueOf(MathHelper.parseIntWithDefault((String)p_96560_0_.get(var3), 1)));
+                map.put(s.substring("score_".length()), Integer.valueOf(MathHelper.parseIntWithDefault((String)p_96560_0_.get(s), 1)));
             }
         }
 
-        return var1;
+        return map;
     }
 
     /**
@@ -733,18 +649,18 @@ public class PlayerSelector
      */
     public static boolean matchesMultiplePlayers(String p_82377_0_)
     {
-        Matcher var1 = tokenPattern.matcher(p_82377_0_);
+        Matcher matcher = tokenPattern.matcher(p_82377_0_);
 
-        if (!var1.matches())
+        if (!matcher.matches())
         {
             return false;
         }
         else
         {
-            Map var2 = getArgumentMap(var1.group(2));
-            String var3 = var1.group(1);
-            int var4 = !"a".equals(var3) && !"e".equals(var3) ? 1 : 0;
-            return func_179653_a(var2, "c", var4) != 1;
+            Map<String, String> map = getArgumentMap(matcher.group(2));
+            String s = matcher.group(1);
+            int i = !"a".equals(s) && !"e".equals(s) ? 1 : 0;
+            return parseIntWithDefault(map, "c", i) != 1;
         }
     }
 
@@ -756,61 +672,58 @@ public class PlayerSelector
         return tokenPattern.matcher(p_82378_0_).matches();
     }
 
-    /**
-     * Parses the given argument string, turning it into a HashMap&lt;String, String&gt; of name-&gt;value.
-     */
-    private static Map getArgumentMap(String p_82381_0_)
+    private static Map<String, String> getArgumentMap(String argumentString)
     {
-        HashMap var1 = Maps.newHashMap();
+        Map<String, String> map = Maps.<String, String>newHashMap();
 
-        if (p_82381_0_ == null)
+        if (argumentString == null)
         {
-            return var1;
+            return map;
         }
         else
         {
-            int var2 = 0;
-            int var3 = -1;
+            int i = 0;
+            int j = -1;
 
-            for (Matcher var4 = intListPattern.matcher(p_82381_0_); var4.find(); var3 = var4.end())
+            for (Matcher matcher = intListPattern.matcher(argumentString); matcher.find(); j = matcher.end())
             {
-                String var5 = null;
+                String s = null;
 
-                switch (var2++)
+                switch (i++)
                 {
                     case 0:
-                        var5 = "x";
+                        s = "x";
                         break;
 
                     case 1:
-                        var5 = "y";
+                        s = "y";
                         break;
 
                     case 2:
-                        var5 = "z";
+                        s = "z";
                         break;
 
                     case 3:
-                        var5 = "r";
+                        s = "r";
                 }
 
-                if (var5 != null && var4.group(1).length() > 0)
+                if (s != null && matcher.group(1).length() > 0)
                 {
-                    var1.put(var5, var4.group(1));
+                    map.put(s, matcher.group(1));
                 }
             }
 
-            if (var3 < p_82381_0_.length())
+            if (j < argumentString.length())
             {
-                Matcher var6 = keyValueListPattern.matcher(var3 == -1 ? p_82381_0_ : p_82381_0_.substring(var3));
+                Matcher matcher1 = keyValueListPattern.matcher(j == -1 ? argumentString : argumentString.substring(j));
 
-                while (var6.find())
+                while (matcher1.find())
                 {
-                    var1.put(var6.group(1), var6.group(2));
+                    map.put(matcher1.group(1), matcher1.group(2));
                 }
             }
 
-            return var1;
+            return map;
         }
     }
 }

@@ -2,7 +2,6 @@ package net.minecraft.world.storage;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -27,31 +26,22 @@ public class MapData extends WorldSavedData
 
     /** colours */
     public byte[] colors = new byte[16384];
+    public List<MapData.MapInfo> playersArrayList = Lists.<MapData.MapInfo>newArrayList();
+    private Map<EntityPlayer, MapData.MapInfo> playersHashMap = Maps.<EntityPlayer, MapData.MapInfo>newHashMap();
+    public Map<String, Vec4b> mapDecorations = Maps.<String, Vec4b>newLinkedHashMap();
 
-    /**
-     * Holds a reference to the MapInfo of the players who own a copy of the map
-     */
-    public List playersArrayList = Lists.newArrayList();
-
-    /**
-     * Holds a reference to the players who own a copy of the map and a reference to their MapInfo
-     */
-    private Map playersHashMap = Maps.newHashMap();
-    public Map playersVisibleOnMap = Maps.newLinkedHashMap();
-    private static final String __OBFID = "CL_00000577";
-
-    public MapData(String p_i2140_1_)
+    public MapData(String mapname)
     {
-        super(p_i2140_1_);
+        super(mapname);
     }
 
-    public void func_176054_a(double p_176054_1_, double p_176054_3_, int p_176054_5_)
+    public void calculateMapCenter(double x, double z, int mapScale)
     {
-        int var6 = 128 * (1 << p_176054_5_);
-        int var7 = MathHelper.floor_double((p_176054_1_ + 64.0D) / (double)var6);
-        int var8 = MathHelper.floor_double((p_176054_3_ + 64.0D) / (double)var6);
-        this.xCenter = var7 * var6 + var6 / 2 - 64;
-        this.zCenter = var8 * var6 + var6 / 2 - 64;
+        int i = 128 * (1 << mapScale);
+        int j = MathHelper.floor_double((x + 64.0D) / (double)i);
+        int k = MathHelper.floor_double((z + 64.0D) / (double)i);
+        this.xCenter = j * i + i / 2 - 64;
+        this.zCenter = k * i + i / 2 - 64;
     }
 
     /**
@@ -64,33 +54,33 @@ public class MapData extends WorldSavedData
         this.zCenter = nbt.getInteger("zCenter");
         this.scale = nbt.getByte("scale");
         this.scale = (byte)MathHelper.clamp_int(this.scale, 0, 4);
-        short var2 = nbt.getShort("width");
-        short var3 = nbt.getShort("height");
+        int i = nbt.getShort("width");
+        int j = nbt.getShort("height");
 
-        if (var2 == 128 && var3 == 128)
+        if (i == 128 && j == 128)
         {
             this.colors = nbt.getByteArray("colors");
         }
         else
         {
-            byte[] var4 = nbt.getByteArray("colors");
+            byte[] abyte = nbt.getByteArray("colors");
             this.colors = new byte[16384];
-            int var5 = (128 - var2) / 2;
-            int var6 = (128 - var3) / 2;
+            int k = (128 - i) / 2;
+            int l = (128 - j) / 2;
 
-            for (int var7 = 0; var7 < var3; ++var7)
+            for (int i1 = 0; i1 < j; ++i1)
             {
-                int var8 = var7 + var6;
+                int j1 = i1 + l;
 
-                if (var8 >= 0 || var8 < 128)
+                if (j1 >= 0 || j1 < 128)
                 {
-                    for (int var9 = 0; var9 < var2; ++var9)
+                    for (int k1 = 0; k1 < i; ++k1)
                     {
-                        int var10 = var9 + var5;
+                        int l1 = k1 + k;
 
-                        if (var10 >= 0 || var10 < 128)
+                        if (l1 >= 0 || l1 < 128)
                         {
-                            this.colors[var10 + var8 * 128] = var4[var9 + var7 * var2];
+                            this.colors[l1 + j1 * 128] = abyte[k1 + i1 * i];
                         }
                     }
                 }
@@ -115,195 +105,192 @@ public class MapData extends WorldSavedData
     /**
      * Adds the player passed to the list of visible players and checks to see which players are visible
      */
-    public void updateVisiblePlayers(EntityPlayer p_76191_1_, ItemStack p_76191_2_)
+    public void updateVisiblePlayers(EntityPlayer player, ItemStack mapStack)
     {
-        if (!this.playersHashMap.containsKey(p_76191_1_))
+        if (!this.playersHashMap.containsKey(player))
         {
-            MapData.MapInfo var3 = new MapData.MapInfo(p_76191_1_);
-            this.playersHashMap.put(p_76191_1_, var3);
-            this.playersArrayList.add(var3);
+            MapData.MapInfo mapdata$mapinfo = new MapData.MapInfo(player);
+            this.playersHashMap.put(player, mapdata$mapinfo);
+            this.playersArrayList.add(mapdata$mapinfo);
         }
 
-        if (!p_76191_1_.inventory.hasItemStack(p_76191_2_))
+        if (!player.inventory.hasItemStack(mapStack))
         {
-            this.playersVisibleOnMap.remove(p_76191_1_.getName());
+            this.mapDecorations.remove(player.getName());
         }
 
-        for (int var6 = 0; var6 < this.playersArrayList.size(); ++var6)
+        for (int i = 0; i < this.playersArrayList.size(); ++i)
         {
-            MapData.MapInfo var4 = (MapData.MapInfo)this.playersArrayList.get(var6);
+            MapData.MapInfo mapdata$mapinfo1 = (MapData.MapInfo)this.playersArrayList.get(i);
 
-            if (!var4.entityplayerObj.isDead && (var4.entityplayerObj.inventory.hasItemStack(p_76191_2_) || p_76191_2_.isOnItemFrame()))
+            if (!mapdata$mapinfo1.entityplayerObj.isDead && (mapdata$mapinfo1.entityplayerObj.inventory.hasItemStack(mapStack) || mapStack.isOnItemFrame()))
             {
-                if (!p_76191_2_.isOnItemFrame() && var4.entityplayerObj.dimension == this.dimension)
+                if (!mapStack.isOnItemFrame() && mapdata$mapinfo1.entityplayerObj.dimension == this.dimension)
                 {
-                    this.func_82567_a(0, var4.entityplayerObj.worldObj, var4.entityplayerObj.getName(), var4.entityplayerObj.posX, var4.entityplayerObj.posZ, (double)var4.entityplayerObj.rotationYaw);
+                    this.updateDecorations(0, mapdata$mapinfo1.entityplayerObj.worldObj, mapdata$mapinfo1.entityplayerObj.getName(), mapdata$mapinfo1.entityplayerObj.posX, mapdata$mapinfo1.entityplayerObj.posZ, (double)mapdata$mapinfo1.entityplayerObj.rotationYaw);
                 }
             }
             else
             {
-                this.playersHashMap.remove(var4.entityplayerObj);
-                this.playersArrayList.remove(var4);
+                this.playersHashMap.remove(mapdata$mapinfo1.entityplayerObj);
+                this.playersArrayList.remove(mapdata$mapinfo1);
             }
         }
 
-        if (p_76191_2_.isOnItemFrame())
+        if (mapStack.isOnItemFrame())
         {
-            EntityItemFrame var7 = p_76191_2_.getItemFrame();
-            BlockPos var9 = var7.func_174857_n();
-            this.func_82567_a(1, p_76191_1_.worldObj, "frame-" + var7.getEntityId(), (double)var9.getX(), (double)var9.getZ(), (double)(var7.field_174860_b.getHorizontalIndex() * 90));
+            EntityItemFrame entityitemframe = mapStack.getItemFrame();
+            BlockPos blockpos = entityitemframe.getHangingPosition();
+            this.updateDecorations(1, player.worldObj, "frame-" + entityitemframe.getEntityId(), (double)blockpos.getX(), (double)blockpos.getZ(), (double)(entityitemframe.facingDirection.getHorizontalIndex() * 90));
         }
 
-        if (p_76191_2_.hasTagCompound() && p_76191_2_.getTagCompound().hasKey("Decorations", 9))
+        if (mapStack.hasTagCompound() && mapStack.getTagCompound().hasKey("Decorations", 9))
         {
-            NBTTagList var8 = p_76191_2_.getTagCompound().getTagList("Decorations", 10);
+            NBTTagList nbttaglist = mapStack.getTagCompound().getTagList("Decorations", 10);
 
-            for (int var10 = 0; var10 < var8.tagCount(); ++var10)
+            for (int j = 0; j < nbttaglist.tagCount(); ++j)
             {
-                NBTTagCompound var5 = var8.getCompoundTagAt(var10);
+                NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(j);
 
-                if (!this.playersVisibleOnMap.containsKey(var5.getString("id")))
+                if (!this.mapDecorations.containsKey(nbttagcompound.getString("id")))
                 {
-                    this.func_82567_a(var5.getByte("type"), p_76191_1_.worldObj, var5.getString("id"), var5.getDouble("x"), var5.getDouble("z"), var5.getDouble("rot"));
+                    this.updateDecorations(nbttagcompound.getByte("type"), player.worldObj, nbttagcompound.getString("id"), nbttagcompound.getDouble("x"), nbttagcompound.getDouble("z"), nbttagcompound.getDouble("rot"));
                 }
             }
         }
     }
 
-    private void func_82567_a(int p_82567_1_, World worldIn, String p_82567_3_, double p_82567_4_, double p_82567_6_, double p_82567_8_)
+    private void updateDecorations(int type, World worldIn, String entityIdentifier, double worldX, double worldZ, double rotation)
     {
-        int var10 = 1 << this.scale;
-        float var11 = (float)(p_82567_4_ - (double)this.xCenter) / (float)var10;
-        float var12 = (float)(p_82567_6_ - (double)this.zCenter) / (float)var10;
-        byte var13 = (byte)((int)((double)(var11 * 2.0F) + 0.5D));
-        byte var14 = (byte)((int)((double)(var12 * 2.0F) + 0.5D));
-        byte var16 = 63;
-        byte var15;
+        int i = 1 << this.scale;
+        float f = (float)(worldX - (double)this.xCenter) / (float)i;
+        float f1 = (float)(worldZ - (double)this.zCenter) / (float)i;
+        byte b0 = (byte)((int)((double)(f * 2.0F) + 0.5D));
+        byte b1 = (byte)((int)((double)(f1 * 2.0F) + 0.5D));
+        int j = 63;
+        byte b2;
 
-        if (var11 >= (float)(-var16) && var12 >= (float)(-var16) && var11 <= (float)var16 && var12 <= (float)var16)
+        if (f >= (float)(-j) && f1 >= (float)(-j) && f <= (float)j && f1 <= (float)j)
         {
-            p_82567_8_ += p_82567_8_ < 0.0D ? -8.0D : 8.0D;
-            var15 = (byte)((int)(p_82567_8_ * 16.0D / 360.0D));
+            rotation = rotation + (rotation < 0.0D ? -8.0D : 8.0D);
+            b2 = (byte)((int)(rotation * 16.0D / 360.0D));
 
             if (this.dimension < 0)
             {
-                int var17 = (int)(worldIn.getWorldInfo().getWorldTime() / 10L);
-                var15 = (byte)(var17 * var17 * 34187121 + var17 * 121 >> 15 & 15);
+                int k = (int)(worldIn.getWorldInfo().getWorldTime() / 10L);
+                b2 = (byte)(k * k * 34187121 + k * 121 >> 15 & 15);
             }
         }
         else
         {
-            if (Math.abs(var11) >= 320.0F || Math.abs(var12) >= 320.0F)
+            if (Math.abs(f) >= 320.0F || Math.abs(f1) >= 320.0F)
             {
-                this.playersVisibleOnMap.remove(p_82567_3_);
+                this.mapDecorations.remove(entityIdentifier);
                 return;
             }
 
-            p_82567_1_ = 6;
-            var15 = 0;
+            type = 6;
+            b2 = 0;
 
-            if (var11 <= (float)(-var16))
+            if (f <= (float)(-j))
             {
-                var13 = (byte)((int)((double)(var16 * 2) + 2.5D));
+                b0 = (byte)((int)((double)(j * 2) + 2.5D));
             }
 
-            if (var12 <= (float)(-var16))
+            if (f1 <= (float)(-j))
             {
-                var14 = (byte)((int)((double)(var16 * 2) + 2.5D));
+                b1 = (byte)((int)((double)(j * 2) + 2.5D));
             }
 
-            if (var11 >= (float)var16)
+            if (f >= (float)j)
             {
-                var13 = (byte)(var16 * 2 + 1);
+                b0 = (byte)(j * 2 + 1);
             }
 
-            if (var12 >= (float)var16)
+            if (f1 >= (float)j)
             {
-                var14 = (byte)(var16 * 2 + 1);
+                b1 = (byte)(j * 2 + 1);
             }
         }
 
-        this.playersVisibleOnMap.put(p_82567_3_, new Vec4b((byte)p_82567_1_, var13, var14, var15));
+        this.mapDecorations.put(entityIdentifier, new Vec4b((byte)type, b0, b1, b2));
     }
 
-    public Packet func_176052_a(ItemStack p_176052_1_, World worldIn, EntityPlayer p_176052_3_)
+    public Packet getMapPacket(ItemStack mapStack, World worldIn, EntityPlayer player)
     {
-        MapData.MapInfo var4 = (MapData.MapInfo)this.playersHashMap.get(p_176052_3_);
-        return var4 == null ? null : var4.func_176101_a(p_176052_1_);
+        MapData.MapInfo mapdata$mapinfo = (MapData.MapInfo)this.playersHashMap.get(player);
+        return mapdata$mapinfo == null ? null : mapdata$mapinfo.getPacket(mapStack);
     }
 
-    public void func_176053_a(int p_176053_1_, int p_176053_2_)
+    public void updateMapData(int x, int y)
     {
         super.markDirty();
-        Iterator var3 = this.playersArrayList.iterator();
 
-        while (var3.hasNext())
+        for (MapData.MapInfo mapdata$mapinfo : this.playersArrayList)
         {
-            MapData.MapInfo var4 = (MapData.MapInfo)var3.next();
-            var4.func_176102_a(p_176053_1_, p_176053_2_);
+            mapdata$mapinfo.update(x, y);
         }
     }
 
-    public MapData.MapInfo func_82568_a(EntityPlayer p_82568_1_)
+    public MapData.MapInfo getMapInfo(EntityPlayer player)
     {
-        MapData.MapInfo var2 = (MapData.MapInfo)this.playersHashMap.get(p_82568_1_);
+        MapData.MapInfo mapdata$mapinfo = (MapData.MapInfo)this.playersHashMap.get(player);
 
-        if (var2 == null)
+        if (mapdata$mapinfo == null)
         {
-            var2 = new MapData.MapInfo(p_82568_1_);
-            this.playersHashMap.put(p_82568_1_, var2);
-            this.playersArrayList.add(var2);
+            mapdata$mapinfo = new MapData.MapInfo(player);
+            this.playersHashMap.put(player, mapdata$mapinfo);
+            this.playersArrayList.add(mapdata$mapinfo);
         }
 
-        return var2;
+        return mapdata$mapinfo;
     }
 
     public class MapInfo
     {
         public final EntityPlayer entityplayerObj;
         private boolean field_176105_d = true;
-        private int field_176106_e = 0;
-        private int field_176103_f = 0;
-        private int field_176104_g = 127;
-        private int field_176108_h = 127;
+        private int minX = 0;
+        private int minY = 0;
+        private int maxX = 127;
+        private int maxY = 127;
         private int field_176109_i;
         public int field_82569_d;
-        private static final String __OBFID = "CL_00000578";
 
-        public MapInfo(EntityPlayer p_i2138_2_)
+        public MapInfo(EntityPlayer player)
         {
-            this.entityplayerObj = p_i2138_2_;
+            this.entityplayerObj = player;
         }
 
-        public Packet func_176101_a(ItemStack p_176101_1_)
+        public Packet getPacket(ItemStack stack)
         {
             if (this.field_176105_d)
             {
                 this.field_176105_d = false;
-                return new S34PacketMaps(p_176101_1_.getMetadata(), MapData.this.scale, MapData.this.playersVisibleOnMap.values(), MapData.this.colors, this.field_176106_e, this.field_176103_f, this.field_176104_g + 1 - this.field_176106_e, this.field_176108_h + 1 - this.field_176103_f);
+                return new S34PacketMaps(stack.getMetadata(), MapData.this.scale, MapData.this.mapDecorations.values(), MapData.this.colors, this.minX, this.minY, this.maxX + 1 - this.minX, this.maxY + 1 - this.minY);
             }
             else
             {
-                return this.field_176109_i++ % 5 == 0 ? new S34PacketMaps(p_176101_1_.getMetadata(), MapData.this.scale, MapData.this.playersVisibleOnMap.values(), MapData.this.colors, 0, 0, 0, 0) : null;
+                return this.field_176109_i++ % 5 == 0 ? new S34PacketMaps(stack.getMetadata(), MapData.this.scale, MapData.this.mapDecorations.values(), MapData.this.colors, 0, 0, 0, 0) : null;
             }
         }
 
-        public void func_176102_a(int p_176102_1_, int p_176102_2_)
+        public void update(int x, int y)
         {
             if (this.field_176105_d)
             {
-                this.field_176106_e = Math.min(this.field_176106_e, p_176102_1_);
-                this.field_176103_f = Math.min(this.field_176103_f, p_176102_2_);
-                this.field_176104_g = Math.max(this.field_176104_g, p_176102_1_);
-                this.field_176108_h = Math.max(this.field_176108_h, p_176102_2_);
+                this.minX = Math.min(this.minX, x);
+                this.minY = Math.min(this.minY, y);
+                this.maxX = Math.max(this.maxX, x);
+                this.maxY = Math.max(this.maxY, y);
             }
             else
             {
                 this.field_176105_d = true;
-                this.field_176106_e = p_176102_1_;
-                this.field_176103_f = p_176102_2_;
-                this.field_176104_g = p_176102_1_;
-                this.field_176108_h = p_176102_2_;
+                this.minX = x;
+                this.minY = y;
+                this.maxX = x;
+                this.maxY = y;
             }
         }
     }

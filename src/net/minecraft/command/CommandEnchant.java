@@ -2,7 +2,7 @@ package net.minecraft.command;
 
 import java.util.List;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
@@ -10,8 +10,9 @@ import net.minecraft.util.BlockPos;
 
 public class CommandEnchant extends CommandBase
 {
-    private static final String __OBFID = "CL_00000377";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "enchant";
@@ -25,11 +26,17 @@ public class CommandEnchant extends CommandBase
         return 2;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.enchant.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length < 2)
@@ -38,42 +45,42 @@ public class CommandEnchant extends CommandBase
         }
         else
         {
-            EntityPlayerMP var3 = getPlayer(sender, args[0]);
-            sender.func_174794_a(CommandResultStats.Type.AFFECTED_ITEMS, 0);
-            int var4;
+            EntityPlayer entityplayer = getPlayer(sender, args[0]);
+            sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, 0);
+            int i;
 
             try
             {
-                var4 = parseInt(args[1], 0);
+                i = parseInt(args[1], 0);
             }
-            catch (NumberInvalidException var12)
+            catch (NumberInvalidException numberinvalidexception)
             {
-                Enchantment var6 = Enchantment.func_180305_b(args[1]);
+                Enchantment enchantment = Enchantment.getEnchantmentByLocation(args[1]);
 
-                if (var6 == null)
+                if (enchantment == null)
                 {
-                    throw var12;
+                    throw numberinvalidexception;
                 }
 
-                var4 = var6.effectId;
+                i = enchantment.effectId;
             }
 
-            int var5 = 1;
-            ItemStack var13 = var3.getCurrentEquippedItem();
+            int j = 1;
+            ItemStack itemstack = entityplayer.getCurrentEquippedItem();
 
-            if (var13 == null)
+            if (itemstack == null)
             {
                 throw new CommandException("commands.enchant.noItem", new Object[0]);
             }
             else
             {
-                Enchantment var7 = Enchantment.func_180306_c(var4);
+                Enchantment enchantment1 = Enchantment.getEnchantmentById(i);
 
-                if (var7 == null)
+                if (enchantment1 == null)
                 {
-                    throw new NumberInvalidException("commands.enchant.notFound", new Object[] {Integer.valueOf(var4)});
+                    throw new NumberInvalidException("commands.enchant.notFound", new Object[] {Integer.valueOf(i)});
                 }
-                else if (!var7.canApply(var13))
+                else if (!enchantment1.canApply(itemstack))
                 {
                     throw new CommandException("commands.enchant.cantEnchant", new Object[0]);
                 }
@@ -81,43 +88,43 @@ public class CommandEnchant extends CommandBase
                 {
                     if (args.length >= 3)
                     {
-                        var5 = parseInt(args[2], var7.getMinLevel(), var7.getMaxLevel());
+                        j = parseInt(args[2], enchantment1.getMinLevel(), enchantment1.getMaxLevel());
                     }
 
-                    if (var13.hasTagCompound())
+                    if (itemstack.hasTagCompound())
                     {
-                        NBTTagList var8 = var13.getEnchantmentTagList();
+                        NBTTagList nbttaglist = itemstack.getEnchantmentTagList();
 
-                        if (var8 != null)
+                        if (nbttaglist != null)
                         {
-                            for (int var9 = 0; var9 < var8.tagCount(); ++var9)
+                            for (int k = 0; k < nbttaglist.tagCount(); ++k)
                             {
-                                short var10 = var8.getCompoundTagAt(var9).getShort("id");
+                                int l = nbttaglist.getCompoundTagAt(k).getShort("id");
 
-                                if (Enchantment.func_180306_c(var10) != null)
+                                if (Enchantment.getEnchantmentById(l) != null)
                                 {
-                                    Enchantment var11 = Enchantment.func_180306_c(var10);
+                                    Enchantment enchantment2 = Enchantment.getEnchantmentById(l);
 
-                                    if (!var11.canApplyTogether(var7))
+                                    if (!enchantment2.canApplyTogether(enchantment1))
                                     {
-                                        throw new CommandException("commands.enchant.cantCombine", new Object[] {var7.getTranslatedName(var5), var11.getTranslatedName(var8.getCompoundTagAt(var9).getShort("lvl"))});
+                                        throw new CommandException("commands.enchant.cantCombine", new Object[] {enchantment1.getTranslatedName(j), enchantment2.getTranslatedName(nbttaglist.getCompoundTagAt(k).getShort("lvl"))});
                                     }
                                 }
                             }
                         }
                     }
 
-                    var13.addEnchantment(var7, var5);
+                    itemstack.addEnchantment(enchantment1, j);
                     notifyOperators(sender, this, "commands.enchant.success", new Object[0]);
-                    sender.func_174794_a(CommandResultStats.Type.AFFECTED_ITEMS, 1);
+                    sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, 1);
                 }
             }
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, this.getListOfPlayers()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, Enchantment.func_180304_c()) : null);
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, this.getListOfPlayers()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, Enchantment.func_181077_c()) : null);
     }
 
     protected String[] getListOfPlayers()

@@ -22,7 +22,6 @@ public class ModelBat extends ModelBase
 
     /** The outer left wing box of the bat model. */
     private ModelRenderer batOuterLeftWing;
-    private static final String __OBFID = "CL_00000830";
 
     public ModelBat()
     {
@@ -30,13 +29,13 @@ public class ModelBat extends ModelBase
         this.textureHeight = 64;
         this.batHead = new ModelRenderer(this, 0, 0);
         this.batHead.addBox(-3.0F, -3.0F, -3.0F, 6, 6, 6);
-        ModelRenderer var1 = new ModelRenderer(this, 24, 0);
-        var1.addBox(-4.0F, -6.0F, -2.0F, 3, 4, 1);
-        this.batHead.addChild(var1);
-        ModelRenderer var2 = new ModelRenderer(this, 24, 0);
-        var2.mirror = true;
-        var2.addBox(1.0F, -6.0F, -2.0F, 3, 4, 1);
-        this.batHead.addChild(var2);
+        ModelRenderer modelrenderer = new ModelRenderer(this, 24, 0);
+        modelrenderer.addBox(-4.0F, -6.0F, -2.0F, 3, 4, 1);
+        this.batHead.addChild(modelrenderer);
+        ModelRenderer modelrenderer1 = new ModelRenderer(this, 24, 0);
+        modelrenderer1.mirror = true;
+        modelrenderer1.addBox(1.0F, -6.0F, -2.0F, 3, 4, 1);
+        this.batHead.addChild(modelrenderer1);
         this.batBody = new ModelRenderer(this, 0, 16);
         this.batBody.addBox(-3.0F, 4.0F, -3.0F, 6, 12, 6);
         this.batBody.setTextureOffset(0, 34).addBox(-5.0F, 16.0F, 0.0F, 10, 6, 1);
@@ -61,11 +60,11 @@ public class ModelBat extends ModelBase
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float p_78088_7_)
+    public void render(Entity entityIn, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float scale)
     {
-        this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_, p_78088_1_);
-        this.batHead.render(p_78088_7_);
-        this.batBody.render(p_78088_7_);
+        this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, scale, entityIn);
+        this.batHead.render(scale);
+        this.batBody.render(scale);
     }
 
     /**
@@ -73,13 +72,11 @@ public class ModelBat extends ModelBase
      * and legs, where par1 represents the time(so that arms and legs swing back and forth) and par2 represents how
      * "far" arms and legs can swing at most.
      */
-    public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity p_78087_7_)
+    public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity entityIn)
     {
-        float var8;
-
-        if (((EntityBat)p_78087_7_).getIsBatHanging())
+        if (((EntityBat)entityIn).getIsBatHanging())
         {
-            var8 = (180F / (float)Math.PI);
+            float f = (180F / (float)Math.PI);
             this.batHead.rotateAngleX = p_78087_5_ / (180F / (float)Math.PI);
             this.batHead.rotateAngleY = (float)Math.PI - p_78087_4_ / (180F / (float)Math.PI);
             this.batHead.rotateAngleZ = (float)Math.PI;
@@ -96,7 +93,7 @@ public class ModelBat extends ModelBase
         }
         else
         {
-            var8 = (180F / (float)Math.PI);
+            float f1 = (180F / (float)Math.PI);
             this.batHead.rotateAngleX = p_78087_5_ / (180F / (float)Math.PI);
             this.batHead.rotateAngleY = p_78087_4_ / (180F / (float)Math.PI);
             this.batHead.rotateAngleZ = 0.0F;

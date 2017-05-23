@@ -2,48 +2,53 @@ package net.minecraft.network.play.server;
 
 import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
-public class S0APacketUseBed implements Packet
+public class S0APacketUseBed implements Packet<INetHandlerPlayClient>
 {
     private int playerID;
-    private BlockPos field_179799_b;
-    private static final String __OBFID = "CL_00001319";
 
-    public S0APacketUseBed() {}
+    /** Block location of the head part of the bed */
+    private BlockPos bedPos;
 
-    public S0APacketUseBed(EntityPlayer p_i45964_1_, BlockPos p_i45964_2_)
+    public S0APacketUseBed()
     {
-        this.playerID = p_i45964_1_.getEntityId();
-        this.field_179799_b = p_i45964_2_;
+    }
+
+    public S0APacketUseBed(EntityPlayer player, BlockPos bedPosIn)
+    {
+        this.playerID = player.getEntityId();
+        this.bedPos = bedPosIn;
     }
 
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.playerID = data.readVarIntFromBuffer();
-        this.field_179799_b = data.readBlockPos();
+        this.playerID = buf.readVarIntFromBuffer();
+        this.bedPos = buf.readBlockPos();
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeVarIntToBuffer(this.playerID);
-        data.writeBlockPos(this.field_179799_b);
+        buf.writeVarIntToBuffer(this.playerID);
+        buf.writeBlockPos(this.bedPos);
     }
 
-    public void func_180744_a(INetHandlerPlayClient p_180744_1_)
+    /**
+     * Passes this Packet on to the NetHandler for processing.
+     */
+    public void processPacket(INetHandlerPlayClient handler)
     {
-        p_180744_1_.handleUseBed(this);
+        handler.handleUseBed(this);
     }
 
     public EntityPlayer getPlayer(World worldIn)
@@ -51,16 +56,8 @@ public class S0APacketUseBed implements Packet
         return (EntityPlayer)worldIn.getEntityByID(this.playerID);
     }
 
-    public BlockPos func_179798_a()
+    public BlockPos getBedPosition()
     {
-        return this.field_179799_b;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.func_180744_a((INetHandlerPlayClient)handler);
+        return this.bedPos;
     }
 }

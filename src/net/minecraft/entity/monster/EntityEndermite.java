@@ -21,7 +21,6 @@ public class EntityEndermite extends EntityMob
 {
     private int lifetime = 0;
     private boolean playerSpawned = false;
-    private static final String __OBFID = "CL_00002219";
 
     public EntityEndermite(World worldIn)
     {
@@ -83,7 +82,7 @@ public class EntityEndermite extends EntityMob
         return "mob.silverfish.kill";
     }
 
-    protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
+    protected void playStepSound(BlockPos pos, Block blockIn)
     {
         this.playSound("mob.silverfish.step", 0.15F, 1.0F);
     }
@@ -127,9 +126,12 @@ public class EntityEndermite extends EntityMob
         return this.playerSpawned;
     }
 
-    public void setSpawnedByPlayer(boolean p_175496_1_)
+    /**
+     * Sets if this mob was spawned by a player or not.
+     */
+    public void setSpawnedByPlayer(boolean spawnedByPlayer)
     {
-        this.playerSpawned = p_175496_1_;
+        this.playerSpawned = spawnedByPlayer;
     }
 
     /**
@@ -142,7 +144,7 @@ public class EntityEndermite extends EntityMob
 
         if (this.worldObj.isRemote)
         {
-            for (int var1 = 0; var1 < 2; ++var1)
+            for (int i = 0; i < 2; ++i)
             {
                 this.worldObj.spawnParticle(EnumParticleTypes.PORTAL, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D, new int[0]);
             }
@@ -176,8 +178,8 @@ public class EntityEndermite extends EntityMob
     {
         if (super.getCanSpawnHere())
         {
-            EntityPlayer var1 = this.worldObj.getClosestPlayerToEntity(this, 5.0D);
-            return var1 == null;
+            EntityPlayer entityplayer = this.worldObj.getClosestPlayerToEntity(this, 5.0D);
+            return entityplayer == null;
         }
         else
         {

@@ -8,25 +8,32 @@ import net.minecraft.world.WorldSettings;
 
 public class CommandPublishLocalServer extends CommandBase
 {
-    private static final String __OBFID = "CL_00000799";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "publish";
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.publish.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
-        String var3 = MinecraftServer.getServer().shareToLAN(WorldSettings.GameType.SURVIVAL, false);
+        String s = MinecraftServer.getServer().shareToLAN(WorldSettings.GameType.SURVIVAL, false);
 
-        if (var3 != null)
+        if (s != null)
         {
-            notifyOperators(sender, this, "commands.publish.started", new Object[] {var3});
+            notifyOperators(sender, this, "commands.publish.started", new Object[] {s});
         }
         else
         {

@@ -14,8 +14,6 @@ import net.minecraft.world.World;
 
 public class EntityMinecartChest extends EntityMinecartContainer
 {
-    private static final String __OBFID = "CL_00001671";
-
     public EntityMinecartChest(World worldIn)
     {
         super(worldIn);
@@ -29,7 +27,11 @@ public class EntityMinecartChest extends EntityMinecartContainer
     public void killMinecart(DamageSource p_94095_1_)
     {
         super.killMinecart(p_94095_1_);
-        this.dropItemWithOffset(Item.getItemFromBlock(Blocks.chest), 1, 0.0F);
+
+        if (this.worldObj.getGameRules().getBoolean("doEntityDrops"))
+        {
+            this.dropItemWithOffset(Item.getItemFromBlock(Blocks.chest), 1, 0.0F);
+        }
     }
 
     /**
@@ -40,14 +42,14 @@ public class EntityMinecartChest extends EntityMinecartContainer
         return 27;
     }
 
-    public EntityMinecart.EnumMinecartType func_180456_s()
+    public EntityMinecart.EnumMinecartType getMinecartType()
     {
         return EntityMinecart.EnumMinecartType.CHEST;
     }
 
-    public IBlockState func_180457_u()
+    public IBlockState getDefaultDisplayTile()
     {
-        return Blocks.chest.getDefaultState().withProperty(BlockChest.FACING_PROP, EnumFacing.NORTH);
+        return Blocks.chest.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.NORTH);
     }
 
     public int getDefaultDisplayTileOffset()

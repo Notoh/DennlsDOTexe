@@ -234,7 +234,6 @@ public class Blocks
     public static final Block red_sandstone_stairs;
     public static final BlockSlab double_stone_slab2;
     public static final BlockSlab stone_slab2;
-    private static final String __OBFID = "CL_00000204";
 
     /**
      * Returns the Block in the blockRegistry with the specified name.

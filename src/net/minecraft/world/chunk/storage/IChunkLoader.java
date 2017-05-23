@@ -18,7 +18,7 @@ public interface IChunkLoader
      * Save extra data associated with this Chunk not normally saved during autosave, only during chunk unload.
      * Currently unused.
      */
-    void saveExtraChunkData(World worldIn, Chunk chunkIn);
+    void saveExtraChunkData(World worldIn, Chunk chunkIn) throws IOException;
 
     /**
      * Called every World.tick()

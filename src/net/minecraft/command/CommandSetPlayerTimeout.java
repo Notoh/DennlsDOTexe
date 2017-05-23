@@ -4,8 +4,9 @@ import net.minecraft.server.MinecraftServer;
 
 public class CommandSetPlayerTimeout extends CommandBase
 {
-    private static final String __OBFID = "CL_00000999";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "setidletimeout";
@@ -19,11 +20,17 @@ public class CommandSetPlayerTimeout extends CommandBase
         return 3;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.setidletimeout.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length != 1)
@@ -32,9 +39,9 @@ public class CommandSetPlayerTimeout extends CommandBase
         }
         else
         {
-            int var3 = parseInt(args[0], 0);
-            MinecraftServer.getServer().setPlayerIdleTimeout(var3);
-            notifyOperators(sender, this, "commands.setidletimeout.success", new Object[] {Integer.valueOf(var3)});
+            int i = parseInt(args[0], 0);
+            MinecraftServer.getServer().setPlayerIdleTimeout(i);
+            notifyOperators(sender, this, "commands.setidletimeout.success", new Object[] {Integer.valueOf(i)});
         }
     }
 }

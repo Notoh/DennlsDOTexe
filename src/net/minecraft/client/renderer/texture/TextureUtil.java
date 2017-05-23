@@ -1,7 +1,6 @@
 package net.minecraft.client.renderer.texture;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
@@ -14,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL12;
@@ -25,17 +23,16 @@ public class TextureUtil
     private static final IntBuffer dataBuffer = GLAllocation.createDirectIntBuffer(4194304);
     public static final DynamicTexture missingTexture = new DynamicTexture(16, 16);
     public static final int[] missingTextureData = missingTexture.getTextureData();
-    private static final int[] field_147957_g;
-    private static final String __OBFID = "CL_00001067";
+    private static final int[] mipmapBuffer;
 
     public static int glGenTextures()
     {
-        return GlStateManager.func_179146_y();
+        return GlStateManager.generateTexture();
     }
 
-    public static void deleteTexture(int p_147942_0_)
+    public static void deleteTexture(int textureId)
     {
-        GlStateManager.func_179150_h(p_147942_0_);
+        GlStateManager.deleteTexture(textureId);
     }
 
     public static int uploadTextureImage(int p_110987_0_, BufferedImage p_110987_1_)
@@ -43,146 +40,144 @@ public class TextureUtil
         return uploadTextureImageAllocate(p_110987_0_, p_110987_1_, false, false);
     }
 
-    public static void uploadTexture(int p_110988_0_, int[] p_110988_1_, int p_110988_2_, int p_110988_3_)
+    public static void uploadTexture(int textureId, int[] p_110988_1_, int p_110988_2_, int p_110988_3_)
     {
-        bindTexture(p_110988_0_);
+        bindTexture(textureId);
         uploadTextureSub(0, p_110988_1_, p_110988_2_, p_110988_3_, 0, 0, false, false, false);
     }
 
     public static int[][] generateMipmapData(int p_147949_0_, int p_147949_1_, int[][] p_147949_2_)
     {
-        int[][] var3 = new int[p_147949_0_ + 1][];
-        var3[0] = p_147949_2_[0];
+        int[][] aint = new int[p_147949_0_ + 1][];
+        aint[0] = p_147949_2_[0];
 
         if (p_147949_0_ > 0)
         {
-            boolean var4 = false;
-            int var5;
+            boolean flag = false;
 
-            for (var5 = 0; var5 < p_147949_2_.length; ++var5)
+            for (int i = 0; i < p_147949_2_.length; ++i)
             {
-                if (p_147949_2_[0][var5] >> 24 == 0)
+                if (p_147949_2_[0][i] >> 24 == 0)
                 {
-                    var4 = true;
+                    flag = true;
                     break;
                 }
             }
 
-            for (var5 = 1; var5 <= p_147949_0_; ++var5)
+            for (int l1 = 1; l1 <= p_147949_0_; ++l1)
             {
-                if (p_147949_2_[var5] != null)
+                if (p_147949_2_[l1] != null)
                 {
-                    var3[var5] = p_147949_2_[var5];
+                    aint[l1] = p_147949_2_[l1];
                 }
                 else
                 {
-                    int[] var6 = var3[var5 - 1];
-                    int[] var7 = new int[var6.length >> 2];
-                    int var8 = p_147949_1_ >> var5;
-                    int var9 = var7.length / var8;
-                    int var10 = var8 << 1;
+                    int[] aint1 = aint[l1 - 1];
+                    int[] aint2 = new int[aint1.length >> 2];
+                    int j = p_147949_1_ >> l1;
+                    int k = aint2.length / j;
+                    int l = j << 1;
 
-                    for (int var11 = 0; var11 < var8; ++var11)
+                    for (int i1 = 0; i1 < j; ++i1)
                     {
-                        for (int var12 = 0; var12 < var9; ++var12)
+                        for (int j1 = 0; j1 < k; ++j1)
                         {
-                            int var13 = 2 * (var11 + var12 * var10);
-                            var7[var11 + var12 * var8] = func_147943_a(var6[var13 + 0], var6[var13 + 1], var6[var13 + 0 + var10], var6[var13 + 1 + var10], var4);
+                            int k1 = 2 * (i1 + j1 * l);
+                            aint2[i1 + j1 * j] = blendColors(aint1[k1 + 0], aint1[k1 + 1], aint1[k1 + 0 + l], aint1[k1 + 1 + l], flag);
                         }
                     }
 
-                    var3[var5] = var7;
+                    aint[l1] = aint2;
                 }
             }
         }
 
-        return var3;
+        return aint;
     }
 
-    private static int func_147943_a(int p_147943_0_, int p_147943_1_, int p_147943_2_, int p_147943_3_, boolean p_147943_4_)
+    private static int blendColors(int p_147943_0_, int p_147943_1_, int p_147943_2_, int p_147943_3_, boolean p_147943_4_)
     {
         if (!p_147943_4_)
         {
-            int var13 = func_147944_a(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 24);
-            int var14 = func_147944_a(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 16);
-            int var15 = func_147944_a(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 8);
-            int var16 = func_147944_a(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 0);
-            return var13 << 24 | var14 << 16 | var15 << 8 | var16;
+            int i1 = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 24);
+            int j1 = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 16);
+            int k1 = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 8);
+            int l1 = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 0);
+            return i1 << 24 | j1 << 16 | k1 << 8 | l1;
         }
         else
         {
-            field_147957_g[0] = p_147943_0_;
-            field_147957_g[1] = p_147943_1_;
-            field_147957_g[2] = p_147943_2_;
-            field_147957_g[3] = p_147943_3_;
-            float var5 = 0.0F;
-            float var6 = 0.0F;
-            float var7 = 0.0F;
-            float var8 = 0.0F;
-            int var9;
+            mipmapBuffer[0] = p_147943_0_;
+            mipmapBuffer[1] = p_147943_1_;
+            mipmapBuffer[2] = p_147943_2_;
+            mipmapBuffer[3] = p_147943_3_;
+            float f = 0.0F;
+            float f1 = 0.0F;
+            float f2 = 0.0F;
+            float f3 = 0.0F;
 
-            for (var9 = 0; var9 < 4; ++var9)
+            for (int i = 0; i < 4; ++i)
             {
-                if (field_147957_g[var9] >> 24 != 0)
+                if (mipmapBuffer[i] >> 24 != 0)
                 {
-                    var5 += (float)Math.pow((double)((float)(field_147957_g[var9] >> 24 & 255) / 255.0F), 2.2D);
-                    var6 += (float)Math.pow((double)((float)(field_147957_g[var9] >> 16 & 255) / 255.0F), 2.2D);
-                    var7 += (float)Math.pow((double)((float)(field_147957_g[var9] >> 8 & 255) / 255.0F), 2.2D);
-                    var8 += (float)Math.pow((double)((float)(field_147957_g[var9] >> 0 & 255) / 255.0F), 2.2D);
+                    f += (float)Math.pow((double)((float)(mipmapBuffer[i] >> 24 & 255) / 255.0F), 2.2D);
+                    f1 += (float)Math.pow((double)((float)(mipmapBuffer[i] >> 16 & 255) / 255.0F), 2.2D);
+                    f2 += (float)Math.pow((double)((float)(mipmapBuffer[i] >> 8 & 255) / 255.0F), 2.2D);
+                    f3 += (float)Math.pow((double)((float)(mipmapBuffer[i] >> 0 & 255) / 255.0F), 2.2D);
                 }
             }
 
-            var5 /= 4.0F;
-            var6 /= 4.0F;
-            var7 /= 4.0F;
-            var8 /= 4.0F;
-            var9 = (int)(Math.pow((double)var5, 0.45454545454545453D) * 255.0D);
-            int var10 = (int)(Math.pow((double)var6, 0.45454545454545453D) * 255.0D);
-            int var11 = (int)(Math.pow((double)var7, 0.45454545454545453D) * 255.0D);
-            int var12 = (int)(Math.pow((double)var8, 0.45454545454545453D) * 255.0D);
+            f = f / 4.0F;
+            f1 = f1 / 4.0F;
+            f2 = f2 / 4.0F;
+            f3 = f3 / 4.0F;
+            int i2 = (int)(Math.pow((double)f, 0.45454545454545453D) * 255.0D);
+            int j = (int)(Math.pow((double)f1, 0.45454545454545453D) * 255.0D);
+            int k = (int)(Math.pow((double)f2, 0.45454545454545453D) * 255.0D);
+            int l = (int)(Math.pow((double)f3, 0.45454545454545453D) * 255.0D);
 
-            if (var9 < 96)
+            if (i2 < 96)
             {
-                var9 = 0;
+                i2 = 0;
             }
 
-            return var9 << 24 | var10 << 16 | var11 << 8 | var12;
+            return i2 << 24 | j << 16 | k << 8 | l;
         }
     }
 
-    private static int func_147944_a(int p_147944_0_, int p_147944_1_, int p_147944_2_, int p_147944_3_, int p_147944_4_)
+    private static int blendColorComponent(int p_147944_0_, int p_147944_1_, int p_147944_2_, int p_147944_3_, int p_147944_4_)
     {
-        float var5 = (float)Math.pow((double)((float)(p_147944_0_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
-        float var6 = (float)Math.pow((double)((float)(p_147944_1_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
-        float var7 = (float)Math.pow((double)((float)(p_147944_2_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
-        float var8 = (float)Math.pow((double)((float)(p_147944_3_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
-        float var9 = (float)Math.pow((double)(var5 + var6 + var7 + var8) * 0.25D, 0.45454545454545453D);
-        return (int)((double)var9 * 255.0D);
+        float f = (float)Math.pow((double)((float)(p_147944_0_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
+        float f1 = (float)Math.pow((double)((float)(p_147944_1_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
+        float f2 = (float)Math.pow((double)((float)(p_147944_2_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
+        float f3 = (float)Math.pow((double)((float)(p_147944_3_ >> p_147944_4_ & 255) / 255.0F), 2.2D);
+        float f4 = (float)Math.pow((double)(f + f1 + f2 + f3) * 0.25D, 0.45454545454545453D);
+        return (int)((double)f4 * 255.0D);
     }
 
     public static void uploadTextureMipmap(int[][] p_147955_0_, int p_147955_1_, int p_147955_2_, int p_147955_3_, int p_147955_4_, boolean p_147955_5_, boolean p_147955_6_)
     {
-        for (int var7 = 0; var7 < p_147955_0_.length; ++var7)
+        for (int i = 0; i < p_147955_0_.length; ++i)
         {
-            int[] var8 = p_147955_0_[var7];
-            uploadTextureSub(var7, var8, p_147955_1_ >> var7, p_147955_2_ >> var7, p_147955_3_ >> var7, p_147955_4_ >> var7, p_147955_5_, p_147955_6_, p_147955_0_.length > 1);
+            int[] aint = p_147955_0_[i];
+            uploadTextureSub(i, aint, p_147955_1_ >> i, p_147955_2_ >> i, p_147955_3_ >> i, p_147955_4_ >> i, p_147955_5_, p_147955_6_, p_147955_0_.length > 1);
         }
     }
 
     private static void uploadTextureSub(int p_147947_0_, int[] p_147947_1_, int p_147947_2_, int p_147947_3_, int p_147947_4_, int p_147947_5_, boolean p_147947_6_, boolean p_147947_7_, boolean p_147947_8_)
     {
-        int var9 = 4194304 / p_147947_2_;
-        func_147954_b(p_147947_6_, p_147947_8_);
+        int i = 4194304 / p_147947_2_;
+        setTextureBlurMipmap(p_147947_6_, p_147947_8_);
         setTextureClamped(p_147947_7_);
-        int var12;
+        int l;
 
-        for (int var10 = 0; var10 < p_147947_2_ * p_147947_3_; var10 += p_147947_2_ * var12)
+        for (int j = 0; j < p_147947_2_ * p_147947_3_; j += p_147947_2_ * l)
         {
-            int var11 = var10 / p_147947_2_;
-            var12 = Math.min(var9, p_147947_3_ - var11);
-            int var13 = p_147947_2_ * var12;
-            copyToBufferPos(p_147947_1_, var10, var13);
-            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, p_147947_0_, p_147947_4_, p_147947_5_ + var11, p_147947_2_, var12, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, dataBuffer);
+            int k = j / p_147947_2_;
+            l = Math.min(i, p_147947_3_ - k);
+            int i1 = p_147947_2_ * l;
+            copyToBufferPos(p_147947_1_, j, i1);
+            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, p_147947_0_, p_147947_4_, p_147947_5_ + k, p_147947_2_, l, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer)dataBuffer);
         }
     }
 
@@ -194,10 +189,10 @@ public class TextureUtil
 
     public static void allocateTexture(int p_110991_0_, int p_110991_1_, int p_110991_2_)
     {
-        func_180600_a(p_110991_0_, 0, p_110991_1_, p_110991_2_);
+        allocateTextureImpl(p_110991_0_, 0, p_110991_1_, p_110991_2_);
     }
 
-    public static void func_180600_a(int p_180600_0_, int p_180600_1_, int p_180600_2_, int p_180600_3_)
+    public static void allocateTextureImpl(int p_180600_0_, int p_180600_1_, int p_180600_2_, int p_180600_3_)
     {
         deleteTexture(p_180600_0_);
         bindTexture(p_180600_0_);
@@ -210,36 +205,36 @@ public class TextureUtil
             GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0.0F);
         }
 
-        for (int var4 = 0; var4 <= p_180600_1_; ++var4)
+        for (int i = 0; i <= p_180600_1_; ++i)
         {
-            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, var4, GL11.GL_RGBA, p_180600_2_ >> var4, p_180600_3_ >> var4, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer)null);
+            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, i, GL11.GL_RGBA, p_180600_2_ >> i, p_180600_3_ >> i, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer)((IntBuffer)null));
         }
     }
 
-    public static int uploadTextureImageSub(int p_110995_0_, BufferedImage p_110995_1_, int p_110995_2_, int p_110995_3_, boolean p_110995_4_, boolean p_110995_5_)
+    public static int uploadTextureImageSub(int textureId, BufferedImage p_110995_1_, int p_110995_2_, int p_110995_3_, boolean p_110995_4_, boolean p_110995_5_)
     {
-        bindTexture(p_110995_0_);
+        bindTexture(textureId);
         uploadTextureImageSubImpl(p_110995_1_, p_110995_2_, p_110995_3_, p_110995_4_, p_110995_5_);
-        return p_110995_0_;
+        return textureId;
     }
 
     private static void uploadTextureImageSubImpl(BufferedImage p_110993_0_, int p_110993_1_, int p_110993_2_, boolean p_110993_3_, boolean p_110993_4_)
     {
-        int var5 = p_110993_0_.getWidth();
-        int var6 = p_110993_0_.getHeight();
-        int var7 = 4194304 / var5;
-        int[] var8 = new int[var7 * var5];
+        int i = p_110993_0_.getWidth();
+        int j = p_110993_0_.getHeight();
+        int k = 4194304 / i;
+        int[] aint = new int[k * i];
         setTextureBlurred(p_110993_3_);
         setTextureClamped(p_110993_4_);
 
-        for (int var9 = 0; var9 < var5 * var6; var9 += var5 * var7)
+        for (int l = 0; l < i * j; l += i * k)
         {
-            int var10 = var9 / var5;
-            int var11 = Math.min(var7, var6 - var10);
-            int var12 = var5 * var11;
-            p_110993_0_.getRGB(0, var10, var5, var11, var8, 0, var5);
-            copyToBuffer(var8, var12);
-            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, p_110993_1_, p_110993_2_ + var10, var5, var11, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, dataBuffer);
+            int i1 = l / i;
+            int j1 = Math.min(k, j - i1);
+            int k1 = i * j1;
+            p_110993_0_.getRGB(0, i1, i, j1, aint, 0, i);
+            copyToBuffer(aint, k1);
+            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, p_110993_1_, p_110993_2_ + i1, i, j1, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer)dataBuffer);
         }
     }
 
@@ -259,10 +254,10 @@ public class TextureUtil
 
     private static void setTextureBlurred(boolean p_147951_0_)
     {
-        func_147954_b(p_147951_0_, false);
+        setTextureBlurMipmap(p_147951_0_, false);
     }
 
-    private static void func_147954_b(boolean p_147954_0_, boolean p_147954_1_)
+    private static void setTextureBlurMipmap(boolean p_147954_0_, boolean p_147954_1_)
     {
         if (p_147954_0_)
         {
@@ -283,132 +278,101 @@ public class TextureUtil
 
     private static void copyToBufferPos(int[] p_110994_0_, int p_110994_1_, int p_110994_2_)
     {
-        int[] var3 = p_110994_0_;
+        int[] aint = p_110994_0_;
 
-        if (Minecraft.getMC().gameSettings.anaglyph)
+        if (Minecraft.getMinecraft().gameSettings.anaglyph)
         {
-            var3 = updateAnaglyph(p_110994_0_);
+            aint = updateAnaglyph(p_110994_0_);
         }
 
         dataBuffer.clear();
-        dataBuffer.put(var3, p_110994_1_, p_110994_2_);
+        dataBuffer.put(aint, p_110994_1_, p_110994_2_);
         dataBuffer.position(0).limit(p_110994_2_);
     }
 
     static void bindTexture(int p_94277_0_)
     {
-        GlStateManager.func_179144_i(p_94277_0_);
+        GlStateManager.bindTexture(p_94277_0_);
     }
 
-    public static int[] readImageData(IResourceManager p_110986_0_, ResourceLocation p_110986_1_) throws IOException
+    public static int[] readImageData(IResourceManager resourceManager, ResourceLocation imageLocation) throws IOException
     {
-        BufferedImage var2 = func_177053_a(p_110986_0_.getResource(p_110986_1_).getInputStream());
-        int var3 = var2.getWidth();
-        int var4 = var2.getHeight();
-        int[] var5 = new int[var3 * var4];
-        var2.getRGB(0, 0, var3, var4, var5, 0, var3);
-        return var5;
+        BufferedImage bufferedimage = readBufferedImage(resourceManager.getResource(imageLocation).getInputStream());
+        int i = bufferedimage.getWidth();
+        int j = bufferedimage.getHeight();
+        int[] aint = new int[i * j];
+        bufferedimage.getRGB(0, 0, i, j, aint, 0, i);
+        return aint;
     }
 
-    public static BufferedImage func_177053_a(InputStream p_177053_0_) throws IOException
+    public static BufferedImage readBufferedImage(InputStream imageStream) throws IOException
     {
-        BufferedImage var1;
+        BufferedImage bufferedimage;
 
         try
         {
-            var1 = ImageIO.read(p_177053_0_);
+            bufferedimage = ImageIO.read(imageStream);
         }
         finally
         {
-            IOUtils.closeQuietly(p_177053_0_);
+            IOUtils.closeQuietly(imageStream);
         }
 
-        return var1;
+        return bufferedimage;
     }
 
     public static int[] updateAnaglyph(int[] p_110985_0_)
     {
-        int[] var1 = new int[p_110985_0_.length];
+        int[] aint = new int[p_110985_0_.length];
 
-        for (int var2 = 0; var2 < p_110985_0_.length; ++var2)
+        for (int i = 0; i < p_110985_0_.length; ++i)
         {
-            var1[var2] = func_177054_c(p_110985_0_[var2]);
+            aint[i] = anaglyphColor(p_110985_0_[i]);
         }
 
-        return var1;
+        return aint;
     }
 
-    public static int func_177054_c(int p_177054_0_)
+    public static int anaglyphColor(int p_177054_0_)
     {
-        int var1 = p_177054_0_ >> 24 & 255;
-        int var2 = p_177054_0_ >> 16 & 255;
-        int var3 = p_177054_0_ >> 8 & 255;
-        int var4 = p_177054_0_ & 255;
-        int var5 = (var2 * 30 + var3 * 59 + var4 * 11) / 100;
-        int var6 = (var2 * 30 + var3 * 70) / 100;
-        int var7 = (var2 * 30 + var4 * 70) / 100;
-        return var1 << 24 | var5 << 16 | var6 << 8 | var7;
+        int i = p_177054_0_ >> 24 & 255;
+        int j = p_177054_0_ >> 16 & 255;
+        int k = p_177054_0_ >> 8 & 255;
+        int l = p_177054_0_ & 255;
+        int i1 = (j * 30 + k * 59 + l * 11) / 100;
+        int j1 = (j * 30 + k * 70) / 100;
+        int k1 = (j * 30 + l * 70) / 100;
+        return i << 24 | i1 << 16 | j1 << 8 | k1;
     }
 
-    public static void func_177055_a(String p_177055_0_, int p_177055_1_, int p_177055_2_, int p_177055_3_, int p_177055_4_)
+    public static void processPixelValues(int[] p_147953_0_, int p_147953_1_, int p_147953_2_)
     {
-        bindTexture(p_177055_1_);
-        GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
-        GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+        int[] aint = new int[p_147953_1_];
+        int i = p_147953_2_ / 2;
 
-        for (int var5 = 0; var5 <= p_177055_2_; ++var5)
+        for (int j = 0; j < i; ++j)
         {
-            File var6 = new File(p_177055_0_ + "_" + var5 + ".png");
-            int var7 = p_177055_3_ >> var5;
-            int var8 = p_177055_4_ >> var5;
-            int var9 = var7 * var8;
-            IntBuffer var10 = BufferUtils.createIntBuffer(var9);
-            int[] var11 = new int[var9];
-            GL11.glGetTexImage(GL11.GL_TEXTURE_2D, var5, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, var10);
-            var10.get(var11);
-            BufferedImage var12 = new BufferedImage(var7, var8, 2);
-            var12.setRGB(0, 0, var7, var8, var11, 0, var7);
-
-            try
-            {
-                ImageIO.write(var12, "png", var6);
-                logger.debug("Exported png to: {}", new Object[] {var6.getAbsolutePath()});
-            }
-            catch (IOException var14)
-            {
-                logger.debug("Unable to write: ", var14);
-            }
-        }
-    }
-
-    public static void func_147953_a(int[] p_147953_0_, int p_147953_1_, int p_147953_2_)
-    {
-        int[] var3 = new int[p_147953_1_];
-        int var4 = p_147953_2_ / 2;
-
-        for (int var5 = 0; var5 < var4; ++var5)
-        {
-            System.arraycopy(p_147953_0_, var5 * p_147953_1_, var3, 0, p_147953_1_);
-            System.arraycopy(p_147953_0_, (p_147953_2_ - 1 - var5) * p_147953_1_, p_147953_0_, var5 * p_147953_1_, p_147953_1_);
-            System.arraycopy(var3, 0, p_147953_0_, (p_147953_2_ - 1 - var5) * p_147953_1_, p_147953_1_);
+            System.arraycopy(p_147953_0_, j * p_147953_1_, aint, 0, p_147953_1_);
+            System.arraycopy(p_147953_0_, (p_147953_2_ - 1 - j) * p_147953_1_, p_147953_0_, j * p_147953_1_, p_147953_1_);
+            System.arraycopy(aint, 0, p_147953_0_, (p_147953_2_ - 1 - j) * p_147953_1_, p_147953_1_);
         }
     }
 
     static
     {
-        int var0 = -16777216;
-        int var1 = -524040;
-        int[] var2 = new int[] { -524040, -524040, -524040, -524040, -524040, -524040, -524040, -524040};
-        int[] var3 = new int[] { -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216};
-        int var4 = var2.length;
+        int i = -16777216;
+        int j = -524040;
+        int[] aint = new int[] { -524040, -524040, -524040, -524040, -524040, -524040, -524040, -524040};
+        int[] aint1 = new int[] { -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216};
+        int k = aint.length;
 
-        for (int var5 = 0; var5 < 16; ++var5)
+        for (int l = 0; l < 16; ++l)
         {
-            System.arraycopy(var5 < var4 ? var2 : var3, 0, missingTextureData, 16 * var5, var4);
-            System.arraycopy(var5 < var4 ? var3 : var2, 0, missingTextureData, 16 * var5 + var4, var4);
+            System.arraycopy(l < k ? aint : aint1, 0, missingTextureData, 16 * l, k);
+            System.arraycopy(l < k ? aint1 : aint, 0, missingTextureData, 16 * l + k, k);
         }
 
         missingTexture.updateDynamicTexture();
-        field_147957_g = new int[4];
+        mipmapBuffer = new int[4];
     }
 }

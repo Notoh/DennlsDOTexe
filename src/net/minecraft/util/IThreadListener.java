@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 public interface IThreadListener
 {
-    ListenableFuture addScheduledTask(Runnable runnableToSchedule);
+    ListenableFuture<Object> addScheduledTask(Runnable runnableToSchedule);
 
     boolean isCallingFromMinecraftThread();
 }

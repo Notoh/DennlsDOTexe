@@ -4,28 +4,26 @@ import net.minecraft.util.ResourceLocation;
 
 public class EnchantmentFireAspect extends Enchantment
 {
-    private static final String __OBFID = "CL_00000116";
-
-    protected EnchantmentFireAspect(int p_i45770_1_, ResourceLocation p_i45770_2_, int p_i45770_3_)
+    protected EnchantmentFireAspect(int enchID, ResourceLocation enchName, int enchWeight)
     {
-        super(p_i45770_1_, p_i45770_2_, p_i45770_3_, EnumEnchantmentType.WEAPON);
+        super(enchID, enchName, enchWeight, EnumEnchantmentType.WEAPON);
         this.setName("fire");
     }
 
     /**
      * Returns the minimal value of enchantability needed on the enchantment level passed.
      */
-    public int getMinEnchantability(int p_77321_1_)
+    public int getMinEnchantability(int enchantmentLevel)
     {
-        return 10 + 20 * (p_77321_1_ - 1);
+        return 10 + 20 * (enchantmentLevel - 1);
     }
 
     /**
      * Returns the maximum value of enchantability nedded on the enchantment level passed.
      */
-    public int getMaxEnchantability(int p_77317_1_)
+    public int getMaxEnchantability(int enchantmentLevel)
     {
-        return super.getMinEnchantability(p_77317_1_) + 50;
+        return super.getMinEnchantability(enchantmentLevel) + 50;
     }
 
     /**

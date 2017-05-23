@@ -26,24 +26,23 @@ public class GuiConnecting extends GuiScreen
     private NetworkManager networkManager;
     private boolean cancel;
     private final GuiScreen previousGuiScreen;
-    private static final String __OBFID = "CL_00000685";
 
     public GuiConnecting(GuiScreen p_i1181_1_, Minecraft mcIn, ServerData p_i1181_3_)
     {
         this.mc = mcIn;
         this.previousGuiScreen = p_i1181_1_;
-        ServerAddress var4 = ServerAddress.func_78860_a(p_i1181_3_.serverIP);
+        ServerAddress serveraddress = ServerAddress.func_78860_a(p_i1181_3_.serverIP);
         mcIn.loadWorld((WorldClient)null);
         mcIn.setServerData(p_i1181_3_);
-        this.connect(var4.getIP(), var4.getPort());
+        this.connect(serveraddress.getIP(), serveraddress.getPort());
     }
 
-    public GuiConnecting(GuiScreen p_i1182_1_, Minecraft mcIn, String p_i1182_3_, int p_i1182_4_)
+    public GuiConnecting(GuiScreen p_i1182_1_, Minecraft mcIn, String hostName, int port)
     {
         this.mc = mcIn;
         this.previousGuiScreen = p_i1182_1_;
         mcIn.loadWorld((WorldClient)null);
-        this.connect(p_i1182_3_, p_i1182_4_);
+        this.connect(hostName, port);
     }
 
     private void connect(final String ip, final int port)
@@ -51,10 +50,9 @@ public class GuiConnecting extends GuiScreen
         logger.info("Connecting to " + ip + ", " + port);
         (new Thread("Server Connector #" + CONNECTION_ID.incrementAndGet())
         {
-            private static final String __OBFID = "CL_00000686";
             public void run()
             {
-                InetAddress var1 = null;
+                InetAddress inetaddress = null;
 
                 try
                 {
@@ -63,39 +61,39 @@ public class GuiConnecting extends GuiScreen
                         return;
                     }
 
-                    var1 = InetAddress.getByName(ip);
-                    GuiConnecting.this.networkManager = NetworkManager.provideLanClient(var1, port);
+                    inetaddress = InetAddress.getByName(ip);
+                    GuiConnecting.this.networkManager = NetworkManager.func_181124_a(inetaddress, port, GuiConnecting.this.mc.gameSettings.func_181148_f());
                     GuiConnecting.this.networkManager.setNetHandler(new NetHandlerLoginClient(GuiConnecting.this.networkManager, GuiConnecting.this.mc, GuiConnecting.this.previousGuiScreen));
                     GuiConnecting.this.networkManager.sendPacket(new C00Handshake(47, ip, port, EnumConnectionState.LOGIN));
                     GuiConnecting.this.networkManager.sendPacket(new C00PacketLoginStart(GuiConnecting.this.mc.getSession().getProfile()));
                 }
-                catch (UnknownHostException var5)
+                catch (UnknownHostException unknownhostexception)
                 {
                     if (GuiConnecting.this.cancel)
                     {
                         return;
                     }
 
-                    GuiConnecting.logger.error("Couldn\'t connect to server", var5);
+                    GuiConnecting.logger.error((String)"Couldn\'t connect to server", (Throwable)unknownhostexception);
                     GuiConnecting.this.mc.displayGuiScreen(new GuiDisconnected(GuiConnecting.this.previousGuiScreen, "connect.failed", new ChatComponentTranslation("disconnect.genericReason", new Object[] {"Unknown host"})));
                 }
-                catch (Exception var6)
+                catch (Exception exception)
                 {
                     if (GuiConnecting.this.cancel)
                     {
                         return;
                     }
 
-                    GuiConnecting.logger.error("Couldn\'t connect to server", var6);
-                    String var3 = var6.toString();
+                    GuiConnecting.logger.error((String)"Couldn\'t connect to server", (Throwable)exception);
+                    String s = exception.toString();
 
-                    if (var1 != null)
+                    if (inetaddress != null)
                     {
-                        String var4 = var1.toString() + ":" + port;
-                        var3 = var3.replaceAll(var4, "");
+                        String s1 = inetaddress.toString() + ":" + port;
+                        s = s.replaceAll(s1, "");
                     }
 
-                    GuiConnecting.this.mc.displayGuiScreen(new GuiDisconnected(GuiConnecting.this.previousGuiScreen, "connect.failed", new ChatComponentTranslation("disconnect.genericReason", new Object[] {var3})));
+                    GuiConnecting.this.mc.displayGuiScreen(new GuiDisconnected(GuiConnecting.this.previousGuiScreen, "connect.failed", new ChatComponentTranslation("disconnect.genericReason", new Object[] {s})));
                 }
             }
         }).start();
@@ -120,13 +118,16 @@ public class GuiConnecting extends GuiScreen
     }
 
     /**
-     * Fired when a key is typed (except F11 who toggle full screen). This is the equivalent of
+     * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {}
+    protected void keyTyped(char typedChar, int keyCode) throws IOException
+    {
+    }
 
     /**
-     * Adds the buttons (and other controls) to the screen in question.
+     * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
+     * window resizes, the buttonList is cleared beforehand.
      */
     public void initGui()
     {
@@ -134,6 +135,9 @@ public class GuiConnecting extends GuiScreen
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, I18n.format("gui.cancel", new Object[0])));
     }
 
+    /**
+     * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
+     */
     protected void actionPerformed(GuiButton button) throws IOException
     {
         if (button.id == 0)

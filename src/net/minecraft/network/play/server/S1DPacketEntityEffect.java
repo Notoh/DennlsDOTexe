@@ -1,68 +1,68 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.potion.PotionEffect;
 
-public class S1DPacketEntityEffect implements Packet
+public class S1DPacketEntityEffect implements Packet<INetHandlerPlayClient>
 {
-    private int field_149434_a;
-    private byte field_149432_b;
-    private byte field_149433_c;
-    private int field_149431_d;
-    private byte field_179708_e;
-    private static final String __OBFID = "CL_00001343";
+    private int entityId;
+    private byte effectId;
+    private byte amplifier;
+    private int duration;
+    private byte hideParticles;
 
-    public S1DPacketEntityEffect() {}
-
-    public S1DPacketEntityEffect(int p_i45237_1_, PotionEffect p_i45237_2_)
+    public S1DPacketEntityEffect()
     {
-        this.field_149434_a = p_i45237_1_;
-        this.field_149432_b = (byte)(p_i45237_2_.getPotionID() & 255);
-        this.field_149433_c = (byte)(p_i45237_2_.getAmplifier() & 255);
+    }
 
-        if (p_i45237_2_.getDuration() > 32767)
+    public S1DPacketEntityEffect(int entityIdIn, PotionEffect effect)
+    {
+        this.entityId = entityIdIn;
+        this.effectId = (byte)(effect.getPotionID() & 255);
+        this.amplifier = (byte)(effect.getAmplifier() & 255);
+
+        if (effect.getDuration() > 32767)
         {
-            this.field_149431_d = 32767;
+            this.duration = 32767;
         }
         else
         {
-            this.field_149431_d = p_i45237_2_.getDuration();
+            this.duration = effect.getDuration();
         }
 
-        this.field_179708_e = (byte)(p_i45237_2_.func_180154_f() ? 1 : 0);
+        this.hideParticles = (byte)(effect.getIsShowParticles() ? 1 : 0);
     }
 
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.field_149434_a = data.readVarIntFromBuffer();
-        this.field_149432_b = data.readByte();
-        this.field_149433_c = data.readByte();
-        this.field_149431_d = data.readVarIntFromBuffer();
-        this.field_179708_e = data.readByte();
+        this.entityId = buf.readVarIntFromBuffer();
+        this.effectId = buf.readByte();
+        this.amplifier = buf.readByte();
+        this.duration = buf.readVarIntFromBuffer();
+        this.hideParticles = buf.readByte();
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeVarIntToBuffer(this.field_149434_a);
-        data.writeByte(this.field_149432_b);
-        data.writeByte(this.field_149433_c);
-        data.writeVarIntToBuffer(this.field_149431_d);
-        data.writeByte(this.field_179708_e);
+        buf.writeVarIntToBuffer(this.entityId);
+        buf.writeByte(this.effectId);
+        buf.writeByte(this.amplifier);
+        buf.writeVarIntToBuffer(this.duration);
+        buf.writeByte(this.hideParticles);
     }
 
     public boolean func_149429_c()
     {
-        return this.field_149431_d == 32767;
+        return this.duration == 32767;
     }
 
     /**
@@ -73,36 +73,28 @@ public class S1DPacketEntityEffect implements Packet
         handler.handleEntityEffect(this);
     }
 
-    public int func_149426_d()
+    public int getEntityId()
     {
-        return this.field_149434_a;
+        return this.entityId;
     }
 
-    public byte func_149427_e()
+    public byte getEffectId()
     {
-        return this.field_149432_b;
+        return this.effectId;
     }
 
-    public byte func_149428_f()
+    public byte getAmplifier()
     {
-        return this.field_149433_c;
+        return this.amplifier;
     }
 
-    public int func_180755_e()
+    public int getDuration()
     {
-        return this.field_149431_d;
+        return this.duration;
     }
 
     public boolean func_179707_f()
     {
-        return this.field_179708_e != 0;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.processPacket((INetHandlerPlayClient)handler);
+        return this.hideParticles != 0;
     }
 }

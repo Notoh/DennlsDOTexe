@@ -7,17 +7,15 @@ import net.minecraft.world.World;
 
 public class WorldGenMelon extends WorldGenerator
 {
-    private static final String __OBFID = "CL_00000424";
-
-    public boolean generate(World worldIn, Random p_180709_2_, BlockPos p_180709_3_)
+    public boolean generate(World worldIn, Random rand, BlockPos position)
     {
-        for (int var4 = 0; var4 < 64; ++var4)
+        for (int i = 0; i < 64; ++i)
         {
-            BlockPos var5 = p_180709_3_.add(p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8), p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4), p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8));
+            BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
 
-            if (Blocks.melon_block.canPlaceBlockAt(worldIn, var5) && worldIn.getBlockState(var5.offsetDown()).getBlock() == Blocks.grass)
+            if (Blocks.melon_block.canPlaceBlockAt(worldIn, blockpos) && worldIn.getBlockState(blockpos.down()).getBlock() == Blocks.grass)
             {
-                worldIn.setBlockState(var5, Blocks.melon_block.getDefaultState(), 2);
+                worldIn.setBlockState(blockpos, Blocks.melon_block.getDefaultState(), 2);
             }
         }
 

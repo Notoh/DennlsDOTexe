@@ -5,7 +5,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.UnmodifiableIterator;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -14,117 +13,82 @@ import java.util.NoSuchElementException;
 
 public class Cartesian
 {
-    private static final String __OBFID = "CL_00002327";
-
-    /**
-     * Create the cartesian product. This method returns an Iterable of arrays of type clazz.
-     *  
-     * @param sets the Sets to combine. This is an Iterable of Iterables of type clazz
-     */
-    public static Iterable cartesianProduct(Class clazz, Iterable sets)
+    public static <T> Iterable<T[]> cartesianProduct(Class<T> clazz, Iterable <? extends Iterable <? extends T >> sets)
     {
-        return new Cartesian.Product(clazz, (Iterable[])toArray(Iterable.class, sets), null);
+        return new Cartesian.Product(clazz, (Iterable[])toArray(Iterable.class, sets));
     }
 
-    /**
-     * Like cartesianProduct(Class, Iterable) but returns an Iterable of Lists instead.
-     */
-    public static Iterable cartesianProduct(Iterable sets)
+    public static <T> Iterable<List<T>> cartesianProduct(Iterable <? extends Iterable <? extends T >> sets)
     {
         return arraysAsLists(cartesianProduct(Object.class, sets));
     }
 
-    /**
-     * Convert an Iterable of Arrays (Object[]) to an Iterable of Lists
-     */
-    private static Iterable arraysAsLists(Iterable arrays)
+    private static <T> Iterable<List<T>> arraysAsLists(Iterable<Object[]> arrays)
     {
-        return Iterables.transform(arrays, new Cartesian.GetList(null));
+        return Iterables.transform(arrays, new Cartesian.GetList());
     }
 
-    /**
-     * Create a new Array of type clazz with the contents of the given Iterable
-     */
-    private static Object[] toArray(Class clazz, Iterable it)
+    private static <T> T[] toArray(Class <? super T > clazz, Iterable <? extends T > it)
     {
-        ArrayList var2 = Lists.newArrayList();
-        Iterator var3 = it.iterator();
+        List<T> list = Lists.<T>newArrayList();
 
-        while (var3.hasNext())
+        for (T t : it)
         {
-            Object var4 = var3.next();
-            var2.add(var4);
+            list.add(t);
         }
 
-        return (Object[])var2.toArray(createArray(clazz, var2.size()));
+        return (T[])((Object[])list.toArray(createArray(clazz, list.size())));
     }
 
-    private static Object[] createArray(Class p_179319_0_, int p_179319_1_)
+    private static <T> T[] createArray(Class <? super T > p_179319_0_, int p_179319_1_)
     {
-        return (Object[])((Object[])Array.newInstance(p_179319_0_, p_179319_1_));
+        return (T[])((Object[])((Object[])Array.newInstance(p_179319_0_, p_179319_1_)));
     }
 
-    static class GetList implements Function
+    static class GetList<T> implements Function<Object[], List<T>>
     {
-        private static final String __OBFID = "CL_00002325";
-
-        private GetList() {}
-
-        public List apply(Object[] array)
+        private GetList()
         {
-            return Arrays.asList((Object[])array);
         }
 
-        public Object apply(Object p_apply_1_)
+        public List<T> apply(Object[] p_apply_1_)
         {
-            return this.apply((Object[])p_apply_1_);
-        }
-
-        GetList(Object p_i46022_1_)
-        {
-            this();
+            return Arrays.<T>asList((T[])p_apply_1_);
         }
     }
 
-    static class Product implements Iterable
+    static class Product<T> implements Iterable<T[]>
     {
-        private final Class clazz;
-        private final Iterable[] iterables;
-        private static final String __OBFID = "CL_00002324";
+        private final Class<T> clazz;
+        private final Iterable <? extends T > [] iterables;
 
-        private Product(Class clazz, Iterable[] iterables)
+        private Product(Class<T> clazz, Iterable <? extends T > [] iterables)
         {
             this.clazz = clazz;
             this.iterables = iterables;
         }
 
-        public Iterator iterator()
+        public Iterator<T[]> iterator()
         {
-            return (Iterator)(this.iterables.length <= 0 ? Collections.singletonList((Object[])Cartesian.createArray(this.clazz, 0)).iterator() : new Cartesian.Product.ProductIterator(this.clazz, this.iterables, null));
+            return (Iterator<T[]>)(this.iterables.length <= 0 ? Collections.singletonList((Object[])Cartesian.createArray(this.clazz, 0)).iterator() : new Cartesian.Product.ProductIterator(this.clazz, this.iterables));
         }
 
-        Product(Class p_i46021_1_, Iterable[] p_i46021_2_, Object p_i46021_3_)
-        {
-            this(p_i46021_1_, p_i46021_2_);
-        }
-
-        static class ProductIterator extends UnmodifiableIterator
+        static class ProductIterator<T> extends UnmodifiableIterator<T[]>
         {
             private int index;
-            private final Iterable[] iterables;
-            private final Iterator[] iterators;
-            private final Object[] results;
-            private static final String __OBFID = "CL_00002323";
+            private final Iterable <? extends T > [] iterables;
+            private final Iterator <? extends T > [] iterators;
+            private final T[] results;
 
-            private ProductIterator(Class clazz, Iterable[] iterables)
+            private ProductIterator(Class<T> clazz, Iterable <? extends T > [] iterables)
             {
                 this.index = -2;
                 this.iterables = iterables;
                 this.iterators = (Iterator[])Cartesian.createArray(Iterator.class, this.iterables.length);
 
-                for (int var3 = 0; var3 < this.iterables.length; ++var3)
+                for (int i = 0; i < this.iterables.length; ++i)
                 {
-                    this.iterators[var3] = iterables[var3].iterator();
+                    this.iterators[i] = iterables[i].iterator();
                 }
 
                 this.results = Cartesian.createArray(clazz, this.iterators.length);
@@ -142,14 +106,10 @@ public class Cartesian
                 if (this.index == -2)
                 {
                     this.index = 0;
-                    Iterator[] var5 = this.iterators;
-                    int var2 = var5.length;
 
-                    for (int var3 = 0; var3 < var2; ++var3)
+                    for (Iterator <? extends T > iterator1 : this.iterators)
                     {
-                        Iterator var4 = var5[var3];
-
-                        if (!var4.hasNext())
+                        if (!iterator1.hasNext())
                         {
                             this.endOfData();
                             break;
@@ -164,9 +124,9 @@ public class Cartesian
                     {
                         for (this.index = this.iterators.length - 1; this.index >= 0; --this.index)
                         {
-                            Iterator var1 = this.iterators[this.index];
+                            Iterator <? extends T > iterator = this.iterators[this.index];
 
-                            if (var1.hasNext())
+                            if (iterator.hasNext())
                             {
                                 break;
                             }
@@ -177,10 +137,10 @@ public class Cartesian
                                 break;
                             }
 
-                            var1 = this.iterables[this.index].iterator();
-                            this.iterators[this.index] = var1;
+                            iterator = this.iterables[this.index].iterator();
+                            this.iterators[this.index] = iterator;
 
-                            if (!var1.hasNext())
+                            if (!iterator.hasNext())
                             {
                                 this.endOfData();
                                 break;
@@ -192,7 +152,7 @@ public class Cartesian
                 }
             }
 
-            public Object[] next0()
+            public T[] next()
             {
                 if (!this.hasNext())
                 {
@@ -206,18 +166,8 @@ public class Cartesian
                         ++this.index;
                     }
 
-                    return (Object[])this.results.clone();
+                    return (T[])((Object[])this.results.clone());
                 }
-            }
-
-            public Object next()
-            {
-                return this.next0();
-            }
-
-            ProductIterator(Class p_i46019_1_, Iterable[] p_i46019_2_, Object p_i46019_3_)
-            {
-                this(p_i46019_1_, p_i46019_2_);
             }
         }
     }

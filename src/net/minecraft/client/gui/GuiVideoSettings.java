@@ -13,17 +13,17 @@ public class GuiVideoSettings extends GuiScreen
     private GuiListExtended optionsRowList;
 
     /** An array of all of GameSettings.Options's video options. */
-    private static final GameSettings.Options[] videoOptions = new GameSettings.Options[] {GameSettings.Options.GRAPHICS, GameSettings.Options.RENDER_DISTANCE, GameSettings.Options.AMBIENT_OCCLUSION, GameSettings.Options.FRAMERATE_LIMIT, GameSettings.Options.ANAGLYPH, GameSettings.Options.VIEW_BOBBING, GameSettings.Options.GUI_SCALE, GameSettings.Options.GAMMA, GameSettings.Options.RENDER_CLOUDS, GameSettings.Options.PARTICLES, GameSettings.Options.USE_FULLSCREEN, GameSettings.Options.ENABLE_VSYNC, GameSettings.Options.MIPMAP_LEVELS, GameSettings.Options.BLOCK_ALTERNATIVES, GameSettings.Options.USE_VBO};
-    private static final String __OBFID = "CL_00000718";
+    private static final GameSettings.Options[] videoOptions = new GameSettings.Options[] {GameSettings.Options.GRAPHICS, GameSettings.Options.RENDER_DISTANCE, GameSettings.Options.AMBIENT_OCCLUSION, GameSettings.Options.FRAMERATE_LIMIT, GameSettings.Options.ANAGLYPH, GameSettings.Options.VIEW_BOBBING, GameSettings.Options.GUI_SCALE, GameSettings.Options.GAMMA, GameSettings.Options.RENDER_CLOUDS, GameSettings.Options.PARTICLES, GameSettings.Options.USE_FULLSCREEN, GameSettings.Options.ENABLE_VSYNC, GameSettings.Options.MIPMAP_LEVELS, GameSettings.Options.BLOCK_ALTERNATIVES, GameSettings.Options.USE_VBO, GameSettings.Options.ENTITY_SHADOWS};
 
-    public GuiVideoSettings(GuiScreen p_i1062_1_, GameSettings p_i1062_2_)
+    public GuiVideoSettings(GuiScreen parentScreenIn, GameSettings gameSettingsIn)
     {
-        this.parentGuiScreen = p_i1062_1_;
-        this.guiGameSettings = p_i1062_2_;
+        this.parentGuiScreen = parentScreenIn;
+        this.guiGameSettings = gameSettingsIn;
     }
 
     /**
-     * Adds the buttons (and other controls) to the screen in question.
+     * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
+     * window resizes, the buttonList is cleared beforehand.
      */
     public void initGui()
     {
@@ -31,27 +31,23 @@ public class GuiVideoSettings extends GuiScreen
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(200, this.width / 2 - 100, this.height - 27, I18n.format("gui.done", new Object[0])));
 
-        if (!OpenGlHelper.field_176083_O)
+        if (!OpenGlHelper.vboSupported)
         {
-            GameSettings.Options[] var1 = new GameSettings.Options[videoOptions.length - 1];
-            int var2 = 0;
-            GameSettings.Options[] var3 = videoOptions;
-            int var4 = var3.length;
+            GameSettings.Options[] agamesettings$options = new GameSettings.Options[videoOptions.length - 1];
+            int i = 0;
 
-            for (int var5 = 0; var5 < var4; ++var5)
+            for (GameSettings.Options gamesettings$options : videoOptions)
             {
-                GameSettings.Options var6 = var3[var5];
-
-                if (var6 == GameSettings.Options.USE_VBO)
+                if (gamesettings$options == GameSettings.Options.USE_VBO)
                 {
                     break;
                 }
 
-                var1[var2] = var6;
-                ++var2;
+                agamesettings$options[i] = gamesettings$options;
+                ++i;
             }
 
-            this.optionsRowList = new GuiOptionsRowList(this.mc, this.width, this.height, 32, this.height - 32, 25, var1);
+            this.optionsRowList = new GuiOptionsRowList(this.mc, this.width, this.height, 32, this.height - 32, 25, agamesettings$options);
         }
         else
         {
@@ -65,9 +61,12 @@ public class GuiVideoSettings extends GuiScreen
     public void handleMouseInput() throws IOException
     {
         super.handleMouseInput();
-        this.optionsRowList.func_178039_p();
+        this.optionsRowList.handleMouseInput();
     }
 
+    /**
+     * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
+     */
     protected void actionPerformed(GuiButton button) throws IOException
     {
         if (button.enabled)
@@ -85,16 +84,16 @@ public class GuiVideoSettings extends GuiScreen
      */
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
-        int var4 = this.guiGameSettings.guiScale;
+        int i = this.guiGameSettings.guiScale;
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        this.optionsRowList.func_148179_a(mouseX, mouseY, mouseButton);
+        this.optionsRowList.mouseClicked(mouseX, mouseY, mouseButton);
 
-        if (this.guiGameSettings.guiScale != var4)
+        if (this.guiGameSettings.guiScale != i)
         {
-            ScaledResolution var5 = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
-            int var6 = var5.getScaledWidth();
-            int var7 = var5.getScaledHeight();
-            this.setWorldAndResolution(this.mc, var6, var7);
+            ScaledResolution scaledresolution = new ScaledResolution(this.mc);
+            int j = scaledresolution.getScaledWidth();
+            int k = scaledresolution.getScaledHeight();
+            this.setWorldAndResolution(this.mc, j, k);
         }
     }
 
@@ -103,16 +102,16 @@ public class GuiVideoSettings extends GuiScreen
      */
     protected void mouseReleased(int mouseX, int mouseY, int state)
     {
-        int var4 = this.guiGameSettings.guiScale;
+        int i = this.guiGameSettings.guiScale;
         super.mouseReleased(mouseX, mouseY, state);
-        this.optionsRowList.func_148181_b(mouseX, mouseY, state);
+        this.optionsRowList.mouseReleased(mouseX, mouseY, state);
 
-        if (this.guiGameSettings.guiScale != var4)
+        if (this.guiGameSettings.guiScale != i)
         {
-            ScaledResolution var5 = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
-            int var6 = var5.getScaledWidth();
-            int var7 = var5.getScaledHeight();
-            this.setWorldAndResolution(this.mc, var6, var7);
+            ScaledResolution scaledresolution = new ScaledResolution(this.mc);
+            int j = scaledresolution.getScaledWidth();
+            int k = scaledresolution.getScaledHeight();
+            this.setWorldAndResolution(this.mc, j, k);
         }
     }
 

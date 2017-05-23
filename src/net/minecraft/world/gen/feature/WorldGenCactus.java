@@ -7,23 +7,21 @@ import net.minecraft.world.World;
 
 public class WorldGenCactus extends WorldGenerator
 {
-    private static final String __OBFID = "CL_00000404";
-
-    public boolean generate(World worldIn, Random p_180709_2_, BlockPos p_180709_3_)
+    public boolean generate(World worldIn, Random rand, BlockPos position)
     {
-        for (int var4 = 0; var4 < 10; ++var4)
+        for (int i = 0; i < 10; ++i)
         {
-            BlockPos var5 = p_180709_3_.add(p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8), p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4), p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8));
+            BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
 
-            if (worldIn.isAirBlock(var5))
+            if (worldIn.isAirBlock(blockpos))
             {
-                int var6 = 1 + p_180709_2_.nextInt(p_180709_2_.nextInt(3) + 1);
+                int j = 1 + rand.nextInt(rand.nextInt(3) + 1);
 
-                for (int var7 = 0; var7 < var6; ++var7)
+                for (int k = 0; k < j; ++k)
                 {
-                    if (Blocks.cactus.canBlockStay(worldIn, var5))
+                    if (Blocks.cactus.canBlockStay(worldIn, blockpos))
                     {
-                        worldIn.setBlockState(var5.offsetUp(var7), Blocks.cactus.getDefaultState(), 2);
+                        worldIn.setBlockState(blockpos.up(k), Blocks.cactus.getDefaultState(), 2);
                     }
                 }
             }

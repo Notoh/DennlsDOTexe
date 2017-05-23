@@ -8,14 +8,12 @@ import net.minecraft.world.pathfinder.SwimNodeProcessor;
 
 public class PathNavigateSwimmer extends PathNavigate
 {
-    private static final String __OBFID = "CL_00002244";
-
-    public PathNavigateSwimmer(EntityLiving p_i45873_1_, World worldIn)
+    public PathNavigateSwimmer(EntityLiving entitylivingIn, World worldIn)
     {
-        super(p_i45873_1_, worldIn);
+        super(entitylivingIn, worldIn);
     }
 
-    protected PathFinder func_179679_a()
+    protected PathFinder getPathFinder()
     {
         return new PathFinder(new SwimNodeProcessor());
     }
@@ -35,27 +33,27 @@ public class PathNavigateSwimmer extends PathNavigate
 
     protected void pathFollow()
     {
-        Vec3 var1 = this.getEntityPosition();
-        float var2 = this.theEntity.width * this.theEntity.width;
-        byte var3 = 6;
+        Vec3 vec3 = this.getEntityPosition();
+        float f = this.theEntity.width * this.theEntity.width;
+        int i = 6;
 
-        if (var1.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, this.currentPath.getCurrentPathIndex())) < (double)var2)
+        if (vec3.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, this.currentPath.getCurrentPathIndex())) < (double)f)
         {
             this.currentPath.incrementPathIndex();
         }
 
-        for (int var4 = Math.min(this.currentPath.getCurrentPathIndex() + var3, this.currentPath.getCurrentPathLength() - 1); var4 > this.currentPath.getCurrentPathIndex(); --var4)
+        for (int j = Math.min(this.currentPath.getCurrentPathIndex() + i, this.currentPath.getCurrentPathLength() - 1); j > this.currentPath.getCurrentPathIndex(); --j)
         {
-            Vec3 var5 = this.currentPath.getVectorFromIndex(this.theEntity, var4);
+            Vec3 vec31 = this.currentPath.getVectorFromIndex(this.theEntity, j);
 
-            if (var5.squareDistanceTo(var1) <= 36.0D && this.isDirectPathBetweenPoints(var1, var5, 0, 0, 0))
+            if (vec31.squareDistanceTo(vec3) <= 36.0D && this.isDirectPathBetweenPoints(vec3, vec31, 0, 0, 0))
             {
-                this.currentPath.setCurrentPathIndex(var4);
+                this.currentPath.setCurrentPathIndex(j);
                 break;
             }
         }
 
-        this.func_179677_a(var1);
+        this.checkForStuck(vec3);
     }
 
     /**
@@ -70,9 +68,9 @@ public class PathNavigateSwimmer extends PathNavigate
      * Returns true when an entity of specified size could safely walk in a straight line between the two points. Args:
      * pos1, pos2, entityXSize, entityYSize, entityZSize
      */
-    protected boolean isDirectPathBetweenPoints(Vec3 p_75493_1_, Vec3 p_75493_2_, int p_75493_3_, int p_75493_4_, int p_75493_5_)
+    protected boolean isDirectPathBetweenPoints(Vec3 posVec31, Vec3 posVec32, int sizeX, int sizeY, int sizeZ)
     {
-        MovingObjectPosition var6 = this.worldObj.rayTraceBlocks(p_75493_1_, new Vec3(p_75493_2_.xCoord, p_75493_2_.yCoord + (double)this.theEntity.height * 0.5D, p_75493_2_.zCoord), false, true, false);
-        return var6 == null || var6.typeOfHit == MovingObjectPosition.MovingObjectType.MISS;
+        MovingObjectPosition movingobjectposition = this.worldObj.rayTraceBlocks(posVec31, new Vec3(posVec32.xCoord, posVec32.yCoord + (double)this.theEntity.height * 0.5D, posVec32.zCoord), false, true, false);
+        return movingobjectposition == null || movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.MISS;
     }
 }

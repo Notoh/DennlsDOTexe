@@ -22,85 +22,81 @@ public enum EnumDyeColor implements IStringSerializable
     GREEN(13, 2, "green", "green", MapColor.greenColor, EnumChatFormatting.DARK_GREEN),
     RED(14, 1, "red", "red", MapColor.redColor, EnumChatFormatting.DARK_RED),
     BLACK(15, 0, "black", "black", MapColor.blackColor, EnumChatFormatting.BLACK);
-    private static final EnumDyeColor[] field_176790_q = new EnumDyeColor[values().length];
-    private static final EnumDyeColor[] field_176789_r = new EnumDyeColor[values().length];
-    private final int field_176788_s;
-    private final int field_176787_t;
-    private final String field_176786_u;
-    private final String field_176785_v;
-    private final MapColor field_176784_w;
-    private final EnumChatFormatting field_176793_x;
-    private static final String __OBFID = "CL_00002180";
 
-    private EnumDyeColor(int p_i45786_3_, int p_i45786_4_, String p_i45786_5_, String p_i45786_6_, MapColor p_i45786_7_, EnumChatFormatting p_i45786_8_)
+    private static final EnumDyeColor[] META_LOOKUP = new EnumDyeColor[values().length];
+    private static final EnumDyeColor[] DYE_DMG_LOOKUP = new EnumDyeColor[values().length];
+    private final int meta;
+    private final int dyeDamage;
+    private final String name;
+    private final String unlocalizedName;
+    private final MapColor mapColor;
+    private final EnumChatFormatting chatColor;
+
+    private EnumDyeColor(int meta, int dyeDamage, String name, String unlocalizedName, MapColor mapColorIn, EnumChatFormatting chatColor)
     {
-        this.field_176788_s = p_i45786_3_;
-        this.field_176787_t = p_i45786_4_;
-        this.field_176786_u = p_i45786_5_;
-        this.field_176785_v = p_i45786_6_;
-        this.field_176784_w = p_i45786_7_;
-        this.field_176793_x = p_i45786_8_;
+        this.meta = meta;
+        this.dyeDamage = dyeDamage;
+        this.name = name;
+        this.unlocalizedName = unlocalizedName;
+        this.mapColor = mapColorIn;
+        this.chatColor = chatColor;
     }
 
-    public int func_176765_a()
+    public int getMetadata()
     {
-        return this.field_176788_s;
+        return this.meta;
     }
 
-    public int getDyeColorDamage()
+    public int getDyeDamage()
     {
-        return this.field_176787_t;
+        return this.dyeDamage;
     }
 
-    public String func_176762_d()
+    public String getUnlocalizedName()
     {
-        return this.field_176785_v;
+        return this.unlocalizedName;
     }
 
-    public MapColor func_176768_e()
+    public MapColor getMapColor()
     {
-        return this.field_176784_w;
+        return this.mapColor;
     }
 
-    public static EnumDyeColor func_176766_a(int p_176766_0_)
+    public static EnumDyeColor byDyeDamage(int damage)
     {
-        if (p_176766_0_ < 0 || p_176766_0_ >= field_176789_r.length)
+        if (damage < 0 || damage >= DYE_DMG_LOOKUP.length)
         {
-            p_176766_0_ = 0;
+            damage = 0;
         }
 
-        return field_176789_r[p_176766_0_];
+        return DYE_DMG_LOOKUP[damage];
     }
 
-    public static EnumDyeColor func_176764_b(int p_176764_0_)
+    public static EnumDyeColor byMetadata(int meta)
     {
-        if (p_176764_0_ < 0 || p_176764_0_ >= field_176790_q.length)
+        if (meta < 0 || meta >= META_LOOKUP.length)
         {
-            p_176764_0_ = 0;
+            meta = 0;
         }
 
-        return field_176790_q[p_176764_0_];
+        return META_LOOKUP[meta];
     }
 
     public String toString()
     {
-        return this.field_176785_v;
+        return this.unlocalizedName;
     }
 
     public String getName()
     {
-        return this.field_176786_u;
+        return this.name;
     }
 
     static {
-        EnumDyeColor[] var0 = values();
-        int var1 = var0.length;
-
-        for (int var2 = 0; var2 < var1; ++var2)
+        for (EnumDyeColor enumdyecolor : values())
         {
-            EnumDyeColor var3 = var0[var2];
-            field_176790_q[var3.func_176765_a()] = var3;
-            field_176789_r[var3.getDyeColorDamage()] = var3;
+            META_LOOKUP[enumdyecolor.getMetadata()] = enumdyecolor;
+            DYE_DMG_LOOKUP[enumdyecolor.getDyeDamage()] = enumdyecolor;
         }
     }
 }

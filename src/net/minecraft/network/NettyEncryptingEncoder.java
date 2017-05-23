@@ -6,23 +6,17 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import javax.crypto.Cipher;
 import javax.crypto.ShortBufferException;
 
-public class NettyEncryptingEncoder extends MessageToByteEncoder
+public class NettyEncryptingEncoder extends MessageToByteEncoder<ByteBuf>
 {
     private final NettyEncryptionTranslator encryptionCodec;
-    private static final String __OBFID = "CL_00001239";
 
     public NettyEncryptingEncoder(Cipher cipher)
     {
         this.encryptionCodec = new NettyEncryptionTranslator(cipher);
     }
 
-    protected void encode(ChannelHandlerContext p_encode_1_, ByteBuf p_encode_2_, ByteBuf p_encode_3_) throws ShortBufferException
+    protected void encode(ChannelHandlerContext p_encode_1_, ByteBuf p_encode_2_, ByteBuf p_encode_3_) throws ShortBufferException, Exception
     {
         this.encryptionCodec.cipher(p_encode_2_, p_encode_3_);
-    }
-
-    protected void encode(ChannelHandlerContext p_encode_1_, Object p_encode_2_, ByteBuf p_encode_3_) throws ShortBufferException
-    {
-        this.encode(p_encode_1_, (ByteBuf)p_encode_2_, p_encode_3_);
     }
 }

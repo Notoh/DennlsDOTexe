@@ -1,21 +1,19 @@
 package net.minecraft.block;
 
-import java.util.Iterator;
 import java.util.Random;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenBigMushroom;
+import net.minecraft.world.gen.feature.WorldGenerator;
 
 public class BlockMushroom extends BlockBush implements IGrowable
 {
-    private static final String __OBFID = "CL_00000272";
-
     protected BlockMushroom()
     {
-        float var1 = 0.2F;
-        this.setBlockBounds(0.5F - var1, 0.0F, 0.5F - var1, 0.5F + var1, var1 * 2.0F, 0.5F + var1);
+        float f = 0.2F;
+        this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f * 2.0F, 0.5F + f);
         this.setTickRandomly(true);
     }
 
@@ -23,40 +21,37 @@ public class BlockMushroom extends BlockBush implements IGrowable
     {
         if (rand.nextInt(25) == 0)
         {
-            int var5 = 5;
-            boolean var6 = true;
-            Iterator var7 = BlockPos.getAllInBoxMutable(pos.add(-4, -1, -4), pos.add(4, 1, 4)).iterator();
+            int i = 5;
+            int j = 4;
 
-            while (var7.hasNext())
+            for (BlockPos blockpos : BlockPos.getAllInBoxMutable(pos.add(-4, -1, -4), pos.add(4, 1, 4)))
             {
-                BlockPos var8 = (BlockPos)var7.next();
-
-                if (worldIn.getBlockState(var8).getBlock() == this)
+                if (worldIn.getBlockState(blockpos).getBlock() == this)
                 {
-                    --var5;
+                    --i;
 
-                    if (var5 <= 0)
+                    if (i <= 0)
                     {
                         return;
                     }
                 }
             }
 
-            BlockPos var9 = pos.add(rand.nextInt(3) - 1, rand.nextInt(2) - rand.nextInt(2), rand.nextInt(3) - 1);
+            BlockPos blockpos1 = pos.add(rand.nextInt(3) - 1, rand.nextInt(2) - rand.nextInt(2), rand.nextInt(3) - 1);
 
-            for (int var10 = 0; var10 < 4; ++var10)
+            for (int k = 0; k < 4; ++k)
             {
-                if (worldIn.isAirBlock(var9) && this.canBlockStay(worldIn, var9, this.getDefaultState()))
+                if (worldIn.isAirBlock(blockpos1) && this.canBlockStay(worldIn, blockpos1, this.getDefaultState()))
                 {
-                    pos = var9;
+                    pos = blockpos1;
                 }
 
-                var9 = pos.add(rand.nextInt(3) - 1, rand.nextInt(2) - rand.nextInt(2), rand.nextInt(3) - 1);
+                blockpos1 = pos.add(rand.nextInt(3) - 1, rand.nextInt(2) - rand.nextInt(2), rand.nextInt(3) - 1);
             }
 
-            if (worldIn.isAirBlock(var9) && this.canBlockStay(worldIn, var9, this.getDefaultState()))
+            if (worldIn.isAirBlock(blockpos1) && this.canBlockStay(worldIn, blockpos1, this.getDefaultState()))
             {
-                worldIn.setBlockState(var9, this.getDefaultState(), 2);
+                worldIn.setBlockState(blockpos1, this.getDefaultState(), 2);
             }
         }
     }
@@ -74,12 +69,12 @@ public class BlockMushroom extends BlockBush implements IGrowable
         return ground.isFullBlock();
     }
 
-    public boolean canBlockStay(World worldIn, BlockPos p_180671_2_, IBlockState p_180671_3_)
+    public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state)
     {
-        if (p_180671_2_.getY() >= 0 && p_180671_2_.getY() < 256)
+        if (pos.getY() >= 0 && pos.getY() < 256)
         {
-            IBlockState var4 = worldIn.getBlockState(p_180671_2_.offsetDown());
-            return var4.getBlock() == Blocks.mycelium ? true : (var4.getBlock() == Blocks.dirt && var4.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.PODZOL ? true : worldIn.getLight(p_180671_2_) < 13 && this.canPlaceBlockOn(var4.getBlock()));
+            IBlockState iblockstate = worldIn.getBlockState(pos.down());
+            return iblockstate.getBlock() == Blocks.mycelium ? true : (iblockstate.getBlock() == Blocks.dirt && iblockstate.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.PODZOL ? true : worldIn.getLight(pos) < 13 && this.canPlaceBlockOn(iblockstate.getBlock()));
         }
         else
         {
@@ -87,43 +82,46 @@ public class BlockMushroom extends BlockBush implements IGrowable
         }
     }
 
-    public boolean func_176485_d(World worldIn, BlockPos p_176485_2_, IBlockState p_176485_3_, Random p_176485_4_)
+    public boolean generateBigMushroom(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        worldIn.setBlockToAir(p_176485_2_);
-        WorldGenBigMushroom var5 = null;
+        worldIn.setBlockToAir(pos);
+        WorldGenerator worldgenerator = null;
 
         if (this == Blocks.brown_mushroom)
         {
-            var5 = new WorldGenBigMushroom(0);
+            worldgenerator = new WorldGenBigMushroom(Blocks.brown_mushroom_block);
         }
         else if (this == Blocks.red_mushroom)
         {
-            var5 = new WorldGenBigMushroom(1);
+            worldgenerator = new WorldGenBigMushroom(Blocks.red_mushroom_block);
         }
 
-        if (var5 != null && var5.generate(worldIn, p_176485_4_, p_176485_2_))
+        if (worldgenerator != null && worldgenerator.generate(worldIn, rand, pos))
         {
             return true;
         }
         else
         {
-            worldIn.setBlockState(p_176485_2_, p_176485_3_, 3);
+            worldIn.setBlockState(pos, state, 3);
             return false;
         }
     }
 
-    public boolean isStillGrowing(World worldIn, BlockPos p_176473_2_, IBlockState p_176473_3_, boolean p_176473_4_)
+    /**
+     * Whether this IGrowable can grow
+     */
+    public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient)
     {
         return true;
     }
 
-    public boolean canUseBonemeal(World worldIn, Random p_180670_2_, BlockPos p_180670_3_, IBlockState p_180670_4_)
+    public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state)
     {
-        return (double)p_180670_2_.nextFloat() < 0.4D;
+        return (double)rand.nextFloat() < 0.4D;
     }
 
-    public void grow(World worldIn, Random p_176474_2_, BlockPos p_176474_3_, IBlockState p_176474_4_)
+    public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
     {
-        this.func_176485_d(worldIn, p_176474_3_, p_176474_4_, p_176474_2_);
+        this.generateBigMushroom(worldIn, pos, state, rand);
     }
 }

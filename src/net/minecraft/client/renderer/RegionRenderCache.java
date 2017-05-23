@@ -12,76 +12,75 @@ import net.minecraft.world.chunk.Chunk;
 
 public class RegionRenderCache extends ChunkCache
 {
-    private static final IBlockState field_175632_f = Blocks.air.getDefaultState();
-    private final BlockPos field_175633_g;
-    private int[] field_175634_h;
-    private IBlockState[] field_175635_i;
-    private static final String __OBFID = "CL_00002565";
+    private static final IBlockState DEFAULT_STATE = Blocks.air.getDefaultState();
+    private final BlockPos position;
+    private int[] combinedLights;
+    private IBlockState[] blockStates;
 
-    public RegionRenderCache(World worldIn, BlockPos p_i46273_2_, BlockPos p_i46273_3_, int p_i46273_4_)
+    public RegionRenderCache(World worldIn, BlockPos posFromIn, BlockPos posToIn, int subIn)
     {
-        super(worldIn, p_i46273_2_, p_i46273_3_, p_i46273_4_);
-        this.field_175633_g = p_i46273_2_.subtract(new Vec3i(p_i46273_4_, p_i46273_4_, p_i46273_4_));
-        boolean var5 = true;
-        this.field_175634_h = new int[8000];
-        Arrays.fill(this.field_175634_h, -1);
-        this.field_175635_i = new IBlockState[8000];
+        super(worldIn, posFromIn, posToIn, subIn);
+        this.position = posFromIn.subtract(new Vec3i(subIn, subIn, subIn));
+        int i = 8000;
+        this.combinedLights = new int[8000];
+        Arrays.fill((int[])this.combinedLights, (int) - 1);
+        this.blockStates = new IBlockState[8000];
     }
 
     public TileEntity getTileEntity(BlockPos pos)
     {
-        int var2 = (pos.getX() >> 4) - this.chunkX;
-        int var3 = (pos.getZ() >> 4) - this.chunkZ;
-        return this.chunkArray[var2][var3].func_177424_a(pos, Chunk.EnumCreateEntityType.QUEUED);
+        int i = (pos.getX() >> 4) - this.chunkX;
+        int j = (pos.getZ() >> 4) - this.chunkZ;
+        return this.chunkArray[i][j].getTileEntity(pos, Chunk.EnumCreateEntityType.QUEUED);
     }
 
-    public int getCombinedLight(BlockPos p_175626_1_, int p_175626_2_)
+    public int getCombinedLight(BlockPos pos, int lightValue)
     {
-        int var3 = this.func_175630_e(p_175626_1_);
-        int var4 = this.field_175634_h[var3];
+        int i = this.getPositionIndex(pos);
+        int j = this.combinedLights[i];
 
-        if (var4 == -1)
+        if (j == -1)
         {
-            var4 = super.getCombinedLight(p_175626_1_, p_175626_2_);
-            this.field_175634_h[var3] = var4;
+            j = super.getCombinedLight(pos, lightValue);
+            this.combinedLights[i] = j;
         }
 
-        return var4;
+        return j;
     }
 
     public IBlockState getBlockState(BlockPos pos)
     {
-        int var2 = this.func_175630_e(pos);
-        IBlockState var3 = this.field_175635_i[var2];
+        int i = this.getPositionIndex(pos);
+        IBlockState iblockstate = this.blockStates[i];
 
-        if (var3 == null)
+        if (iblockstate == null)
         {
-            var3 = this.func_175631_c(pos);
-            this.field_175635_i[var2] = var3;
+            iblockstate = this.getBlockStateRaw(pos);
+            this.blockStates[i] = iblockstate;
         }
 
-        return var3;
+        return iblockstate;
     }
 
-    private IBlockState func_175631_c(BlockPos p_175631_1_)
+    private IBlockState getBlockStateRaw(BlockPos pos)
     {
-        if (p_175631_1_.getY() >= 0 && p_175631_1_.getY() < 256)
+        if (pos.getY() >= 0 && pos.getY() < 256)
         {
-            int var2 = (p_175631_1_.getX() >> 4) - this.chunkX;
-            int var3 = (p_175631_1_.getZ() >> 4) - this.chunkZ;
-            return this.chunkArray[var2][var3].getBlockState(p_175631_1_);
+            int i = (pos.getX() >> 4) - this.chunkX;
+            int j = (pos.getZ() >> 4) - this.chunkZ;
+            return this.chunkArray[i][j].getBlockState(pos);
         }
         else
         {
-            return field_175632_f;
+            return DEFAULT_STATE;
         }
     }
 
-    private int func_175630_e(BlockPos p_175630_1_)
+    private int getPositionIndex(BlockPos p_175630_1_)
     {
-        int var2 = p_175630_1_.getX() - this.field_175633_g.getX();
-        int var3 = p_175630_1_.getY() - this.field_175633_g.getY();
-        int var4 = p_175630_1_.getZ() - this.field_175633_g.getZ();
-        return var2 * 400 + var4 * 20 + var3;
+        int i = p_175630_1_.getX() - this.position.getX();
+        int j = p_175630_1_.getY() - this.position.getY();
+        int k = p_175630_1_.getZ() - this.position.getZ();
+        return i * 400 + k * 20 + j;
     }
 }

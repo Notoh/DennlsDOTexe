@@ -1,7 +1,6 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -9,46 +8,47 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
-public class S33PacketUpdateSign implements Packet
+public class S33PacketUpdateSign implements Packet<INetHandlerPlayClient>
 {
-    private World field_179706_a;
-    private BlockPos field_179705_b;
-    private IChatComponent[] field_149349_d;
-    private static final String __OBFID = "CL_00001338";
+    private World world;
+    private BlockPos blockPos;
+    private IChatComponent[] lines;
 
-    public S33PacketUpdateSign() {}
-
-    public S33PacketUpdateSign(World worldIn, BlockPos p_i45951_2_, IChatComponent[] p_i45951_3_)
+    public S33PacketUpdateSign()
     {
-        this.field_179706_a = worldIn;
-        this.field_179705_b = p_i45951_2_;
-        this.field_149349_d = new IChatComponent[] {p_i45951_3_[0], p_i45951_3_[1], p_i45951_3_[2], p_i45951_3_[3]};
+    }
+
+    public S33PacketUpdateSign(World worldIn, BlockPos blockPosIn, IChatComponent[] linesIn)
+    {
+        this.world = worldIn;
+        this.blockPos = blockPosIn;
+        this.lines = new IChatComponent[] {linesIn[0], linesIn[1], linesIn[2], linesIn[3]};
     }
 
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.field_179705_b = data.readBlockPos();
-        this.field_149349_d = new IChatComponent[4];
+        this.blockPos = buf.readBlockPos();
+        this.lines = new IChatComponent[4];
 
-        for (int var2 = 0; var2 < 4; ++var2)
+        for (int i = 0; i < 4; ++i)
         {
-            this.field_149349_d[var2] = data.readChatComponent();
+            this.lines[i] = buf.readChatComponent();
         }
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeBlockPos(this.field_179705_b);
+        buf.writeBlockPos(this.blockPos);
 
-        for (int var2 = 0; var2 < 4; ++var2)
+        for (int i = 0; i < 4; ++i)
         {
-            data.writeChatComponent(this.field_149349_d[var2]);
+            buf.writeChatComponent(this.lines[i]);
         }
     }
 
@@ -60,21 +60,13 @@ public class S33PacketUpdateSign implements Packet
         handler.handleUpdateSign(this);
     }
 
-    public BlockPos func_179704_a()
+    public BlockPos getPos()
     {
-        return this.field_179705_b;
+        return this.blockPos;
     }
 
-    public IChatComponent[] func_180753_b()
+    public IChatComponent[] getLines()
     {
-        return this.field_149349_d;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.processPacket((INetHandlerPlayClient)handler);
+        return this.lines;
     }
 }

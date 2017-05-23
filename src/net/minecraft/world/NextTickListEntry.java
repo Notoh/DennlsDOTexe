@@ -3,12 +3,12 @@ package net.minecraft.world;
 import net.minecraft.block.Block;
 import net.minecraft.util.BlockPos;
 
-public class NextTickListEntry implements Comparable
+public class NextTickListEntry implements Comparable<NextTickListEntry>
 {
     /** The id number for the next tick entry */
     private static long nextTickEntryID;
-    private final Block field_151352_g;
-    public final BlockPos field_180282_a;
+    private final Block block;
+    public final BlockPos position;
 
     /** Time this tick is scheduled to occur at */
     public long scheduledTime;
@@ -16,13 +16,12 @@ public class NextTickListEntry implements Comparable
 
     /** The id of the tick entry */
     private long tickEntryID;
-    private static final String __OBFID = "CL_00000156";
 
     public NextTickListEntry(BlockPos p_i45745_1_, Block p_i45745_2_)
     {
         this.tickEntryID = (long)(nextTickEntryID++);
-        this.field_180282_a = p_i45745_1_;
-        this.field_151352_g = p_i45745_2_;
+        this.position = p_i45745_1_;
+        this.block = p_i45745_2_;
     }
 
     public boolean equals(Object p_equals_1_)
@@ -33,14 +32,14 @@ public class NextTickListEntry implements Comparable
         }
         else
         {
-            NextTickListEntry var2 = (NextTickListEntry)p_equals_1_;
-            return this.field_180282_a.equals(var2.field_180282_a) && Block.isEqualTo(this.field_151352_g, var2.field_151352_g);
+            NextTickListEntry nextticklistentry = (NextTickListEntry)p_equals_1_;
+            return this.position.equals(nextticklistentry.position) && Block.isEqualTo(this.block, nextticklistentry.block);
         }
     }
 
     public int hashCode()
     {
-        return this.field_180282_a.hashCode();
+        return this.position.hashCode();
     }
 
     /**
@@ -64,16 +63,11 @@ public class NextTickListEntry implements Comparable
 
     public String toString()
     {
-        return Block.getIdFromBlock(this.field_151352_g) + ": " + this.field_180282_a + ", " + this.scheduledTime + ", " + this.priority + ", " + this.tickEntryID;
+        return Block.getIdFromBlock(this.block) + ": " + this.position + ", " + this.scheduledTime + ", " + this.priority + ", " + this.tickEntryID;
     }
 
-    public Block func_151351_a()
+    public Block getBlock()
     {
-        return this.field_151352_g;
-    }
-
-    public int compareTo(Object p_compareTo_1_)
-    {
-        return this.compareTo((NextTickListEntry)p_compareTo_1_);
+        return this.block;
     }
 }

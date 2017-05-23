@@ -1,23 +1,23 @@
 package net.minecraft.network.play.client;
 
 import java.io.IOException;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 
-public class C11PacketEnchantItem implements Packet
+public class C11PacketEnchantItem implements Packet<INetHandlerPlayServer>
 {
-    private int id;
+    private int windowId;
     private int button;
-    private static final String __OBFID = "CL_00001352";
 
-    public C11PacketEnchantItem() {}
-
-    public C11PacketEnchantItem(int p_i45245_1_, int p_i45245_2_)
+    public C11PacketEnchantItem()
     {
-        this.id = p_i45245_1_;
-        this.button = p_i45245_2_;
+    }
+
+    public C11PacketEnchantItem(int windowId, int button)
+    {
+        this.windowId = windowId;
+        this.button = button;
     }
 
     /**
@@ -31,36 +31,28 @@ public class C11PacketEnchantItem implements Packet
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.id = data.readByte();
-        this.button = data.readByte();
+        this.windowId = buf.readByte();
+        this.button = buf.readByte();
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeByte(this.id);
-        data.writeByte(this.button);
+        buf.writeByte(this.windowId);
+        buf.writeByte(this.button);
     }
 
-    public int getId()
+    public int getWindowId()
     {
-        return this.id;
+        return this.windowId;
     }
 
     public int getButton()
     {
         return this.button;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.processPacket((INetHandlerPlayServer)handler);
     }
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.mojang.authlib.GameProfile;
@@ -19,7 +20,6 @@ public class ServerStatusResponse
     private ServerStatusResponse.PlayerCountData playerCount;
     private ServerStatusResponse.MinecraftProtocolVersionIdentifier protocolVersion;
     private String favicon;
-    private static final String __OBFID = "CL_00001385";
 
     public IChatComponent getServerDescription()
     {
@@ -65,7 +65,6 @@ public class ServerStatusResponse
     {
         private final String name;
         private final int protocol;
-        private static final String __OBFID = "CL_00001389";
 
         public MinecraftProtocolVersionIdentifier(String nameIn, int protocolIn)
         {
@@ -83,27 +82,20 @@ public class ServerStatusResponse
             return this.protocol;
         }
 
-        public static class Serializer implements JsonDeserializer, JsonSerializer
+        public static class Serializer implements JsonDeserializer<ServerStatusResponse.MinecraftProtocolVersionIdentifier>, JsonSerializer<ServerStatusResponse.MinecraftProtocolVersionIdentifier>
         {
-            private static final String __OBFID = "CL_00001390";
-
-            public ServerStatusResponse.MinecraftProtocolVersionIdentifier deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_)
+            public ServerStatusResponse.MinecraftProtocolVersionIdentifier deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
             {
-                JsonObject var4 = JsonUtils.getElementAsJsonObject(p_deserialize_1_, "version");
-                return new ServerStatusResponse.MinecraftProtocolVersionIdentifier(JsonUtils.getJsonObjectStringFieldValue(var4, "name"), JsonUtils.getJsonObjectIntegerFieldValue(var4, "protocol"));
+                JsonObject jsonobject = JsonUtils.getJsonObject(p_deserialize_1_, "version");
+                return new ServerStatusResponse.MinecraftProtocolVersionIdentifier(JsonUtils.getString(jsonobject, "name"), JsonUtils.getInt(jsonobject, "protocol"));
             }
 
             public JsonElement serialize(ServerStatusResponse.MinecraftProtocolVersionIdentifier p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
             {
-                JsonObject var4 = new JsonObject();
-                var4.addProperty("name", p_serialize_1_.getName());
-                var4.addProperty("protocol", Integer.valueOf(p_serialize_1_.getProtocol()));
-                return var4;
-            }
-
-            public JsonElement serialize(Object p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
-            {
-                return this.serialize((ServerStatusResponse.MinecraftProtocolVersionIdentifier)p_serialize_1_, p_serialize_2_, p_serialize_3_);
+                JsonObject jsonobject = new JsonObject();
+                jsonobject.addProperty("name", p_serialize_1_.getName());
+                jsonobject.addProperty("protocol", (Number)Integer.valueOf(p_serialize_1_.getProtocol()));
+                return jsonobject;
             }
         }
     }
@@ -113,12 +105,11 @@ public class ServerStatusResponse
         private final int maxPlayers;
         private final int onlinePlayerCount;
         private GameProfile[] players;
-        private static final String __OBFID = "CL_00001386";
 
-        public PlayerCountData(int p_i45274_1_, int p_i45274_2_)
+        public PlayerCountData(int maxOnlinePlayers, int onlinePlayers)
         {
-            this.maxPlayers = p_i45274_1_;
-            this.onlinePlayerCount = p_i45274_2_;
+            this.maxPlayers = maxOnlinePlayers;
+            this.onlinePlayerCount = onlinePlayers;
         }
 
         public int getMaxPlayers()
@@ -141,131 +132,117 @@ public class ServerStatusResponse
             this.players = playersIn;
         }
 
-        public static class Serializer implements JsonDeserializer, JsonSerializer
+        public static class Serializer implements JsonDeserializer<ServerStatusResponse.PlayerCountData>, JsonSerializer<ServerStatusResponse.PlayerCountData>
         {
-            private static final String __OBFID = "CL_00001387";
-
-            public ServerStatusResponse.PlayerCountData deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_)
+            public ServerStatusResponse.PlayerCountData deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
             {
-                JsonObject var4 = JsonUtils.getElementAsJsonObject(p_deserialize_1_, "players");
-                ServerStatusResponse.PlayerCountData var5 = new ServerStatusResponse.PlayerCountData(JsonUtils.getJsonObjectIntegerFieldValue(var4, "max"), JsonUtils.getJsonObjectIntegerFieldValue(var4, "online"));
+                JsonObject jsonobject = JsonUtils.getJsonObject(p_deserialize_1_, "players");
+                ServerStatusResponse.PlayerCountData serverstatusresponse$playercountdata = new ServerStatusResponse.PlayerCountData(JsonUtils.getInt(jsonobject, "max"), JsonUtils.getInt(jsonobject, "online"));
 
-                if (JsonUtils.jsonObjectFieldTypeIsArray(var4, "sample"))
+                if (JsonUtils.isJsonArray(jsonobject, "sample"))
                 {
-                    JsonArray var6 = JsonUtils.getJsonObjectJsonArrayField(var4, "sample");
+                    JsonArray jsonarray = JsonUtils.getJsonArray(jsonobject, "sample");
 
-                    if (var6.size() > 0)
+                    if (jsonarray.size() > 0)
                     {
-                        GameProfile[] var7 = new GameProfile[var6.size()];
+                        GameProfile[] agameprofile = new GameProfile[jsonarray.size()];
 
-                        for (int var8 = 0; var8 < var7.length; ++var8)
+                        for (int i = 0; i < agameprofile.length; ++i)
                         {
-                            JsonObject var9 = JsonUtils.getElementAsJsonObject(var6.get(var8), "player[" + var8 + "]");
-                            String var10 = JsonUtils.getJsonObjectStringFieldValue(var9, "id");
-                            var7[var8] = new GameProfile(UUID.fromString(var10), JsonUtils.getJsonObjectStringFieldValue(var9, "name"));
+                            JsonObject jsonobject1 = JsonUtils.getJsonObject(jsonarray.get(i), "player[" + i + "]");
+                            String s = JsonUtils.getString(jsonobject1, "id");
+                            agameprofile[i] = new GameProfile(UUID.fromString(s), JsonUtils.getString(jsonobject1, "name"));
                         }
 
-                        var5.setPlayers(var7);
+                        serverstatusresponse$playercountdata.setPlayers(agameprofile);
                     }
                 }
 
-                return var5;
+                return serverstatusresponse$playercountdata;
             }
 
             public JsonElement serialize(ServerStatusResponse.PlayerCountData p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
             {
-                JsonObject var4 = new JsonObject();
-                var4.addProperty("max", Integer.valueOf(p_serialize_1_.getMaxPlayers()));
-                var4.addProperty("online", Integer.valueOf(p_serialize_1_.getOnlinePlayerCount()));
+                JsonObject jsonobject = new JsonObject();
+                jsonobject.addProperty("max", (Number)Integer.valueOf(p_serialize_1_.getMaxPlayers()));
+                jsonobject.addProperty("online", (Number)Integer.valueOf(p_serialize_1_.getOnlinePlayerCount()));
 
                 if (p_serialize_1_.getPlayers() != null && p_serialize_1_.getPlayers().length > 0)
                 {
-                    JsonArray var5 = new JsonArray();
+                    JsonArray jsonarray = new JsonArray();
 
-                    for (int var6 = 0; var6 < p_serialize_1_.getPlayers().length; ++var6)
+                    for (int i = 0; i < p_serialize_1_.getPlayers().length; ++i)
                     {
-                        JsonObject var7 = new JsonObject();
-                        UUID var8 = p_serialize_1_.getPlayers()[var6].getId();
-                        var7.addProperty("id", var8 == null ? "" : var8.toString());
-                        var7.addProperty("name", p_serialize_1_.getPlayers()[var6].getName());
-                        var5.add(var7);
+                        JsonObject jsonobject1 = new JsonObject();
+                        UUID uuid = p_serialize_1_.getPlayers()[i].getId();
+                        jsonobject1.addProperty("id", uuid == null ? "" : uuid.toString());
+                        jsonobject1.addProperty("name", p_serialize_1_.getPlayers()[i].getName());
+                        jsonarray.add(jsonobject1);
                     }
 
-                    var4.add("sample", var5);
+                    jsonobject.add("sample", jsonarray);
                 }
 
-                return var4;
-            }
-
-            public JsonElement serialize(Object p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
-            {
-                return this.serialize((ServerStatusResponse.PlayerCountData)p_serialize_1_, p_serialize_2_, p_serialize_3_);
+                return jsonobject;
             }
         }
     }
 
-    public static class Serializer implements JsonDeserializer, JsonSerializer
+    public static class Serializer implements JsonDeserializer<ServerStatusResponse>, JsonSerializer<ServerStatusResponse>
     {
-        private static final String __OBFID = "CL_00001388";
-
-        public ServerStatusResponse deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_)
+        public ServerStatusResponse deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
         {
-            JsonObject var4 = JsonUtils.getElementAsJsonObject(p_deserialize_1_, "status");
-            ServerStatusResponse var5 = new ServerStatusResponse();
+            JsonObject jsonobject = JsonUtils.getJsonObject(p_deserialize_1_, "status");
+            ServerStatusResponse serverstatusresponse = new ServerStatusResponse();
 
-            if (var4.has("description"))
+            if (jsonobject.has("description"))
             {
-                var5.setServerDescription((IChatComponent)p_deserialize_3_.deserialize(var4.get("description"), IChatComponent.class));
+                serverstatusresponse.setServerDescription((IChatComponent)p_deserialize_3_.deserialize(jsonobject.get("description"), IChatComponent.class));
             }
 
-            if (var4.has("players"))
+            if (jsonobject.has("players"))
             {
-                var5.setPlayerCountData((ServerStatusResponse.PlayerCountData)p_deserialize_3_.deserialize(var4.get("players"), ServerStatusResponse.PlayerCountData.class));
+                serverstatusresponse.setPlayerCountData((ServerStatusResponse.PlayerCountData)p_deserialize_3_.deserialize(jsonobject.get("players"), ServerStatusResponse.PlayerCountData.class));
             }
 
-            if (var4.has("version"))
+            if (jsonobject.has("version"))
             {
-                var5.setProtocolVersionInfo((ServerStatusResponse.MinecraftProtocolVersionIdentifier)p_deserialize_3_.deserialize(var4.get("version"), ServerStatusResponse.MinecraftProtocolVersionIdentifier.class));
+                serverstatusresponse.setProtocolVersionInfo((ServerStatusResponse.MinecraftProtocolVersionIdentifier)p_deserialize_3_.deserialize(jsonobject.get("version"), ServerStatusResponse.MinecraftProtocolVersionIdentifier.class));
             }
 
-            if (var4.has("favicon"))
+            if (jsonobject.has("favicon"))
             {
-                var5.setFavicon(JsonUtils.getJsonObjectStringFieldValue(var4, "favicon"));
+                serverstatusresponse.setFavicon(JsonUtils.getString(jsonobject, "favicon"));
             }
 
-            return var5;
+            return serverstatusresponse;
         }
 
         public JsonElement serialize(ServerStatusResponse p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
         {
-            JsonObject var4 = new JsonObject();
+            JsonObject jsonobject = new JsonObject();
 
             if (p_serialize_1_.getServerDescription() != null)
             {
-                var4.add("description", p_serialize_3_.serialize(p_serialize_1_.getServerDescription()));
+                jsonobject.add("description", p_serialize_3_.serialize(p_serialize_1_.getServerDescription()));
             }
 
             if (p_serialize_1_.getPlayerCountData() != null)
             {
-                var4.add("players", p_serialize_3_.serialize(p_serialize_1_.getPlayerCountData()));
+                jsonobject.add("players", p_serialize_3_.serialize(p_serialize_1_.getPlayerCountData()));
             }
 
             if (p_serialize_1_.getProtocolVersionInfo() != null)
             {
-                var4.add("version", p_serialize_3_.serialize(p_serialize_1_.getProtocolVersionInfo()));
+                jsonobject.add("version", p_serialize_3_.serialize(p_serialize_1_.getProtocolVersionInfo()));
             }
 
             if (p_serialize_1_.getFavicon() != null)
             {
-                var4.addProperty("favicon", p_serialize_1_.getFavicon());
+                jsonobject.addProperty("favicon", p_serialize_1_.getFavicon());
             }
 
-            return var4;
-        }
-
-        public JsonElement serialize(Object p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
-        {
-            return this.serialize((ServerStatusResponse)p_serialize_1_, p_serialize_2_, p_serialize_3_);
+            return jsonobject;
         }
     }
 }

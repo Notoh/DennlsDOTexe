@@ -2,45 +2,45 @@ package net.minecraft.network.play.server;
 
 import java.io.IOException;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 
-public class S1BPacketEntityAttach implements Packet
+public class S1BPacketEntityAttach implements Packet<INetHandlerPlayClient>
 {
-    private int field_149408_a;
-    private int field_149406_b;
-    private int field_149407_c;
-    private static final String __OBFID = "CL_00001327";
+    private int leash;
+    private int entityId;
+    private int vehicleEntityId;
 
-    public S1BPacketEntityAttach() {}
-
-    public S1BPacketEntityAttach(int p_i45218_1_, Entity p_i45218_2_, Entity p_i45218_3_)
+    public S1BPacketEntityAttach()
     {
-        this.field_149408_a = p_i45218_1_;
-        this.field_149406_b = p_i45218_2_.getEntityId();
-        this.field_149407_c = p_i45218_3_ != null ? p_i45218_3_.getEntityId() : -1;
+    }
+
+    public S1BPacketEntityAttach(int leashIn, Entity entityIn, Entity vehicle)
+    {
+        this.leash = leashIn;
+        this.entityId = entityIn.getEntityId();
+        this.vehicleEntityId = vehicle != null ? vehicle.getEntityId() : -1;
     }
 
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.field_149406_b = data.readInt();
-        this.field_149407_c = data.readInt();
-        this.field_149408_a = data.readUnsignedByte();
+        this.entityId = buf.readInt();
+        this.vehicleEntityId = buf.readInt();
+        this.leash = buf.readUnsignedByte();
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeInt(this.field_149406_b);
-        data.writeInt(this.field_149407_c);
-        data.writeByte(this.field_149408_a);
+        buf.writeInt(this.entityId);
+        buf.writeInt(this.vehicleEntityId);
+        buf.writeByte(this.leash);
     }
 
     /**
@@ -51,26 +51,18 @@ public class S1BPacketEntityAttach implements Packet
         handler.handleEntityAttach(this);
     }
 
-    public int func_149404_c()
+    public int getLeash()
     {
-        return this.field_149408_a;
+        return this.leash;
     }
 
-    public int func_149403_d()
+    public int getEntityId()
     {
-        return this.field_149406_b;
+        return this.entityId;
     }
 
-    public int func_149402_e()
+    public int getVehicleEntityId()
     {
-        return this.field_149407_c;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.processPacket((INetHandlerPlayClient)handler);
+        return this.vehicleEntityId;
     }
 }

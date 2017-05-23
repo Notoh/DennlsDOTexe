@@ -1,6 +1,7 @@
 package io.notoh.dennls.mods;
 
-import io.notoh.dennls.ClientEntry;
+import io.notoh.dennls.Dennls;
+import io.notoh.dennls.util.ModCategory;
 import io.notoh.dennls.util.ModeUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -9,29 +10,40 @@ import org.lwjgl.opengl.Display;
  * Created by alexa on 5/22/2017.
  */
 public class ChangeMode extends Module {
+    private int keycode = Keyboard.KEY_M;
+
+    @Override
+    public void setKeyCode(int keyCode) {
+        this.keycode = keyCode;
+    }
     @Override
     public int getKeyCode() {
-        return Keyboard.KEY_M;
+        return keycode;
     }
+
 
     @Override
     public String getName() {
-        return "Change Mode";
+        return "ChangeMode";
+    }
+
+    @Override
+    public ModCategory getCategory() {
+        return ModCategory.OTHER;
     }
 
     @Override
     public void toggle() {
-        ClientEntry.setActive(ModeUtils.getNext());
-        if(ClientEntry.getActive() != Mode.GHOST) {
-            ClientEntry.getClientGui().renderScreen();
-            Display.setTitle("DennlsDOTExe (test build 1.0.1)");
+        Dennls.setActive(ModeUtils.getNext());
+        if(Dennls.getActive() != Mode.GHOST) {
+            Display.setTitle("DennlsDOTExe (test build 2.0.5)");
         } else {
-            Display.setTitle("Minecraft 1.8");
+            Display.setTitle("Minecraft 1.8.8");
         }
     }
 
     @Override
     public boolean getToggle() {
-        return false;
+        return true;
     }
 }

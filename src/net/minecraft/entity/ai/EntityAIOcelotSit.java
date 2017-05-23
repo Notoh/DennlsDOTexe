@@ -13,7 +13,6 @@ import net.minecraft.world.World;
 public class EntityAIOcelotSit extends EntityAIMoveToBlock
 {
     private final EntityOcelot field_151493_a;
-    private static final String __OBFID = "CL_00001601";
 
     public EntityAIOcelotSit(EntityOcelot p_i45315_1_, double p_i45315_2_)
     {
@@ -63,7 +62,7 @@ public class EntityAIOcelotSit extends EntityAIMoveToBlock
         super.updateTask();
         this.field_151493_a.getAISit().setSitting(false);
 
-        if (!this.func_179487_f())
+        if (!this.getIsAboveDestination())
         {
             this.field_151493_a.setSitting(false);
         }
@@ -73,34 +72,37 @@ public class EntityAIOcelotSit extends EntityAIMoveToBlock
         }
     }
 
-    protected boolean func_179488_a(World worldIn, BlockPos p_179488_2_)
+    /**
+     * Return true to set given position as destination
+     */
+    protected boolean shouldMoveTo(World worldIn, BlockPos pos)
     {
-        if (!worldIn.isAirBlock(p_179488_2_.offsetUp()))
+        if (!worldIn.isAirBlock(pos.up()))
         {
             return false;
         }
         else
         {
-            IBlockState var3 = worldIn.getBlockState(p_179488_2_);
-            Block var4 = var3.getBlock();
+            IBlockState iblockstate = worldIn.getBlockState(pos);
+            Block block = iblockstate.getBlock();
 
-            if (var4 == Blocks.chest)
+            if (block == Blocks.chest)
             {
-                TileEntity var5 = worldIn.getTileEntity(p_179488_2_);
+                TileEntity tileentity = worldIn.getTileEntity(pos);
 
-                if (var5 instanceof TileEntityChest && ((TileEntityChest)var5).numPlayersUsing < 1)
+                if (tileentity instanceof TileEntityChest && ((TileEntityChest)tileentity).numPlayersUsing < 1)
                 {
                     return true;
                 }
             }
             else
             {
-                if (var4 == Blocks.lit_furnace)
+                if (block == Blocks.lit_furnace)
                 {
                     return true;
                 }
 
-                if (var4 == Blocks.bed && var3.getValue(BlockBed.PART_PROP) != BlockBed.EnumPartType.HEAD)
+                if (block == Blocks.bed && iblockstate.getValue(BlockBed.PART) != BlockBed.EnumPartType.HEAD)
                 {
                     return true;
                 }

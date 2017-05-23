@@ -3,12 +3,11 @@ package net.minecraft.block.properties;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Set;
 
-public class PropertyInteger extends PropertyHelper
+public class PropertyInteger extends PropertyHelper<Integer>
 {
-    private final ImmutableSet allowedValues;
-    private static final String __OBFID = "CL_00002014";
+    private final ImmutableSet<Integer> allowedValues;
 
     protected PropertyInteger(String name, int min, int max)
     {
@@ -24,18 +23,18 @@ public class PropertyInteger extends PropertyHelper
         }
         else
         {
-            HashSet var4 = Sets.newHashSet();
+            Set<Integer> set = Sets.<Integer>newHashSet();
 
-            for (int var5 = min; var5 <= max; ++var5)
+            for (int i = min; i <= max; ++i)
             {
-                var4.add(Integer.valueOf(var5));
+                set.add(Integer.valueOf(i));
             }
 
-            this.allowedValues = ImmutableSet.copyOf(var4);
+            this.allowedValues = ImmutableSet.copyOf(set);
         }
     }
 
-    public Collection getAllowedValues()
+    public Collection<Integer> getAllowedValues()
     {
         return this.allowedValues;
     }
@@ -54,8 +53,8 @@ public class PropertyInteger extends PropertyHelper
             }
             else
             {
-                PropertyInteger var2 = (PropertyInteger)p_equals_1_;
-                return this.allowedValues.equals(var2.allowedValues);
+                PropertyInteger propertyinteger = (PropertyInteger)p_equals_1_;
+                return this.allowedValues.equals(propertyinteger.allowedValues);
             }
         }
         else
@@ -66,9 +65,9 @@ public class PropertyInteger extends PropertyHelper
 
     public int hashCode()
     {
-        int var1 = super.hashCode();
-        var1 = 31 * var1 + this.allowedValues.hashCode();
-        return var1;
+        int i = super.hashCode();
+        i = 31 * i + this.allowedValues.hashCode();
+        return i;
     }
 
     public static PropertyInteger create(String name, int min, int max)
@@ -76,16 +75,11 @@ public class PropertyInteger extends PropertyHelper
         return new PropertyInteger(name, min, max);
     }
 
-    public String getName0(Integer value)
-    {
-        return value.toString();
-    }
-
     /**
      * Get the name for the given value.
      */
-    public String getName(Comparable value)
+    public String getName(Integer value)
     {
-        return this.getName0((Integer)value);
+        return value.toString();
     }
 }

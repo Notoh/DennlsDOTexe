@@ -1,13 +1,10 @@
 package net.minecraft.entity.monster;
 
-import com.google.common.base.Predicate;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAvoidEntity;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -17,20 +14,6 @@ import net.minecraft.world.World;
 
 public abstract class EntityMob extends EntityCreature implements IMob
 {
-    protected final EntityAIBase field_175455_a = new EntityAIAvoidEntity(this, new Predicate()
-    {
-        private static final String __OBFID = "CL_00002208";
-        public boolean func_179911_a(Entity p_179911_1_)
-        {
-            return p_179911_1_ instanceof EntityCreeper && ((EntityCreeper)p_179911_1_).getCreeperState() > 0;
-        }
-        public boolean apply(Object p_apply_1_)
-        {
-            return this.func_179911_a((Entity)p_apply_1_);
-        }
-    }, 4.0F, 1.0D, 2.0D);
-    private static final String __OBFID = "CL_00001692";
-
     public EntityMob(World worldIn)
     {
         super(worldIn);
@@ -44,9 +27,9 @@ public abstract class EntityMob extends EntityCreature implements IMob
     public void onLivingUpdate()
     {
         this.updateArmSwingProgress();
-        float var1 = this.getBrightness(1.0F);
+        float f = this.getBrightness(1.0F);
 
-        if (var1 > 0.5F)
+        if (f > 0.5F)
         {
             this.entityAge += 2;
         }
@@ -82,14 +65,14 @@ public abstract class EntityMob extends EntityCreature implements IMob
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        if (this.func_180431_b(source))
+        if (this.isEntityInvulnerable(source))
         {
             return false;
         }
         else if (super.attackEntityFrom(source, amount))
         {
-            Entity var3 = source.getEntity();
-            return this.riddenByEntity != var3 && this.ridingEntity != var3 ? true : true;
+            Entity entity = source.getEntity();
+            return this.riddenByEntity != entity && this.ridingEntity != entity ? true : true;
         }
         else
         {
@@ -113,49 +96,49 @@ public abstract class EntityMob extends EntityCreature implements IMob
         return "game.hostile.die";
     }
 
-    protected String func_146067_o(int p_146067_1_)
+    protected String getFallSoundString(int damageValue)
     {
-        return p_146067_1_ > 4 ? "game.hostile.hurt.fall.big" : "game.hostile.hurt.fall.small";
+        return damageValue > 4 ? "game.hostile.hurt.fall.big" : "game.hostile.hurt.fall.small";
     }
 
-    public boolean attackEntityAsMob(Entity p_70652_1_)
+    public boolean attackEntityAsMob(Entity entityIn)
     {
-        float var2 = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
-        int var3 = 0;
+        float f = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
+        int i = 0;
 
-        if (p_70652_1_ instanceof EntityLivingBase)
+        if (entityIn instanceof EntityLivingBase)
         {
-            var2 += EnchantmentHelper.func_152377_a(this.getHeldItem(), ((EntityLivingBase)p_70652_1_).getCreatureAttribute());
-            var3 += EnchantmentHelper.getRespiration(this);
+            f += EnchantmentHelper.func_152377_a(this.getHeldItem(), ((EntityLivingBase)entityIn).getCreatureAttribute());
+            i += EnchantmentHelper.getKnockbackModifier(this);
         }
 
-        boolean var4 = p_70652_1_.attackEntityFrom(DamageSource.causeMobDamage(this), var2);
+        boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), f);
 
-        if (var4)
+        if (flag)
         {
-            if (var3 > 0)
+            if (i > 0)
             {
-                p_70652_1_.addVelocity((double)(-MathHelper.sin(this.rotationYaw * (float)Math.PI / 180.0F) * (float)var3 * 0.5F), 0.1D, (double)(MathHelper.cos(this.rotationYaw * (float)Math.PI / 180.0F) * (float)var3 * 0.5F));
+                entityIn.addVelocity((double)(-MathHelper.sin(this.rotationYaw * (float)Math.PI / 180.0F) * (float)i * 0.5F), 0.1D, (double)(MathHelper.cos(this.rotationYaw * (float)Math.PI / 180.0F) * (float)i * 0.5F));
                 this.motionX *= 0.6D;
                 this.motionZ *= 0.6D;
             }
 
-            int var5 = EnchantmentHelper.getFireAspectModifier(this);
+            int j = EnchantmentHelper.getFireAspectModifier(this);
 
-            if (var5 > 0)
+            if (j > 0)
             {
-                p_70652_1_.setFire(var5 * 4);
+                entityIn.setFire(j * 4);
             }
 
-            this.func_174815_a(this, p_70652_1_);
+            this.applyEnchantments(this, entityIn);
         }
 
-        return var4;
+        return flag;
     }
 
-    public float func_180484_a(BlockPos p_180484_1_)
+    public float getBlockPathWeight(BlockPos pos)
     {
-        return 0.5F - this.worldObj.getLightBrightness(p_180484_1_);
+        return 0.5F - this.worldObj.getLightBrightness(pos);
     }
 
     /**
@@ -163,25 +146,25 @@ public abstract class EntityMob extends EntityCreature implements IMob
      */
     protected boolean isValidLightLevel()
     {
-        BlockPos var1 = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
+        BlockPos blockpos = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
 
-        if (this.worldObj.getLightFor(EnumSkyBlock.SKY, var1) > this.rand.nextInt(32))
+        if (this.worldObj.getLightFor(EnumSkyBlock.SKY, blockpos) > this.rand.nextInt(32))
         {
             return false;
         }
         else
         {
-            int var2 = this.worldObj.getLightFromNeighbors(var1);
+            int i = this.worldObj.getLightFromNeighbors(blockpos);
 
             if (this.worldObj.isThundering())
             {
-                int var3 = this.worldObj.getSkylightSubtracted();
+                int j = this.worldObj.getSkylightSubtracted();
                 this.worldObj.setSkylightSubtracted(10);
-                var2 = this.worldObj.getLightFromNeighbors(var1);
-                this.worldObj.setSkylightSubtracted(var3);
+                i = this.worldObj.getLightFromNeighbors(blockpos);
+                this.worldObj.setSkylightSubtracted(j);
             }
 
-            return var2 <= this.rand.nextInt(8);
+            return i <= this.rand.nextInt(8);
         }
     }
 
@@ -199,7 +182,10 @@ public abstract class EntityMob extends EntityCreature implements IMob
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
     }
 
-    protected boolean func_146066_aG()
+    /**
+     * Entity won't drop items or experience points if this returns false
+     */
+    protected boolean canDropLoot()
     {
         return true;
     }

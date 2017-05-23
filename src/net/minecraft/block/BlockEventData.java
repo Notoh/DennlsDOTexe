@@ -4,25 +4,24 @@ import net.minecraft.util.BlockPos;
 
 public class BlockEventData
 {
-    private BlockPos field_180329_a;
-    private Block field_151344_d;
+    private BlockPos position;
+    private Block blockType;
 
     /** Different for each blockID */
     private int eventID;
     private int eventParameter;
-    private static final String __OBFID = "CL_00000131";
 
-    public BlockEventData(BlockPos p_i45756_1_, Block p_i45756_2_, int p_i45756_3_, int p_i45756_4_)
+    public BlockEventData(BlockPos pos, Block blockType, int eventId, int p_i45756_4_)
     {
-        this.field_180329_a = p_i45756_1_;
-        this.eventID = p_i45756_3_;
+        this.position = pos;
+        this.eventID = eventId;
         this.eventParameter = p_i45756_4_;
-        this.field_151344_d = p_i45756_2_;
+        this.blockType = blockType;
     }
 
-    public BlockPos func_180328_a()
+    public BlockPos getPosition()
     {
-        return this.field_180329_a;
+        return this.position;
     }
 
     /**
@@ -40,7 +39,7 @@ public class BlockEventData
 
     public Block getBlock()
     {
-        return this.field_151344_d;
+        return this.blockType;
     }
 
     public boolean equals(Object p_equals_1_)
@@ -51,13 +50,13 @@ public class BlockEventData
         }
         else
         {
-            BlockEventData var2 = (BlockEventData)p_equals_1_;
-            return this.field_180329_a.equals(var2.field_180329_a) && this.eventID == var2.eventID && this.eventParameter == var2.eventParameter && this.field_151344_d == var2.field_151344_d;
+            BlockEventData blockeventdata = (BlockEventData)p_equals_1_;
+            return this.position.equals(blockeventdata.position) && this.eventID == blockeventdata.eventID && this.eventParameter == blockeventdata.eventParameter && this.blockType == blockeventdata.blockType;
         }
     }
 
     public String toString()
     {
-        return "TE(" + this.field_180329_a + ")," + this.eventID + "," + this.eventParameter + "," + this.field_151344_d;
+        return "TE(" + this.position + ")," + this.eventID + "," + this.eventParameter + "," + this.blockType;
     }
 }

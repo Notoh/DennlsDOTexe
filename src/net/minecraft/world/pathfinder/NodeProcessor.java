@@ -8,41 +8,56 @@ import net.minecraft.world.IBlockAccess;
 
 public abstract class NodeProcessor
 {
-    protected IBlockAccess field_176169_a;
-    protected IntHashMap field_176167_b = new IntHashMap();
-    protected int field_176168_c;
-    protected int field_176165_d;
-    protected int field_176166_e;
-    private static final String __OBFID = "CL_00001967";
+    protected IBlockAccess blockaccess;
+    protected IntHashMap<PathPoint> pointMap = new IntHashMap();
+    protected int entitySizeX;
+    protected int entitySizeY;
+    protected int entitySizeZ;
 
-    public void func_176162_a(IBlockAccess p_176162_1_, Entity p_176162_2_)
+    public void initProcessor(IBlockAccess iblockaccessIn, Entity entityIn)
     {
-        this.field_176169_a = p_176162_1_;
-        this.field_176167_b.clearMap();
-        this.field_176168_c = MathHelper.floor_float(p_176162_2_.width + 1.0F);
-        this.field_176165_d = MathHelper.floor_float(p_176162_2_.height + 1.0F);
-        this.field_176166_e = MathHelper.floor_float(p_176162_2_.width + 1.0F);
+        this.blockaccess = iblockaccessIn;
+        this.pointMap.clearMap();
+        this.entitySizeX = MathHelper.floor_float(entityIn.width + 1.0F);
+        this.entitySizeY = MathHelper.floor_float(entityIn.height + 1.0F);
+        this.entitySizeZ = MathHelper.floor_float(entityIn.width + 1.0F);
     }
 
-    public void func_176163_a() {}
-
-    protected PathPoint func_176159_a(int p_176159_1_, int p_176159_2_, int p_176159_3_)
+    /**
+     * This method is called when all nodes have been processed and PathEntity is created.
+     *  {@link net.minecraft.world.pathfinder.WalkNodeProcessor WalkNodeProcessor} uses this to change its field {@link
+     * net.minecraft.world.pathfinder.WalkNodeProcessor#avoidsWater avoidsWater}
+     */
+    public void postProcess()
     {
-        int var4 = PathPoint.makeHash(p_176159_1_, p_176159_2_, p_176159_3_);
-        PathPoint var5 = (PathPoint)this.field_176167_b.lookup(var4);
+    }
 
-        if (var5 == null)
+    /**
+     * Returns a mapped point or creates and adds one
+     */
+    protected PathPoint openPoint(int x, int y, int z)
+    {
+        int i = PathPoint.makeHash(x, y, z);
+        PathPoint pathpoint = (PathPoint)this.pointMap.lookup(i);
+
+        if (pathpoint == null)
         {
-            var5 = new PathPoint(p_176159_1_, p_176159_2_, p_176159_3_);
-            this.field_176167_b.addKey(var4, var5);
+            pathpoint = new PathPoint(x, y, z);
+            this.pointMap.addKey(i, pathpoint);
         }
 
-        return var5;
+        return pathpoint;
     }
 
-    public abstract PathPoint func_176161_a(Entity p_176161_1_);
+    /**
+     * Returns given entity's position as PathPoint
+     */
+    public abstract PathPoint getPathPointTo(Entity entityIn);
 
-    public abstract PathPoint func_176160_a(Entity p_176160_1_, double p_176160_2_, double p_176160_4_, double p_176160_6_);
+    /**
+     * Returns PathPoint for given coordinates
+     */
+    public abstract PathPoint getPathPointToCoords(Entity entityIn, double x, double y, double target);
 
-    public abstract int func_176164_a(PathPoint[] p_176164_1_, Entity p_176164_2_, PathPoint p_176164_3_, PathPoint p_176164_4_, float p_176164_5_);
+    public abstract int findPathOptions(PathPoint[] pathOptions, Entity entityIn, PathPoint currentPoint, PathPoint targetPoint, float maxDistance);
 }

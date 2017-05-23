@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -14,23 +15,27 @@ public class BlockPressurePlateWeighted extends BlockBasePressurePlate
 {
     public static final PropertyInteger POWER = PropertyInteger.create("power", 0, 15);
     private final int field_150068_a;
-    private static final String __OBFID = "CL_00000334";
 
-    protected BlockPressurePlateWeighted(String p_i45436_1_, Material p_i45436_2_, int p_i45436_3_)
+    protected BlockPressurePlateWeighted(Material p_i46379_1_, int p_i46379_2_)
     {
-        super(p_i45436_2_);
+        this(p_i46379_1_, p_i46379_2_, p_i46379_1_.getMaterialMapColor());
+    }
+
+    protected BlockPressurePlateWeighted(Material p_i46380_1_, int p_i46380_2_, MapColor p_i46380_3_)
+    {
+        super(p_i46380_1_, p_i46380_3_);
         this.setDefaultState(this.blockState.getBaseState().withProperty(POWER, Integer.valueOf(0)));
-        this.field_150068_a = p_i45436_3_;
+        this.field_150068_a = p_i46380_2_;
     }
 
     protected int computeRedstoneStrength(World worldIn, BlockPos pos)
     {
-        int var3 = Math.min(worldIn.getEntitiesWithinAABB(Entity.class, this.getSensitiveAABB(pos)).size(), this.field_150068_a);
+        int i = Math.min(worldIn.getEntitiesWithinAABB(Entity.class, this.getSensitiveAABB(pos)).size(), this.field_150068_a);
 
-        if (var3 > 0)
+        if (i > 0)
         {
-            float var4 = (float)Math.min(this.field_150068_a, var3) / (float)this.field_150068_a;
-            return MathHelper.ceiling_float_int(var4 * 15.0F);
+            float f = (float)Math.min(this.field_150068_a, i) / (float)this.field_150068_a;
+            return MathHelper.ceiling_float_int(f * 15.0F);
         }
         else
         {
@@ -38,14 +43,14 @@ public class BlockPressurePlateWeighted extends BlockBasePressurePlate
         }
     }
 
-    protected int getRedstoneStrength(IBlockState p_176576_1_)
+    protected int getRedstoneStrength(IBlockState state)
     {
-        return ((Integer)p_176576_1_.getValue(POWER)).intValue();
+        return ((Integer)state.getValue(POWER)).intValue();
     }
 
-    protected IBlockState setRedstoneStrength(IBlockState p_176575_1_, int p_176575_2_)
+    protected IBlockState setRedstoneStrength(IBlockState state, int strength)
     {
-        return p_176575_1_.withProperty(POWER, Integer.valueOf(p_176575_2_));
+        return state.withProperty(POWER, Integer.valueOf(strength));
     }
 
     /**

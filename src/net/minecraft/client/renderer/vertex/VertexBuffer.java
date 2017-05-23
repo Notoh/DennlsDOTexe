@@ -6,46 +6,45 @@ import org.lwjgl.opengl.GL11;
 
 public class VertexBuffer
 {
-    private int field_177365_a;
-    private final VertexFormat field_177363_b;
-    private int field_177364_c;
-    private static final String __OBFID = "CL_00002402";
+    private int glBufferId;
+    private final VertexFormat vertexFormat;
+    private int count;
 
-    public VertexBuffer(VertexFormat p_i46098_1_)
+    public VertexBuffer(VertexFormat vertexFormatIn)
     {
-        this.field_177363_b = p_i46098_1_;
-        this.field_177365_a = OpenGlHelper.func_176073_e();
+        this.vertexFormat = vertexFormatIn;
+        this.glBufferId = OpenGlHelper.glGenBuffers();
     }
 
-    public void func_177359_a()
+    public void bindBuffer()
     {
-        OpenGlHelper.func_176072_g(OpenGlHelper.field_176089_P, this.field_177365_a);
+        OpenGlHelper.glBindBuffer(OpenGlHelper.GL_ARRAY_BUFFER, this.glBufferId);
     }
 
-    public void func_177360_a(ByteBuffer p_177360_1_, int p_177360_2_)
+    public void func_181722_a(ByteBuffer p_181722_1_)
     {
-        this.func_177359_a();
-        OpenGlHelper.func_176071_a(OpenGlHelper.field_176089_P, p_177360_1_, 35044);
-        this.func_177361_b();
-        this.field_177364_c = p_177360_2_ / this.field_177363_b.func_177338_f();
+        this.bindBuffer();
+        OpenGlHelper.glBufferData(OpenGlHelper.GL_ARRAY_BUFFER, p_181722_1_, 35044);
+        this.unbindBuffer();
+        this.count = p_181722_1_.limit() / this.vertexFormat.getNextOffset();
     }
 
-    public void func_177358_a(int p_177358_1_)
+    public void drawArrays(int mode)
     {
-        GL11.glDrawArrays(p_177358_1_, 0, this.field_177364_c);
+        GL11.glDrawArrays(mode, 0, this.count);
     }
 
-    public void func_177361_b()
+    public void unbindBuffer()
     {
-        OpenGlHelper.func_176072_g(OpenGlHelper.field_176089_P, 0);
+        OpenGlHelper.glBindBuffer(OpenGlHelper.GL_ARRAY_BUFFER, 0);
     }
 
-    public void func_177362_c()
+    public void deleteGlBuffers()
     {
-        if (this.field_177365_a >= 0)
+        if (this.glBufferId >= 0)
         {
-            OpenGlHelper.func_176074_g(this.field_177365_a);
-            this.field_177365_a = -1;
+            OpenGlHelper.glDeleteBuffers(this.glBufferId);
+            this.glBufferId = -1;
         }
     }
 }

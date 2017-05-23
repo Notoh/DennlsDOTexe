@@ -365,21 +365,21 @@ public interface INetHandlerPlayClient extends INetHandler
 
     void handleEntityEffect(S1DPacketEntityEffect packetIn);
 
-    void func_175098_a(S42PacketCombatEvent p_175098_1_);
+    void handleCombatEvent(S42PacketCombatEvent packetIn);
 
-    void func_175101_a(S41PacketServerDifficulty p_175101_1_);
+    void handleServerDifficulty(S41PacketServerDifficulty packetIn);
 
-    void func_175094_a(S43PacketCamera p_175094_1_);
+    void handleCamera(S43PacketCamera packetIn);
 
-    void func_175093_a(S44PacketWorldBorder p_175093_1_);
+    void handleWorldBorder(S44PacketWorldBorder packetIn);
 
-    void func_175099_a(S45PacketTitle p_175099_1_);
+    void handleTitle(S45PacketTitle packetIn);
 
-    void func_175100_a(S46PacketSetCompressionLevel p_175100_1_);
+    void handleSetCompressionLevel(S46PacketSetCompressionLevel packetIn);
 
-    void func_175096_a(S47PacketPlayerListHeaderFooter p_175096_1_);
+    void handlePlayerListHeaderFooter(S47PacketPlayerListHeaderFooter packetIn);
 
-    void func_175095_a(S48PacketResourcePackSend p_175095_1_);
+    void handleResourcePack(S48PacketResourcePackSend packetIn);
 
-    void func_175097_a(S49PacketUpdateEntityNBT p_175097_1_);
+    void handleEntityNBT(S49PacketUpdateEntityNBT packetIn);
 }

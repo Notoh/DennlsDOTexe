@@ -4,11 +4,9 @@ import net.minecraft.block.Block;
 
 public class ItemCloth extends ItemBlock
 {
-    private static final String __OBFID = "CL_00000075";
-
-    public ItemCloth(Block p_i45358_1_)
+    public ItemCloth(Block block)
     {
-        super(p_i45358_1_);
+        super(block);
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
     }
@@ -28,6 +26,6 @@ public class ItemCloth extends ItemBlock
      */
     public String getUnlocalizedName(ItemStack stack)
     {
-        return super.getUnlocalizedName() + "." + EnumDyeColor.func_176764_b(stack.getMetadata()).func_176762_d();
+        return super.getUnlocalizedName() + "." + EnumDyeColor.byMetadata(stack.getMetadata()).getUnlocalizedName();
     }
 }

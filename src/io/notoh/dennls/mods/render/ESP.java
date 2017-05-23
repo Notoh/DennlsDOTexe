@@ -2,6 +2,7 @@ package io.notoh.dennls.mods.render;
 
 import io.notoh.dennls.mods.Module;
 import io.notoh.dennls.util.CanRender;
+import io.notoh.dennls.util.ModCategory;
 import io.notoh.dennls.util.RenderUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -10,18 +11,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.input.Keyboard;
 
 
-
 /**
  * Created by alexa on 5/21/2017.
  */
 public class ESP extends Module implements CanRender {
 
     private boolean toggle;
+    private int keycode = Keyboard.KEY_L;
 
-    @Override
-    public int getKeyCode() {
-        return Keyboard.KEY_L;
-    }
 
     @Override
     public String getName() {
@@ -41,6 +38,18 @@ public class ESP extends Module implements CanRender {
     @Override
     public boolean getToggle() {
         return toggle;
+    }
+    @Override
+    public ModCategory getCategory() {
+        return ModCategory.RENDER;
+    }
+    @Override
+    public void setKeyCode(int keyCode) {
+        this.keycode = keyCode;
+    }
+    @Override
+    public int getKeyCode() {
+        return keycode;
     }
 
     @Override
@@ -75,7 +84,7 @@ public class ESP extends Module implements CanRender {
 
 
     public void render(float red, float green, float blue, double x, double y, double z, float width, float height) {
-        RenderUtils.drawEntityESP(x, y, z, width, height, red, green, blue, 0.45F, 0F, 0F, 0F, 0.01F, 0.01F);
+        RenderUtils.drawEntityESP(x, y, z, width, height, red, green, blue, 0.45F, red, green, blue, 1.0F, 1.0F);
     }
 
 }

@@ -1,44 +1,50 @@
 package io.notoh.dennls.gui;
 
-import io.notoh.dennls.ClientEntry;
+import io.notoh.dennls.Dennls;
 import io.notoh.dennls.mods.ChangeMode;
+import io.notoh.dennls.mods.ClickGui;
 import io.notoh.dennls.mods.Mode;
 import io.notoh.dennls.mods.Module;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.Display;
 
 /**
  * Client gui class
  * @author Notoh
  */
-public class ClientGui extends GuiScreen {
+public class ClientGui extends GuiIngame {
 
     protected Minecraft mc;
 
     public ClientGui() {
-        this.mc = Minecraft.getMC();
+        super(Minecraft.getMinecraft());
+        this.mc = Minecraft.getMinecraft();
     }
 
-    public void renderScreen() {
-        if(ClientEntry.getActive() == Mode.GHOST) return;
-        Display.setTitle("DennlsDOTExe (test build 1.0.1)");
-        String clientName = "\247f\247lDennls\2475.\2474\247lExe";
-        //NO SHADOW = mc.fontRenderObj.drawString
-        drawString(mc.fontRendererObj,clientName,4,4,0xffffffff);
+    public void renderGameOverlay(float partialTicks) {
+        super.renderGameOverlay(partialTicks);
+        if(Dennls.getActive() == Mode.GHOST) return;
+        Display.setTitle("DennlsDOTExe (test build 2.0.5)");
+        ScaledResolution scaledresolution = new ScaledResolution(this.mc);
+        this.mc.entityRenderer.setupOverlayRendering();
+        GlStateManager.enableBlend();
+        drawString(mc.fontRendererObj,"\247f\247lDennls\2475.\2474\247lExe",2,2,0xffffffff);
 
-        int count = 0;
-        for(Module module : ClientEntry.getClient().getMods()) {
-
-            if(!module.getToggle() || module instanceof ChangeMode) {
+        int count = 1;
+        for(Module module : Dennls.getClient().getMods()) {
+            if(!module.getToggle() || module instanceof ChangeMode || module instanceof ClickGui) {
                 continue;
             }
 
             String color = "\247" + count;
-            drawString(mc.fontRendererObj,color + module.getName(),4,20+(10*count),0xffffffff);
+            drawString(mc.fontRendererObj,color + module.getName(),2, 2 + (count * 11), 0xffffffff);
             count++;
         }
-        drawString(mc.fontRendererObj, "Mode: " + ClientEntry.getActive().name(),4, 150,0xffffffff);
+        drawString(mc.fontRendererObj,"Mode: " + Dennls.getActive().name(),4, 175,  0x49E20E);
+        UIRenderer.renderAndUpdateFrames();
     }
 
 }

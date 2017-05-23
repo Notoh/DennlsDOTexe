@@ -11,8 +11,9 @@ import net.minecraft.util.BlockPos;
 
 public class CommandPardonPlayer extends CommandBase
 {
-    private static final String __OBFID = "CL_00000747";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "pardon";
@@ -26,6 +27,9 @@ public class CommandPardonPlayer extends CommandBase
         return 3;
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.unban.usage";
@@ -39,20 +43,23 @@ public class CommandPardonPlayer extends CommandBase
         return MinecraftServer.getServer().getConfigurationManager().getBannedPlayers().isLanServer() && super.canCommandSenderUseCommand(sender);
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length == 1 && args[0].length() > 0)
         {
-            MinecraftServer var3 = MinecraftServer.getServer();
-            GameProfile var4 = var3.getConfigurationManager().getBannedPlayers().isUsernameBanned(args[0]);
+            MinecraftServer minecraftserver = MinecraftServer.getServer();
+            GameProfile gameprofile = minecraftserver.getConfigurationManager().getBannedPlayers().isUsernameBanned(args[0]);
 
-            if (var4 == null)
+            if (gameprofile == null)
             {
                 throw new CommandException("commands.unban.failed", new Object[] {args[0]});
             }
             else
             {
-                var3.getConfigurationManager().getBannedPlayers().removeEntry(var4);
+                minecraftserver.getConfigurationManager().getBannedPlayers().removeEntry(gameprofile);
                 notifyOperators(sender, this, "commands.unban.success", new Object[] {args[0]});
             }
         }
@@ -62,7 +69,7 @@ public class CommandPardonPlayer extends CommandBase
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getConfigurationManager().getBannedPlayers().getKeys()) : null;
     }

@@ -9,17 +9,17 @@ public class MapColor
     public static final MapColor airColor = new MapColor(0, 0);
     public static final MapColor grassColor = new MapColor(1, 8368696);
     public static final MapColor sandColor = new MapColor(2, 16247203);
-    public static final MapColor clothColor = new MapColor(3, 10987431);
+    public static final MapColor clothColor = new MapColor(3, 13092807);
     public static final MapColor tntColor = new MapColor(4, 16711680);
     public static final MapColor iceColor = new MapColor(5, 10526975);
     public static final MapColor ironColor = new MapColor(6, 10987431);
     public static final MapColor foliageColor = new MapColor(7, 31744);
     public static final MapColor snowColor = new MapColor(8, 16777215);
     public static final MapColor clayColor = new MapColor(9, 10791096);
-    public static final MapColor dirtColor = new MapColor(10, 12020271);
+    public static final MapColor dirtColor = new MapColor(10, 9923917);
     public static final MapColor stoneColor = new MapColor(11, 7368816);
     public static final MapColor waterColor = new MapColor(12, 4210943);
-    public static final MapColor woodColor = new MapColor(13, 6837042);
+    public static final MapColor woodColor = new MapColor(13, 9402184);
     public static final MapColor quartzColor = new MapColor(14, 16776437);
     public static final MapColor adobeColor = new MapColor(15, 14188339);
     public static final MapColor magentaColor = new MapColor(16, 11685080);
@@ -40,7 +40,7 @@ public class MapColor
     public static final MapColor diamondColor = new MapColor(31, 6085589);
     public static final MapColor lapisColor = new MapColor(32, 4882687);
     public static final MapColor emeraldColor = new MapColor(33, 55610);
-    public static final MapColor obsidianColor = new MapColor(34, 1381407);
+    public static final MapColor obsidianColor = new MapColor(34, 8476209);
     public static final MapColor netherrackColor = new MapColor(35, 7340544);
 
     /** Holds the color in RGB value that will be rendered on maps. */
@@ -48,15 +48,14 @@ public class MapColor
 
     /** Holds the index of the color used on map. */
     public final int colorIndex;
-    private static final String __OBFID = "CL_00000544";
 
-    private MapColor(int p_i2117_1_, int p_i2117_2_)
+    private MapColor(int index, int color)
     {
-        if (p_i2117_1_ >= 0 && p_i2117_1_ <= 63)
+        if (index >= 0 && index <= 63)
         {
-            this.colorIndex = p_i2117_1_;
-            this.colorValue = p_i2117_2_;
-            mapColorArray[p_i2117_1_] = this;
+            this.colorIndex = index;
+            this.colorValue = color;
+            mapColorArray[index] = this;
         }
         else
         {
@@ -66,31 +65,31 @@ public class MapColor
 
     public int func_151643_b(int p_151643_1_)
     {
-        short var2 = 220;
+        int i = 220;
 
         if (p_151643_1_ == 3)
         {
-            var2 = 135;
+            i = 135;
         }
 
         if (p_151643_1_ == 2)
         {
-            var2 = 255;
+            i = 255;
         }
 
         if (p_151643_1_ == 1)
         {
-            var2 = 220;
+            i = 220;
         }
 
         if (p_151643_1_ == 0)
         {
-            var2 = 180;
+            i = 180;
         }
 
-        int var3 = (this.colorValue >> 16 & 255) * var2 / 255;
-        int var4 = (this.colorValue >> 8 & 255) * var2 / 255;
-        int var5 = (this.colorValue & 255) * var2 / 255;
-        return -16777216 | var3 << 16 | var4 << 8 | var5;
+        int j = (this.colorValue >> 16 & 255) * i / 255;
+        int k = (this.colorValue >> 8 & 255) * i / 255;
+        int l = (this.colorValue & 255) * i / 255;
+        return -16777216 | j << 16 | k << 8 | l;
     }
 }

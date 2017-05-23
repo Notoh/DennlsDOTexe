@@ -10,27 +10,26 @@ public class ScaledResolution
     private int scaledWidth;
     private int scaledHeight;
     private int scaleFactor;
-    private static final String __OBFID = "CL_00000666";
 
-    public ScaledResolution(Minecraft mcIn, int p_i46324_2_, int p_i46324_3_)
+    public ScaledResolution(Minecraft p_i46445_1_)
     {
-        this.scaledWidth = p_i46324_2_;
-        this.scaledHeight = p_i46324_3_;
+        this.scaledWidth = p_i46445_1_.displayWidth;
+        this.scaledHeight = p_i46445_1_.displayHeight;
         this.scaleFactor = 1;
-        boolean var4 = mcIn.isUnicode();
-        int var5 = mcIn.gameSettings.guiScale;
+        boolean flag = p_i46445_1_.isUnicode();
+        int i = p_i46445_1_.gameSettings.guiScale;
 
-        if (var5 == 0)
+        if (i == 0)
         {
-            var5 = 1000;
+            i = 1000;
         }
 
-        while (this.scaleFactor < var5 && this.scaledWidth / (this.scaleFactor + 1) >= 320 && this.scaledHeight / (this.scaleFactor + 1) >= 240)
+        while (this.scaleFactor < i && this.scaledWidth / (this.scaleFactor + 1) >= 320 && this.scaledHeight / (this.scaleFactor + 1) >= 240)
         {
             ++this.scaleFactor;
         }
 
-        if (var4 && this.scaleFactor % 2 != 0 && this.scaleFactor != 1)
+        if (flag && this.scaleFactor % 2 != 0 && this.scaleFactor != 1)
         {
             --this.scaleFactor;
         }

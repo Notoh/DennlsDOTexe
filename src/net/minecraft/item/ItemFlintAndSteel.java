@@ -10,8 +10,6 @@ import net.minecraft.world.World;
 
 public class ItemFlintAndSteel extends Item
 {
-    private static final String __OBFID = "CL_00000035";
-
     public ItemFlintAndSteel()
     {
         this.maxStackSize = 1;
@@ -21,15 +19,12 @@ public class ItemFlintAndSteel extends Item
 
     /**
      * Called when a Block is right-clicked with this Item
-     *  
-     * @param pos The block being right-clicked
-     * @param side The side being right-clicked
      */
     public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         pos = pos.offset(side);
 
-        if (!playerIn.func_175151_a(pos, side, stack))
+        if (!playerIn.canPlayerEdit(pos, side, stack))
         {
             return false;
         }

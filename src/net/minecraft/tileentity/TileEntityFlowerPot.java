@@ -10,21 +10,22 @@ public class TileEntityFlowerPot extends TileEntity
 {
     private Item flowerPotItem;
     private int flowerPotData;
-    private static final String __OBFID = "CL_00000356";
 
-    public TileEntityFlowerPot() {}
-
-    public TileEntityFlowerPot(Item p_i45442_1_, int p_i45442_2_)
+    public TileEntityFlowerPot()
     {
-        this.flowerPotItem = p_i45442_1_;
-        this.flowerPotData = p_i45442_2_;
+    }
+
+    public TileEntityFlowerPot(Item potItem, int potData)
+    {
+        this.flowerPotItem = potItem;
+        this.flowerPotData = potData;
     }
 
     public void writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
-        ResourceLocation var2 = (ResourceLocation)Item.itemRegistry.getNameForObject(this.flowerPotItem);
-        compound.setString("Item", var2 == null ? "" : var2.toString());
+        ResourceLocation resourcelocation = (ResourceLocation)Item.itemRegistry.getNameForObject(this.flowerPotItem);
+        compound.setString("Item", resourcelocation == null ? "" : resourcelocation.toString());
         compound.setInteger("Data", this.flowerPotData);
     }
 
@@ -45,21 +46,22 @@ public class TileEntityFlowerPot extends TileEntity
     }
 
     /**
-     * Overriden in a sign to provide the text.
+     * Allows for a specialized description packet to be created. This is often used to sync tile entity data from the
+     * server to the client easily. For example this is used by signs to synchronise the text to be displayed.
      */
     public Packet getDescriptionPacket()
     {
-        NBTTagCompound var1 = new NBTTagCompound();
-        this.writeToNBT(var1);
-        var1.removeTag("Item");
-        var1.setInteger("Item", Item.getIdFromItem(this.flowerPotItem));
-        return new S35PacketUpdateTileEntity(this.pos, 5, var1);
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
+        this.writeToNBT(nbttagcompound);
+        nbttagcompound.removeTag("Item");
+        nbttagcompound.setInteger("Item", Item.getIdFromItem(this.flowerPotItem));
+        return new S35PacketUpdateTileEntity(this.pos, 5, nbttagcompound);
     }
 
-    public void func_145964_a(Item p_145964_1_, int p_145964_2_)
+    public void setFlowerPotData(Item potItem, int potData)
     {
-        this.flowerPotItem = p_145964_1_;
-        this.flowerPotData = p_145964_2_;
+        this.flowerPotItem = potItem;
+        this.flowerPotData = potData;
     }
 
     public Item getFlowerPotItem()

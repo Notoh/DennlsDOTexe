@@ -1,21 +1,20 @@
 package net.minecraft.util;
 
-public class Tuple
+public class Tuple<A, B>
 {
-    private Object a;
-    private Object b;
-    private static final String __OBFID = "CL_00001502";
+    private A a;
+    private B b;
 
-    public Tuple(Object p_i1555_1_, Object p_i1555_2_)
+    public Tuple(A aIn, B bIn)
     {
-        this.a = p_i1555_1_;
-        this.b = p_i1555_2_;
+        this.a = aIn;
+        this.b = bIn;
     }
 
     /**
      * Get the first Object in the Tuple
      */
-    public Object getFirst()
+    public A getFirst()
     {
         return this.a;
     }
@@ -23,7 +22,7 @@ public class Tuple
     /**
      * Get the second Object in the Tuple
      */
-    public Object getSecond()
+    public B getSecond()
     {
         return this.b;
     }

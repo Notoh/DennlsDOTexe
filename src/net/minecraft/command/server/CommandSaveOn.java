@@ -8,38 +8,45 @@ import net.minecraft.world.WorldServer;
 
 public class CommandSaveOn extends CommandBase
 {
-    private static final String __OBFID = "CL_00000873";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "save-on";
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.save-on.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
-        MinecraftServer var3 = MinecraftServer.getServer();
-        boolean var4 = false;
+        MinecraftServer minecraftserver = MinecraftServer.getServer();
+        boolean flag = false;
 
-        for (int var5 = 0; var5 < var3.worldServers.length; ++var5)
+        for (int i = 0; i < minecraftserver.worldServers.length; ++i)
         {
-            if (var3.worldServers[var5] != null)
+            if (minecraftserver.worldServers[i] != null)
             {
-                WorldServer var6 = var3.worldServers[var5];
+                WorldServer worldserver = minecraftserver.worldServers[i];
 
-                if (var6.disableLevelSaving)
+                if (worldserver.disableLevelSaving)
                 {
-                    var6.disableLevelSaving = false;
-                    var4 = true;
+                    worldserver.disableLevelSaving = false;
+                    flag = true;
                 }
             }
         }
 
-        if (var4)
+        if (flag)
         {
             notifyOperators(sender, this, "commands.save.enabled", new Object[0]);
         }

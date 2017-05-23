@@ -7,34 +7,21 @@ import java.util.NoSuchElementException;
 
 public class MapPopulator
 {
-    private static final String __OBFID = "CL_00002318";
-
-    /**
-     * Create a Map from the given keys and values. This method creates a LinkedHashMap.
-     *  
-     * @param keys the keys for the map, in order
-     * @param values the values for the map, in order
-     */
-    public static Map createMap(Iterable keys, Iterable values)
+    public static <K, V> Map<K, V> createMap(Iterable<K> keys, Iterable<V> values)
     {
-        return populateMap(keys, values, Maps.newLinkedHashMap());
+        return populateMap(keys, values, Maps.<K, V>newLinkedHashMap());
     }
 
-    /**
-     * Populate the given Map with the given keys and values.
-     */
-    public static Map populateMap(Iterable keys, Iterable values, Map map)
+    public static <K, V> Map<K, V> populateMap(Iterable<K> keys, Iterable<V> values, Map<K, V> map)
     {
-        Iterator var3 = values.iterator();
-        Iterator var4 = keys.iterator();
+        Iterator<V> iterator = values.iterator();
 
-        while (var4.hasNext())
+        for (K k : keys)
         {
-            Object var5 = var4.next();
-            map.put(var5, var3.next());
+            map.put(k, iterator.next());
         }
 
-        if (var3.hasNext())
+        if (iterator.hasNext())
         {
             throw new NoSuchElementException();
         }

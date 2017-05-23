@@ -12,14 +12,13 @@ import net.minecraft.world.LockCode;
 
 public class ContainerLocalMenu extends InventoryBasic implements ILockableContainer
 {
-    private String field_174896_a;
-    private Map field_174895_b = Maps.newHashMap();
-    private static final String __OBFID = "CL_00002570";
+    private String guiID;
+    private Map<Integer, Integer> field_174895_b = Maps.<Integer, Integer>newHashMap();
 
-    public ContainerLocalMenu(String p_i46276_1_, IChatComponent p_i46276_2_, int p_i46276_3_)
+    public ContainerLocalMenu(String id, IChatComponent title, int slotCount)
     {
-        super(p_i46276_2_, p_i46276_3_);
-        this.field_174896_a = p_i46276_1_;
+        super(title, slotCount);
+        this.guiID = id;
     }
 
     public int getField(int id)
@@ -42,7 +41,9 @@ public class ContainerLocalMenu extends InventoryBasic implements ILockableConta
         return false;
     }
 
-    public void setLockCode(LockCode code) {}
+    public void setLockCode(LockCode code)
+    {
+    }
 
     public LockCode getLockCode()
     {
@@ -51,7 +52,7 @@ public class ContainerLocalMenu extends InventoryBasic implements ILockableConta
 
     public String getGuiID()
     {
-        return this.field_174896_a;
+        return this.guiID;
     }
 
     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)

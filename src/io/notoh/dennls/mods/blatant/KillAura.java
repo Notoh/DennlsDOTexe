@@ -1,7 +1,8 @@
 package io.notoh.dennls.mods.blatant;
 
-import io.notoh.dennls.ClientEntry;
+import io.notoh.dennls.Dennls;
 import io.notoh.dennls.mods.Module;
+import io.notoh.dennls.util.ModCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -14,18 +15,20 @@ import org.lwjgl.input.Keyboard;
 public class KillAura extends Module {
 
     private boolean toggle;
+    private int keycode = Keyboard.KEY_Z;
 
     @Override
     public void onUpdate() {
         if(!this.toggle) {
             return;
         }
-        for(Object object : Minecraft.getMC().theWorld.loadedEntityList) {
+        for(Object object : Minecraft.getMinecraft().theWorld.loadedEntityList) {
             if(object instanceof EntityLivingBase) {
                 Entity entity = (EntityLivingBase) object;
                 if(entity instanceof EntityPlayerSP) continue;
-                if(getMC().thePlayer.getDistanceToEntity(entity) <= ClientEntry.getActive().getReach()) {
+                if(getMC().thePlayer.getDistanceToEntity(entity) <= Dennls.getActive().getReach()) {
                     if(entity.isEntityAlive()) {
+                        Dennls.aimbot.faceEntity(entity);
                         getMC().playerController.attackEntity(getMC().thePlayer,entity);
                         getMC().thePlayer.swingItem();
                     }
@@ -35,8 +38,16 @@ public class KillAura extends Module {
     }
 
     @Override
+    public void setKeyCode(int keyCode) {
+        this.keycode = keyCode;
+    }
+    @Override
     public int getKeyCode() {
-        return Keyboard.KEY_C;
+        return keycode;
+    }
+    @Override
+    public ModCategory getCategory() {
+        return ModCategory.COMBAT;
     }
 
     @Override

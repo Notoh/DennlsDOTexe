@@ -2,58 +2,61 @@ package net.minecraft.network.play.server;
 
 import java.io.IOException;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.BlockPos;
 
-public class S35PacketUpdateTileEntity implements Packet
+public class S35PacketUpdateTileEntity implements Packet<INetHandlerPlayClient>
 {
-    private BlockPos field_179824_a;
+    private BlockPos blockPos;
 
     /** Used only for vanilla tile entities */
     private int metadata;
     private NBTTagCompound nbt;
-    private static final String __OBFID = "CL_00001285";
 
-    public S35PacketUpdateTileEntity() {}
-
-    public S35PacketUpdateTileEntity(BlockPos p_i45990_1_, int p_i45990_2_, NBTTagCompound p_i45990_3_)
+    public S35PacketUpdateTileEntity()
     {
-        this.field_179824_a = p_i45990_1_;
-        this.metadata = p_i45990_2_;
-        this.nbt = p_i45990_3_;
+    }
+
+    public S35PacketUpdateTileEntity(BlockPos blockPosIn, int metadataIn, NBTTagCompound nbtIn)
+    {
+        this.blockPos = blockPosIn;
+        this.metadata = metadataIn;
+        this.nbt = nbtIn;
     }
 
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.field_179824_a = data.readBlockPos();
-        this.metadata = data.readUnsignedByte();
-        this.nbt = data.readNBTTagCompoundFromBuffer();
+        this.blockPos = buf.readBlockPos();
+        this.metadata = buf.readUnsignedByte();
+        this.nbt = buf.readNBTTagCompoundFromBuffer();
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeBlockPos(this.field_179824_a);
-        data.writeByte((byte)this.metadata);
-        data.writeNBTTagCompoundToBuffer(this.nbt);
+        buf.writeBlockPos(this.blockPos);
+        buf.writeByte((byte)this.metadata);
+        buf.writeNBTTagCompoundToBuffer(this.nbt);
     }
 
-    public void func_180725_a(INetHandlerPlayClient p_180725_1_)
+    /**
+     * Passes this Packet on to the NetHandler for processing.
+     */
+    public void processPacket(INetHandlerPlayClient handler)
     {
-        p_180725_1_.handleUpdateTileEntity(this);
+        handler.handleUpdateTileEntity(this);
     }
 
-    public BlockPos func_179823_a()
+    public BlockPos getPos()
     {
-        return this.field_179824_a;
+        return this.blockPos;
     }
 
     public int getTileEntityType()
@@ -64,13 +67,5 @@ public class S35PacketUpdateTileEntity implements Packet
     public NBTTagCompound getNbtCompound()
     {
         return this.nbt;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.func_180725_a((INetHandlerPlayClient)handler);
     }
 }

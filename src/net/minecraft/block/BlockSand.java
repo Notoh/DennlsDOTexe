@@ -13,34 +13,30 @@ import net.minecraft.util.IStringSerializable;
 
 public class BlockSand extends BlockFalling
 {
-    public static final PropertyEnum VARIANT_PROP = PropertyEnum.create("variant", BlockSand.EnumType.class);
-    private static final String __OBFID = "CL_00000303";
+    public static final PropertyEnum<BlockSand.EnumType> VARIANT = PropertyEnum.<BlockSand.EnumType>create("variant", BlockSand.EnumType.class);
 
     public BlockSand()
     {
-        this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT_PROP, BlockSand.EnumType.SAND));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, BlockSand.EnumType.SAND));
     }
 
     /**
-     * Get the damage value that this Block should drop
+     * Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It
+     * returns the metadata of the dropped item based on the old metadata of the block.
      */
     public int damageDropped(IBlockState state)
     {
-        return ((BlockSand.EnumType)state.getValue(VARIANT_PROP)).func_176688_a();
+        return ((BlockSand.EnumType)state.getValue(VARIANT)).getMetadata();
     }
 
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
     {
-        BlockSand.EnumType[] var4 = BlockSand.EnumType.values();
-        int var5 = var4.length;
-
-        for (int var6 = 0; var6 < var5; ++var6)
+        for (BlockSand.EnumType blocksand$enumtype : BlockSand.EnumType.values())
         {
-            BlockSand.EnumType var7 = var4[var6];
-            list.add(new ItemStack(itemIn, 1, var7.func_176688_a()));
+            list.add(new ItemStack(itemIn, 1, blocksand$enumtype.getMetadata()));
         }
     }
 
@@ -49,7 +45,7 @@ public class BlockSand extends BlockFalling
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return ((BlockSand.EnumType)state.getValue(VARIANT_PROP)).func_176687_c();
+        return ((BlockSand.EnumType)state.getValue(VARIANT)).getMapColor();
     }
 
     /**
@@ -57,7 +53,7 @@ public class BlockSand extends BlockFalling
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(VARIANT_PROP, BlockSand.EnumType.func_176686_a(meta));
+        return this.getDefaultState().withProperty(VARIANT, BlockSand.EnumType.byMetadata(meta));
     }
 
     /**
@@ -65,78 +61,72 @@ public class BlockSand extends BlockFalling
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((BlockSand.EnumType)state.getValue(VARIANT_PROP)).func_176688_a();
+        return ((BlockSand.EnumType)state.getValue(VARIANT)).getMetadata();
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {VARIANT_PROP});
+        return new BlockState(this, new IProperty[] {VARIANT});
     }
 
     public static enum EnumType implements IStringSerializable
     {
-        SAND("SAND", 0, 0, "sand", "default", MapColor.sandColor),
-        RED_SAND("RED_SAND", 1, 1, "red_sand", "red", MapColor.dirtColor);
-        private static final BlockSand.EnumType[] field_176695_c = new BlockSand.EnumType[values().length];
-        private final int field_176692_d;
-        private final String field_176693_e;
-        private final MapColor field_176690_f;
-        private final String field_176691_g;
+        SAND(0, "sand", "default", MapColor.sandColor),
+        RED_SAND(1, "red_sand", "red", MapColor.adobeColor);
 
-        private static final BlockSand.EnumType[] $VALUES = new BlockSand.EnumType[]{SAND, RED_SAND};
-        private static final String __OBFID = "CL_00002069";
+        private static final BlockSand.EnumType[] META_LOOKUP = new BlockSand.EnumType[values().length];
+        private final int meta;
+        private final String name;
+        private final MapColor mapColor;
+        private final String unlocalizedName;
 
-        private EnumType(String p_i45687_1_, int p_i45687_2_, int p_i45687_3_, String p_i45687_4_, String p_i45687_5_, MapColor p_i45687_6_)
+        private EnumType(int meta, String name, String unlocalizedName, MapColor mapColor)
         {
-            this.field_176692_d = p_i45687_3_;
-            this.field_176693_e = p_i45687_4_;
-            this.field_176690_f = p_i45687_6_;
-            this.field_176691_g = p_i45687_5_;
+            this.meta = meta;
+            this.name = name;
+            this.mapColor = mapColor;
+            this.unlocalizedName = unlocalizedName;
         }
 
-        public int func_176688_a()
+        public int getMetadata()
         {
-            return this.field_176692_d;
+            return this.meta;
         }
 
         public String toString()
         {
-            return this.field_176693_e;
+            return this.name;
         }
 
-        public MapColor func_176687_c()
+        public MapColor getMapColor()
         {
-            return this.field_176690_f;
+            return this.mapColor;
         }
 
-        public static BlockSand.EnumType func_176686_a(int p_176686_0_)
+        public static BlockSand.EnumType byMetadata(int meta)
         {
-            if (p_176686_0_ < 0 || p_176686_0_ >= field_176695_c.length)
+            if (meta < 0 || meta >= META_LOOKUP.length)
             {
-                p_176686_0_ = 0;
+                meta = 0;
             }
 
-            return field_176695_c[p_176686_0_];
+            return META_LOOKUP[meta];
         }
 
         public String getName()
         {
-            return this.field_176693_e;
+            return this.name;
         }
 
-        public String func_176685_d()
+        public String getUnlocalizedName()
         {
-            return this.field_176691_g;
+            return this.unlocalizedName;
         }
 
         static {
-            BlockSand.EnumType[] var0 = values();
-            int var1 = var0.length;
-
-            for (int var2 = 0; var2 < var1; ++var2)
+            for (BlockSand.EnumType blocksand$enumtype : values())
             {
-                BlockSand.EnumType var3 = var0[var2];
-                field_176695_c[var3.func_176688_a()] = var3;
+                META_LOOKUP[blocksand$enumtype.getMetadata()] = blocksand$enumtype;
             }
         }
     }

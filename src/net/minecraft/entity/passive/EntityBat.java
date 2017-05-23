@@ -15,7 +15,6 @@ public class EntityBat extends EntityAmbientCreature
 {
     /** Coordinates of where the bat spawned. */
     private BlockPos spawnPosition;
-    private static final String __OBFID = "CL_00001637";
 
     public EntityBat(World worldIn)
     {
@@ -78,9 +77,13 @@ public class EntityBat extends EntityAmbientCreature
         return false;
     }
 
-    protected void collideWithEntity(Entity p_82167_1_) {}
+    protected void collideWithEntity(Entity p_82167_1_)
+    {
+    }
 
-    protected void collideWithNearbyEntities() {}
+    protected void collideWithNearbyEntities()
+    {
+    }
 
     protected void applyEntityAttributes()
     {
@@ -93,17 +96,17 @@ public class EntityBat extends EntityAmbientCreature
         return (this.dataWatcher.getWatchableObjectByte(16) & 1) != 0;
     }
 
-    public void setIsBatHanging(boolean p_82236_1_)
+    public void setIsBatHanging(boolean isHanging)
     {
-        byte var2 = this.dataWatcher.getWatchableObjectByte(16);
+        byte b0 = this.dataWatcher.getWatchableObjectByte(16);
 
-        if (p_82236_1_)
+        if (isHanging)
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(var2 | 1)));
+            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 | 1)));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(var2 & -2)));
+            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 & -2)));
         }
     }
 
@@ -128,15 +131,15 @@ public class EntityBat extends EntityAmbientCreature
     protected void updateAITasks()
     {
         super.updateAITasks();
-        BlockPos var1 = new BlockPos(this);
-        BlockPos var2 = var1.offsetUp();
+        BlockPos blockpos = new BlockPos(this);
+        BlockPos blockpos1 = blockpos.up();
 
         if (this.getIsBatHanging())
         {
-            if (!this.worldObj.getBlockState(var2).getBlock().isNormalCube())
+            if (!this.worldObj.getBlockState(blockpos1).getBlock().isNormalCube())
             {
                 this.setIsBatHanging(false);
-                this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1015, var1, 0);
+                this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1015, blockpos, 0);
             }
             else
             {
@@ -148,7 +151,7 @@ public class EntityBat extends EntityAmbientCreature
                 if (this.worldObj.getClosestPlayerToEntity(this, 4.0D) != null)
                 {
                     this.setIsBatHanging(false);
-                    this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1015, var1, 0);
+                    this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1015, blockpos, 0);
                 }
             }
         }
@@ -164,18 +167,18 @@ public class EntityBat extends EntityAmbientCreature
                 this.spawnPosition = new BlockPos((int)this.posX + this.rand.nextInt(7) - this.rand.nextInt(7), (int)this.posY + this.rand.nextInt(6) - 2, (int)this.posZ + this.rand.nextInt(7) - this.rand.nextInt(7));
             }
 
-            double var3 = (double)this.spawnPosition.getX() + 0.5D - this.posX;
-            double var5 = (double)this.spawnPosition.getY() + 0.1D - this.posY;
-            double var7 = (double)this.spawnPosition.getZ() + 0.5D - this.posZ;
-            this.motionX += (Math.signum(var3) * 0.5D - this.motionX) * 0.10000000149011612D;
-            this.motionY += (Math.signum(var5) * 0.699999988079071D - this.motionY) * 0.10000000149011612D;
-            this.motionZ += (Math.signum(var7) * 0.5D - this.motionZ) * 0.10000000149011612D;
-            float var9 = (float)(Math.atan2(this.motionZ, this.motionX) * 180.0D / Math.PI) - 90.0F;
-            float var10 = MathHelper.wrapAngleTo180_float(var9 - this.rotationYaw);
+            double d0 = (double)this.spawnPosition.getX() + 0.5D - this.posX;
+            double d1 = (double)this.spawnPosition.getY() + 0.1D - this.posY;
+            double d2 = (double)this.spawnPosition.getZ() + 0.5D - this.posZ;
+            this.motionX += (Math.signum(d0) * 0.5D - this.motionX) * 0.10000000149011612D;
+            this.motionY += (Math.signum(d1) * 0.699999988079071D - this.motionY) * 0.10000000149011612D;
+            this.motionZ += (Math.signum(d2) * 0.5D - this.motionZ) * 0.10000000149011612D;
+            float f = (float)(MathHelper.func_181159_b(this.motionZ, this.motionX) * 180.0D / Math.PI) - 90.0F;
+            float f1 = MathHelper.wrapAngleTo180_float(f - this.rotationYaw);
             this.moveForward = 0.5F;
-            this.rotationYaw += var10;
+            this.rotationYaw += f1;
 
-            if (this.rand.nextInt(100) == 0 && this.worldObj.getBlockState(var2).getBlock().isNormalCube())
+            if (this.rand.nextInt(100) == 0 && this.worldObj.getBlockState(blockpos1).getBlock().isNormalCube())
             {
                 this.setIsBatHanging(true);
             }
@@ -191,9 +194,13 @@ public class EntityBat extends EntityAmbientCreature
         return false;
     }
 
-    public void fall(float distance, float damageMultiplier) {}
+    public void fall(float distance, float damageMultiplier)
+    {
+    }
 
-    protected void func_180433_a(double p_180433_1_, boolean p_180433_3_, Block p_180433_4_, BlockPos p_180433_5_) {}
+    protected void updateFallState(double y, boolean onGroundIn, Block blockIn, BlockPos pos)
+    {
+    }
 
     /**
      * Return whether this entity should NOT trigger a pressure plate or a tripwire.
@@ -208,7 +215,7 @@ public class EntityBat extends EntityAmbientCreature
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        if (this.func_180431_b(source))
+        if (this.isEntityInvulnerable(source))
         {
             return false;
         }
@@ -246,31 +253,31 @@ public class EntityBat extends EntityAmbientCreature
      */
     public boolean getCanSpawnHere()
     {
-        BlockPos var1 = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
+        BlockPos blockpos = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
 
-        if (var1.getY() >= 63)
+        if (blockpos.getY() >= this.worldObj.func_181545_F())
         {
             return false;
         }
         else
         {
-            int var2 = this.worldObj.getLightFromNeighbors(var1);
-            byte var3 = 4;
+            int i = this.worldObj.getLightFromNeighbors(blockpos);
+            int j = 4;
 
-            if (this.func_175569_a(this.worldObj.getCurrentDate()))
+            if (this.isDateAroundHalloween(this.worldObj.getCurrentDate()))
             {
-                var3 = 7;
+                j = 7;
             }
             else if (this.rand.nextBoolean())
             {
                 return false;
             }
 
-            return var2 > this.rand.nextInt(var3) ? false : super.getCanSpawnHere();
+            return i > this.rand.nextInt(j) ? false : super.getCanSpawnHere();
         }
     }
 
-    private boolean func_175569_a(Calendar p_175569_1_)
+    private boolean isDateAroundHalloween(Calendar p_175569_1_)
     {
         return p_175569_1_.get(2) + 1 == 10 && p_175569_1_.get(5) >= 20 || p_175569_1_.get(2) + 1 == 11 && p_175569_1_.get(5) <= 3;
     }

@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockState;
@@ -15,15 +17,15 @@ import net.minecraft.world.World;
 
 public class BlockNetherWart extends BlockBush
 {
-    public static final PropertyInteger AGE_PROP = PropertyInteger.create("age", 0, 3);
-    private static final String __OBFID = "CL_00000274";
+    public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 3);
 
     protected BlockNetherWart()
     {
-        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE_PROP, Integer.valueOf(0)));
+        super(Material.plants, MapColor.redColor);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
         this.setTickRandomly(true);
-        float var1 = 0.5F;
-        this.setBlockBounds(0.5F - var1, 0.0F, 0.5F - var1, 0.5F + var1, 0.25F, 0.5F + var1);
+        float f = 0.5F;
+        this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.25F, 0.5F + f);
         this.setCreativeTab((CreativeTabs)null);
     }
 
@@ -35,18 +37,18 @@ public class BlockNetherWart extends BlockBush
         return ground == Blocks.soul_sand;
     }
 
-    public boolean canBlockStay(World worldIn, BlockPos p_180671_2_, IBlockState p_180671_3_)
+    public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state)
     {
-        return this.canPlaceBlockOn(worldIn.getBlockState(p_180671_2_.offsetDown()).getBlock());
+        return this.canPlaceBlockOn(worldIn.getBlockState(pos.down()).getBlock());
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        int var5 = ((Integer)state.getValue(AGE_PROP)).intValue();
+        int i = ((Integer)state.getValue(AGE)).intValue();
 
-        if (var5 < 3 && rand.nextInt(10) == 0)
+        if (i < 3 && rand.nextInt(10) == 0)
         {
-            state = state.withProperty(AGE_PROP, Integer.valueOf(var5 + 1));
+            state = state.withProperty(AGE, Integer.valueOf(i + 1));
             worldIn.setBlockState(pos, state, 2);
         }
 
@@ -55,27 +57,24 @@ public class BlockNetherWart extends BlockBush
 
     /**
      * Spawns this Block's drops into the World as EntityItems.
-     *  
-     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
-     * @param fortune The player's fortune level
      */
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
     {
         if (!worldIn.isRemote)
         {
-            int var6 = 1;
+            int i = 1;
 
-            if (((Integer)state.getValue(AGE_PROP)).intValue() >= 3)
+            if (((Integer)state.getValue(AGE)).intValue() >= 3)
             {
-                var6 = 2 + worldIn.rand.nextInt(3);
+                i = 2 + worldIn.rand.nextInt(3);
 
                 if (fortune > 0)
                 {
-                    var6 += worldIn.rand.nextInt(fortune + 1);
+                    i += worldIn.rand.nextInt(fortune + 1);
                 }
             }
 
-            for (int var7 = 0; var7 < var6; ++var7)
+            for (int j = 0; j < i; ++j)
             {
                 spawnAsEntity(worldIn, pos, new ItemStack(Items.nether_wart));
             }
@@ -84,8 +83,6 @@ public class BlockNetherWart extends BlockBush
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
@@ -110,7 +107,7 @@ public class BlockNetherWart extends BlockBush
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(AGE_PROP, Integer.valueOf(meta));
+        return this.getDefaultState().withProperty(AGE, Integer.valueOf(meta));
     }
 
     /**
@@ -118,11 +115,11 @@ public class BlockNetherWart extends BlockBush
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((Integer)state.getValue(AGE_PROP)).intValue();
+        return ((Integer)state.getValue(AGE)).intValue();
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {AGE_PROP});
+        return new BlockState(this, new IProperty[] {AGE});
     }
 }

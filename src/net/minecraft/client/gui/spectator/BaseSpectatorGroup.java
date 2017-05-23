@@ -9,8 +9,7 @@ import net.minecraft.util.IChatComponent;
 
 public class BaseSpectatorGroup implements ISpectatorMenuView
 {
-    private final List field_178671_a = Lists.newArrayList();
-    private static final String __OBFID = "CL_00001928";
+    private final List<ISpectatorMenuObject> field_178671_a = Lists.<ISpectatorMenuObject>newArrayList();
 
     public BaseSpectatorGroup()
     {
@@ -18,7 +17,7 @@ public class BaseSpectatorGroup implements ISpectatorMenuView
         this.field_178671_a.add(new TeleportToTeam());
     }
 
-    public List func_178669_a()
+    public List<ISpectatorMenuObject> func_178669_a()
     {
         return this.field_178671_a;
     }

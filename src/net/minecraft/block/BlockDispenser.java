@@ -17,9 +17,12 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityDispenser;
+import net.minecraft.tileentity.TileEntityDropper;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.RegistryDefaulted;
@@ -29,11 +32,8 @@ public class BlockDispenser extends BlockContainer
 {
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
     public static final PropertyBool TRIGGERED = PropertyBool.create("triggered");
-
-    /** Registry for all dispense behaviors. */
-    public static final RegistryDefaulted dispenseBehaviorRegistry = new RegistryDefaulted(new BehaviorDefaultDispenseItem());
+    public static final RegistryDefaulted<Item, IBehaviorDispenseItem> dispenseBehaviorRegistry = new RegistryDefaulted(new BehaviorDefaultDispenseItem());
     protected Random rand = new Random();
-    private static final String __OBFID = "CL_00000229";
 
     protected BlockDispenser()
     {
@@ -60,34 +60,34 @@ public class BlockDispenser extends BlockContainer
     {
         if (!worldIn.isRemote)
         {
-            EnumFacing var4 = (EnumFacing)state.getValue(FACING);
-            boolean var5 = worldIn.getBlockState(pos.offsetNorth()).getBlock().isFullBlock();
-            boolean var6 = worldIn.getBlockState(pos.offsetSouth()).getBlock().isFullBlock();
+            EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
+            boolean flag = worldIn.getBlockState(pos.north()).getBlock().isFullBlock();
+            boolean flag1 = worldIn.getBlockState(pos.south()).getBlock().isFullBlock();
 
-            if (var4 == EnumFacing.NORTH && var5 && !var6)
+            if (enumfacing == EnumFacing.NORTH && flag && !flag1)
             {
-                var4 = EnumFacing.SOUTH;
+                enumfacing = EnumFacing.SOUTH;
             }
-            else if (var4 == EnumFacing.SOUTH && var6 && !var5)
+            else if (enumfacing == EnumFacing.SOUTH && flag1 && !flag)
             {
-                var4 = EnumFacing.NORTH;
+                enumfacing = EnumFacing.NORTH;
             }
             else
             {
-                boolean var7 = worldIn.getBlockState(pos.offsetWest()).getBlock().isFullBlock();
-                boolean var8 = worldIn.getBlockState(pos.offsetEast()).getBlock().isFullBlock();
+                boolean flag2 = worldIn.getBlockState(pos.west()).getBlock().isFullBlock();
+                boolean flag3 = worldIn.getBlockState(pos.east()).getBlock().isFullBlock();
 
-                if (var4 == EnumFacing.WEST && var7 && !var8)
+                if (enumfacing == EnumFacing.WEST && flag2 && !flag3)
                 {
-                    var4 = EnumFacing.EAST;
+                    enumfacing = EnumFacing.EAST;
                 }
-                else if (var4 == EnumFacing.EAST && var8 && !var7)
+                else if (enumfacing == EnumFacing.EAST && flag3 && !flag2)
                 {
-                    var4 = EnumFacing.WEST;
+                    enumfacing = EnumFacing.WEST;
                 }
             }
 
-            worldIn.setBlockState(pos, state.withProperty(FACING, var4).withProperty(TRIGGERED, Boolean.valueOf(false)), 2);
+            worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing).withProperty(TRIGGERED, Boolean.valueOf(false)), 2);
         }
     }
 
@@ -99,60 +99,72 @@ public class BlockDispenser extends BlockContainer
         }
         else
         {
-            TileEntity var9 = worldIn.getTileEntity(pos);
+            TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (var9 instanceof TileEntityDispenser)
+            if (tileentity instanceof TileEntityDispenser)
             {
-                playerIn.displayGUIChest((TileEntityDispenser)var9);
+                playerIn.displayGUIChest((TileEntityDispenser)tileentity);
+
+                if (tileentity instanceof TileEntityDropper)
+                {
+                    playerIn.triggerAchievement(StatList.field_181731_O);
+                }
+                else
+                {
+                    playerIn.triggerAchievement(StatList.field_181733_Q);
+                }
             }
 
             return true;
         }
     }
 
-    protected void func_176439_d(World worldIn, BlockPos p_176439_2_)
+    protected void dispense(World worldIn, BlockPos pos)
     {
-        BlockSourceImpl var3 = new BlockSourceImpl(worldIn, p_176439_2_);
-        TileEntityDispenser var4 = (TileEntityDispenser)var3.getBlockTileEntity();
+        BlockSourceImpl blocksourceimpl = new BlockSourceImpl(worldIn, pos);
+        TileEntityDispenser tileentitydispenser = (TileEntityDispenser)blocksourceimpl.getBlockTileEntity();
 
-        if (var4 != null)
+        if (tileentitydispenser != null)
         {
-            int var5 = var4.func_146017_i();
+            int i = tileentitydispenser.getDispenseSlot();
 
-            if (var5 < 0)
+            if (i < 0)
             {
-                worldIn.playAuxSFX(1001, p_176439_2_, 0);
+                worldIn.playAuxSFX(1001, pos, 0);
             }
             else
             {
-                ItemStack var6 = var4.getStackInSlot(var5);
-                IBehaviorDispenseItem var7 = this.func_149940_a(var6);
+                ItemStack itemstack = tileentitydispenser.getStackInSlot(i);
+                IBehaviorDispenseItem ibehaviordispenseitem = this.getBehavior(itemstack);
 
-                if (var7 != IBehaviorDispenseItem.itemDispenseBehaviorProvider)
+                if (ibehaviordispenseitem != IBehaviorDispenseItem.itemDispenseBehaviorProvider)
                 {
-                    ItemStack var8 = var7.dispense(var3, var6);
-                    var4.setInventorySlotContents(var5, var8.stackSize == 0 ? null : var8);
+                    ItemStack itemstack1 = ibehaviordispenseitem.dispense(blocksourceimpl, itemstack);
+                    tileentitydispenser.setInventorySlotContents(i, itemstack1.stackSize <= 0 ? null : itemstack1);
                 }
             }
         }
     }
 
-    protected IBehaviorDispenseItem func_149940_a(ItemStack p_149940_1_)
+    protected IBehaviorDispenseItem getBehavior(ItemStack stack)
     {
-        return (IBehaviorDispenseItem)dispenseBehaviorRegistry.getObject(p_149940_1_ == null ? null : p_149940_1_.getItem());
+        return (IBehaviorDispenseItem)dispenseBehaviorRegistry.getObject(stack == null ? null : stack.getItem());
     }
 
+    /**
+     * Called when a neighboring block changes.
+     */
     public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
     {
-        boolean var5 = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.offsetUp());
-        boolean var6 = ((Boolean)state.getValue(TRIGGERED)).booleanValue();
+        boolean flag = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.up());
+        boolean flag1 = ((Boolean)state.getValue(TRIGGERED)).booleanValue();
 
-        if (var5 && !var6)
+        if (flag && !flag1)
         {
             worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
             worldIn.setBlockState(pos, state.withProperty(TRIGGERED, Boolean.valueOf(true)), 4);
         }
-        else if (!var5 && var6)
+        else if (!flag && flag1)
         {
             worldIn.setBlockState(pos, state.withProperty(TRIGGERED, Boolean.valueOf(false)), 4);
         }
@@ -162,7 +174,7 @@ public class BlockDispenser extends BlockContainer
     {
         if (!worldIn.isRemote)
         {
-            this.func_176439_d(worldIn, pos);
+            this.dispense(worldIn, pos);
         }
     }
 
@@ -174,33 +186,40 @@ public class BlockDispenser extends BlockContainer
         return new TileEntityDispenser();
     }
 
+    /**
+     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
+     * IBlockstate
+     */
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, BlockPistonBase.func_180695_a(worldIn, pos, placer)).withProperty(TRIGGERED, Boolean.valueOf(false));
+        return this.getDefaultState().withProperty(FACING, BlockPistonBase.getFacingFromEntity(worldIn, pos, placer)).withProperty(TRIGGERED, Boolean.valueOf(false));
     }
 
+    /**
+     * Called by ItemBlocks after a block is set in the world, to allow post-place logic
+     */
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
-        worldIn.setBlockState(pos, state.withProperty(FACING, BlockPistonBase.func_180695_a(worldIn, pos, placer)), 2);
+        worldIn.setBlockState(pos, state.withProperty(FACING, BlockPistonBase.getFacingFromEntity(worldIn, pos, placer)), 2);
 
         if (stack.hasDisplayName())
         {
-            TileEntity var6 = worldIn.getTileEntity(pos);
+            TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (var6 instanceof TileEntityDispenser)
+            if (tileentity instanceof TileEntityDispenser)
             {
-                ((TileEntityDispenser)var6).func_146018_a(stack.getDisplayName());
+                ((TileEntityDispenser)tileentity).setCustomName(stack.getDisplayName());
             }
         }
     }
 
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
-        TileEntity var4 = worldIn.getTileEntity(pos);
+        TileEntity tileentity = worldIn.getTileEntity(pos);
 
-        if (var4 instanceof TileEntityDispenser)
+        if (tileentity instanceof TileEntityDispenser)
         {
-            InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityDispenser)var4);
+            InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityDispenser)tileentity);
             worldIn.updateComparatorOutputLevel(pos, this);
         }
 
@@ -212,11 +231,11 @@ public class BlockDispenser extends BlockContainer
      */
     public static IPosition getDispensePosition(IBlockSource coords)
     {
-        EnumFacing var1 = getFacing(coords.getBlockMetadata());
-        double var2 = coords.getX() + 0.7D * (double)var1.getFrontOffsetX();
-        double var4 = coords.getY() + 0.7D * (double)var1.getFrontOffsetY();
-        double var6 = coords.getZ() + 0.7D * (double)var1.getFrontOffsetZ();
-        return new PositionImpl(var2, var4, var6);
+        EnumFacing enumfacing = getFacing(coords.getBlockMetadata());
+        double d0 = coords.getX() + 0.7D * (double)enumfacing.getFrontOffsetX();
+        double d1 = coords.getY() + 0.7D * (double)enumfacing.getFrontOffsetY();
+        double d2 = coords.getZ() + 0.7D * (double)enumfacing.getFrontOffsetZ();
+        return new PositionImpl(d0, d1, d2);
     }
 
     /**
@@ -234,11 +253,11 @@ public class BlockDispenser extends BlockContainer
 
     public int getComparatorInputOverride(World worldIn, BlockPos pos)
     {
-        return Container.calcRedstoneFromInventory(worldIn.getTileEntity(pos));
+        return Container.calcRedstone(worldIn.getTileEntity(pos));
     }
 
     /**
-     * The type of render function that is called for this block
+     * The type of render function called. 3 for standard block models, 2 for TESR's, 1 for liquids, -1 is no render
      */
     public int getRenderType()
     {
@@ -266,15 +285,15 @@ public class BlockDispenser extends BlockContainer
      */
     public int getMetaFromState(IBlockState state)
     {
-        byte var2 = 0;
-        int var3 = var2 | ((EnumFacing)state.getValue(FACING)).getIndex();
+        int i = 0;
+        i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
 
         if (((Boolean)state.getValue(TRIGGERED)).booleanValue())
         {
-            var3 |= 8;
+            i |= 8;
         }
 
-        return var3;
+        return i;
     }
 
     protected BlockState createBlockState()

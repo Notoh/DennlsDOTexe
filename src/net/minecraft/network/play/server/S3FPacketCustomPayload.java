@@ -2,18 +2,18 @@ package net.minecraft.network.play.server;
 
 import io.netty.buffer.ByteBuf;
 import java.io.IOException;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 
-public class S3FPacketCustomPayload implements Packet
+public class S3FPacketCustomPayload implements Packet<INetHandlerPlayClient>
 {
     private String channel;
     private PacketBuffer data;
-    private static final String __OBFID = "CL_00001297";
 
-    public S3FPacketCustomPayload() {}
+    public S3FPacketCustomPayload()
+    {
+    }
 
     public S3FPacketCustomPayload(String channelName, PacketBuffer dataIn)
     {
@@ -29,14 +29,14 @@ public class S3FPacketCustomPayload implements Packet
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.channel = data.readStringFromBuffer(20);
-        int var2 = data.readableBytes();
+        this.channel = buf.readStringFromBuffer(20);
+        int i = buf.readableBytes();
 
-        if (var2 >= 0 && var2 <= 1048576)
+        if (i >= 0 && i <= 1048576)
         {
-            this.data = new PacketBuffer(data.readBytes(var2));
+            this.data = new PacketBuffer(buf.readBytes(i));
         }
         else
         {
@@ -47,15 +47,18 @@ public class S3FPacketCustomPayload implements Packet
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeString(this.channel);
-        data.writeBytes((ByteBuf)this.data);
+        buf.writeString(this.channel);
+        buf.writeBytes((ByteBuf)this.data);
     }
 
-    public void process(INetHandlerPlayClient p_180734_1_)
+    /**
+     * Passes this Packet on to the NetHandler for processing.
+     */
+    public void processPacket(INetHandlerPlayClient handler)
     {
-        p_180734_1_.handleCustomPayload(this);
+        handler.handleCustomPayload(this);
     }
 
     public String getChannelName()
@@ -66,13 +69,5 @@ public class S3FPacketCustomPayload implements Packet
     public PacketBuffer getBufferData()
     {
         return this.data;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.process((INetHandlerPlayClient)handler);
     }
 }

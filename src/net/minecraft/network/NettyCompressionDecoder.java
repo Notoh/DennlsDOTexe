@@ -13,7 +13,6 @@ public class NettyCompressionDecoder extends ByteToMessageDecoder
 {
     private final Inflater inflater;
     private int treshold;
-    private static final String __OBFID = "CL_00002314";
 
     public NettyCompressionDecoder(int treshold)
     {
@@ -21,35 +20,35 @@ public class NettyCompressionDecoder extends ByteToMessageDecoder
         this.inflater = new Inflater();
     }
 
-    protected void decode(ChannelHandlerContext p_decode_1_, ByteBuf p_decode_2_, List p_decode_3_) throws DataFormatException
+    protected void decode(ChannelHandlerContext p_decode_1_, ByteBuf p_decode_2_, List<Object> p_decode_3_) throws DataFormatException, Exception
     {
         if (p_decode_2_.readableBytes() != 0)
         {
-            PacketBuffer var4 = new PacketBuffer(p_decode_2_);
-            int var5 = var4.readVarIntFromBuffer();
+            PacketBuffer packetbuffer = new PacketBuffer(p_decode_2_);
+            int i = packetbuffer.readVarIntFromBuffer();
 
-            if (var5 == 0)
+            if (i == 0)
             {
-                p_decode_3_.add(var4.readBytes(var4.readableBytes()));
+                p_decode_3_.add(packetbuffer.readBytes(packetbuffer.readableBytes()));
             }
             else
             {
-                if (var5 < this.treshold)
+                if (i < this.treshold)
                 {
-                    throw new DecoderException("Badly compressed packet - size of " + var5 + " is below server threshold of " + this.treshold);
+                    throw new DecoderException("Badly compressed packet - size of " + i + " is below server threshold of " + this.treshold);
                 }
 
-                if (var5 > 2097152)
+                if (i > 2097152)
                 {
-                    throw new DecoderException("Badly compressed packet - size of " + var5 + " is larger than protocol maximum of " + 2097152);
+                    throw new DecoderException("Badly compressed packet - size of " + i + " is larger than protocol maximum of " + 2097152);
                 }
 
-                byte[] var6 = new byte[var4.readableBytes()];
-                var4.readBytes(var6);
-                this.inflater.setInput(var6);
-                byte[] var7 = new byte[var5];
-                this.inflater.inflate(var7);
-                p_decode_3_.add(Unpooled.wrappedBuffer(var7));
+                byte[] abyte = new byte[packetbuffer.readableBytes()];
+                packetbuffer.readBytes(abyte);
+                this.inflater.setInput(abyte);
+                byte[] abyte1 = new byte[i];
+                this.inflater.inflate(abyte1);
+                p_decode_3_.add(Unpooled.wrappedBuffer(abyte1));
                 this.inflater.reset();
             }
         }

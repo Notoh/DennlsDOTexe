@@ -2,12 +2,11 @@ package net.minecraft.network.play.client;
 
 import java.io.IOException;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 
-public class C0EPacketClickWindow implements Packet
+public class C0EPacketClickWindow implements Packet<INetHandlerPlayServer>
 {
     /** The id of the window which was clicked. 0 for player inventory. */
     private int windowId;
@@ -26,18 +25,19 @@ public class C0EPacketClickWindow implements Packet
 
     /** Inventory operation mode */
     private int mode;
-    private static final String __OBFID = "CL_00001353";
 
-    public C0EPacketClickWindow() {}
-
-    public C0EPacketClickWindow(int p_i45246_1_, int p_i45246_2_, int p_i45246_3_, int p_i45246_4_, ItemStack p_i45246_5_, short p_i45246_6_)
+    public C0EPacketClickWindow()
     {
-        this.windowId = p_i45246_1_;
-        this.slotId = p_i45246_2_;
-        this.usedButton = p_i45246_3_;
-        this.clickedItem = p_i45246_5_ != null ? p_i45246_5_.copy() : null;
-        this.actionNumber = p_i45246_6_;
-        this.mode = p_i45246_4_;
+    }
+
+    public C0EPacketClickWindow(int windowId, int slotId, int usedButton, int mode, ItemStack clickedItem, short actionNumber)
+    {
+        this.windowId = windowId;
+        this.slotId = slotId;
+        this.usedButton = usedButton;
+        this.clickedItem = clickedItem != null ? clickedItem.copy() : null;
+        this.actionNumber = actionNumber;
+        this.mode = mode;
     }
 
     /**
@@ -51,27 +51,27 @@ public class C0EPacketClickWindow implements Packet
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer data) throws IOException
+    public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.windowId = data.readByte();
-        this.slotId = data.readShort();
-        this.usedButton = data.readByte();
-        this.actionNumber = data.readShort();
-        this.mode = data.readByte();
-        this.clickedItem = data.readItemStackFromBuffer();
+        this.windowId = buf.readByte();
+        this.slotId = buf.readShort();
+        this.usedButton = buf.readByte();
+        this.actionNumber = buf.readShort();
+        this.mode = buf.readByte();
+        this.clickedItem = buf.readItemStackFromBuffer();
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer data) throws IOException
+    public void writePacketData(PacketBuffer buf) throws IOException
     {
-        data.writeByte(this.windowId);
-        data.writeShort(this.slotId);
-        data.writeByte(this.usedButton);
-        data.writeShort(this.actionNumber);
-        data.writeByte(this.mode);
-        data.writeItemStackToBuffer(this.clickedItem);
+        buf.writeByte(this.windowId);
+        buf.writeShort(this.slotId);
+        buf.writeByte(this.usedButton);
+        buf.writeShort(this.actionNumber);
+        buf.writeByte(this.mode);
+        buf.writeItemStackToBuffer(this.clickedItem);
     }
 
     public int getWindowId()
@@ -102,13 +102,5 @@ public class C0EPacketClickWindow implements Packet
     public int getMode()
     {
         return this.mode;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.processPacket((INetHandlerPlayServer)handler);
     }
 }

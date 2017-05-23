@@ -9,21 +9,19 @@ import net.minecraft.world.World;
 
 public class EntitySnowball extends EntityThrowable
 {
-    private static final String __OBFID = "CL_00001722";
-
     public EntitySnowball(World worldIn)
     {
         super(worldIn);
     }
 
-    public EntitySnowball(World worldIn, EntityLivingBase p_i1774_2_)
+    public EntitySnowball(World worldIn, EntityLivingBase throwerIn)
     {
-        super(worldIn, p_i1774_2_);
+        super(worldIn, throwerIn);
     }
 
-    public EntitySnowball(World worldIn, double p_i1775_2_, double p_i1775_4_, double p_i1775_6_)
+    public EntitySnowball(World worldIn, double x, double y, double z)
     {
-        super(worldIn, p_i1775_2_, p_i1775_4_, p_i1775_6_);
+        super(worldIn, x, y, z);
     }
 
     /**
@@ -33,17 +31,17 @@ public class EntitySnowball extends EntityThrowable
     {
         if (p_70184_1_.entityHit != null)
         {
-            byte var2 = 0;
+            int i = 0;
 
             if (p_70184_1_.entityHit instanceof EntityBlaze)
             {
-                var2 = 3;
+                i = 3;
             }
 
-            p_70184_1_.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float)var2);
+            p_70184_1_.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float)i);
         }
 
-        for (int var3 = 0; var3 < 8; ++var3)
+        for (int j = 0; j < 8; ++j)
         {
             this.worldObj.spawnParticle(EnumParticleTypes.SNOWBALL, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
         }

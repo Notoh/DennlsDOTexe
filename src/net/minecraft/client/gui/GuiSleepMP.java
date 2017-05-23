@@ -7,10 +7,9 @@ import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 public class GuiSleepMP extends GuiChat
 {
-    private static final String __OBFID = "CL_00000697";
-
     /**
-     * Adds the buttons (and other controls) to the screen in question.
+     * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
+     * window resizes, the buttonList is cleared beforehand.
      */
     public void initGui()
     {
@@ -19,7 +18,7 @@ public class GuiSleepMP extends GuiChat
     }
 
     /**
-     * Fired when a key is typed (except F11 who toggle full screen). This is the equivalent of
+     * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
     protected void keyTyped(char typedChar, int keyCode) throws IOException
@@ -34,11 +33,11 @@ public class GuiSleepMP extends GuiChat
         }
         else
         {
-            String var3 = this.inputField.getText().trim();
+            String s = this.inputField.getText().trim();
 
-            if (!var3.isEmpty())
+            if (!s.isEmpty())
             {
-                this.mc.thePlayer.sendChatMessage(var3);
+                this.mc.thePlayer.sendChatMessage(s);
             }
 
             this.inputField.setText("");
@@ -46,6 +45,9 @@ public class GuiSleepMP extends GuiChat
         }
     }
 
+    /**
+     * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
+     */
     protected void actionPerformed(GuiButton button) throws IOException
     {
         if (button.id == 1)
@@ -60,7 +62,7 @@ public class GuiSleepMP extends GuiChat
 
     private void wakeFromSleep()
     {
-        NetHandlerPlayClient var1 = this.mc.thePlayer.sendQueue;
-        var1.addToSendQueue(new C0BPacketEntityAction(this.mc.thePlayer, C0BPacketEntityAction.Action.STOP_SLEEPING));
+        NetHandlerPlayClient nethandlerplayclient = this.mc.thePlayer.sendQueue;
+        nethandlerplayclient.addToSendQueue(new C0BPacketEntityAction(this.mc.thePlayer, C0BPacketEntityAction.Action.STOP_SLEEPING));
     }
 }

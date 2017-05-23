@@ -12,8 +12,6 @@ import net.minecraft.world.World;
 
 public class BlockMobSpawner extends BlockContainer
 {
-    private static final String __OBFID = "CL_00000269";
-
     protected BlockMobSpawner()
     {
         super(Material.rock);
@@ -29,8 +27,6 @@ public class BlockMobSpawner extends BlockContainer
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
@@ -47,24 +43,24 @@ public class BlockMobSpawner extends BlockContainer
 
     /**
      * Spawns this Block's drops into the World as EntityItems.
-     *  
-     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
-     * @param fortune The player's fortune level
      */
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
     {
         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
-        int var6 = 15 + worldIn.rand.nextInt(15) + worldIn.rand.nextInt(15);
-        this.dropXpOnBlockBreak(worldIn, pos, var6);
+        int i = 15 + worldIn.rand.nextInt(15) + worldIn.rand.nextInt(15);
+        this.dropXpOnBlockBreak(worldIn, pos, i);
     }
 
+    /**
+     * Used to determine ambient occlusion and culling when rebuilding chunks for render
+     */
     public boolean isOpaqueCube()
     {
         return false;
     }
 
     /**
-     * The type of render function that is called for this block
+     * The type of render function called. 3 for standard block models, 2 for TESR's, 1 for liquids, -1 is no render
      */
     public int getRenderType()
     {

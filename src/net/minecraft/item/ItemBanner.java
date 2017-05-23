@@ -18,8 +18,6 @@ import net.minecraft.world.World;
 
 public class ItemBanner extends ItemBlock
 {
-    private static final String __OBFID = "CL_00002181";
-
     public ItemBanner()
     {
         super(Blocks.standing_banner);
@@ -31,9 +29,6 @@ public class ItemBanner extends ItemBlock
 
     /**
      * Called when a Block is right-clicked with this Item
-     *  
-     * @param pos The block being right-clicked
-     * @param side The side being right-clicked
      */
     public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
     {
@@ -49,7 +44,7 @@ public class ItemBanner extends ItemBlock
         {
             pos = pos.offset(side);
 
-            if (!playerIn.func_175151_a(pos, side, stack))
+            if (!playerIn.canPlayerEdit(pos, side, stack))
             {
                 return false;
             }
@@ -65,20 +60,20 @@ public class ItemBanner extends ItemBlock
             {
                 if (side == EnumFacing.UP)
                 {
-                    int var9 = MathHelper.floor_double((double)((playerIn.rotationYaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
-                    worldIn.setBlockState(pos, Blocks.standing_banner.getDefaultState().withProperty(BlockStandingSign.ROTATION_PROP, Integer.valueOf(var9)), 3);
+                    int i = MathHelper.floor_double((double)((playerIn.rotationYaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
+                    worldIn.setBlockState(pos, Blocks.standing_banner.getDefaultState().withProperty(BlockStandingSign.ROTATION, Integer.valueOf(i)), 3);
                 }
                 else
                 {
-                    worldIn.setBlockState(pos, Blocks.wall_banner.getDefaultState().withProperty(BlockWallSign.field_176412_a, side), 3);
+                    worldIn.setBlockState(pos, Blocks.wall_banner.getDefaultState().withProperty(BlockWallSign.FACING, side), 3);
                 }
 
                 --stack.stackSize;
-                TileEntity var10 = worldIn.getTileEntity(pos);
+                TileEntity tileentity = worldIn.getTileEntity(pos);
 
-                if (var10 instanceof TileEntityBanner)
+                if (tileentity instanceof TileEntityBanner)
                 {
-                    ((TileEntityBanner)var10).setItemValues(stack);
+                    ((TileEntityBanner)tileentity).setItemValues(stack);
                 }
 
                 return true;
@@ -88,35 +83,32 @@ public class ItemBanner extends ItemBlock
 
     public String getItemStackDisplayName(ItemStack stack)
     {
-        String var2 = "item.banner.";
-        EnumDyeColor var3 = this.func_179225_h(stack);
-        var2 = var2 + var3.func_176762_d() + ".name";
-        return StatCollector.translateToLocal(var2);
+        String s = "item.banner.";
+        EnumDyeColor enumdyecolor = this.getBaseColor(stack);
+        s = s + enumdyecolor.getUnlocalizedName() + ".name";
+        return StatCollector.translateToLocal(s);
     }
 
     /**
      * allows items to add custom lines of information to the mouseover description
-     *  
-     * @param tooltip All lines to display in the Item's tooltip. This is a List of Strings.
-     * @param advanced Whether the setting "Advanced tooltips" is enabled
      */
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List tooltip, boolean advanced)
+    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
     {
-        NBTTagCompound var5 = stack.getSubCompound("BlockEntityTag", false);
+        NBTTagCompound nbttagcompound = stack.getSubCompound("BlockEntityTag", false);
 
-        if (var5 != null && var5.hasKey("Patterns"))
+        if (nbttagcompound != null && nbttagcompound.hasKey("Patterns"))
         {
-            NBTTagList var6 = var5.getTagList("Patterns", 10);
+            NBTTagList nbttaglist = nbttagcompound.getTagList("Patterns", 10);
 
-            for (int var7 = 0; var7 < var6.tagCount() && var7 < 6; ++var7)
+            for (int i = 0; i < nbttaglist.tagCount() && i < 6; ++i)
             {
-                NBTTagCompound var8 = var6.getCompoundTagAt(var7);
-                EnumDyeColor var9 = EnumDyeColor.func_176766_a(var8.getInteger("Color"));
-                TileEntityBanner.EnumBannerPattern var10 = TileEntityBanner.EnumBannerPattern.func_177268_a(var8.getString("Pattern"));
+                NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
+                EnumDyeColor enumdyecolor = EnumDyeColor.byDyeDamage(nbttagcompound1.getInteger("Color"));
+                TileEntityBanner.EnumBannerPattern tileentitybanner$enumbannerpattern = TileEntityBanner.EnumBannerPattern.getPatternByID(nbttagcompound1.getString("Pattern"));
 
-                if (var10 != null)
+                if (tileentitybanner$enumbannerpattern != null)
                 {
-                    tooltip.add(StatCollector.translateToLocal("item.banner." + var10.func_177271_a() + "." + var9.func_176762_d()));
+                    tooltip.add(StatCollector.translateToLocal("item.banner." + tileentitybanner$enumbannerpattern.getPatternName() + "." + enumdyecolor.getUnlocalizedName()));
                 }
             }
         }
@@ -130,25 +122,25 @@ public class ItemBanner extends ItemBlock
         }
         else
         {
-            EnumDyeColor var3 = this.func_179225_h(stack);
-            return var3.func_176768_e().colorValue;
+            EnumDyeColor enumdyecolor = this.getBaseColor(stack);
+            return enumdyecolor.getMapColor().colorValue;
         }
     }
 
     /**
      * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
-     *  
-     * @param subItems The List of sub-items. This is a List of ItemStacks.
      */
-    public void getSubItems(Item itemIn, CreativeTabs tab, List subItems)
+    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
     {
-        EnumDyeColor[] var4 = EnumDyeColor.values();
-        int var5 = var4.length;
-
-        for (int var6 = 0; var6 < var5; ++var6)
+        for (EnumDyeColor enumdyecolor : EnumDyeColor.values())
         {
-            EnumDyeColor var7 = var4[var6];
-            subItems.add(new ItemStack(itemIn, 1, var7.getDyeColorDamage()));
+            NBTTagCompound nbttagcompound = new NBTTagCompound();
+            TileEntityBanner.func_181020_a(nbttagcompound, enumdyecolor.getDyeDamage(), (NBTTagList)null);
+            NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+            nbttagcompound1.setTag("BlockEntityTag", nbttagcompound);
+            ItemStack itemstack = new ItemStack(itemIn, 1, enumdyecolor.getDyeDamage());
+            itemstack.setTagCompound(nbttagcompound1);
+            subItems.add(itemstack);
         }
     }
 
@@ -160,20 +152,20 @@ public class ItemBanner extends ItemBlock
         return CreativeTabs.tabDecorations;
     }
 
-    private EnumDyeColor func_179225_h(ItemStack p_179225_1_)
+    private EnumDyeColor getBaseColor(ItemStack stack)
     {
-        NBTTagCompound var2 = p_179225_1_.getSubCompound("BlockEntityTag", false);
-        EnumDyeColor var3 = null;
+        NBTTagCompound nbttagcompound = stack.getSubCompound("BlockEntityTag", false);
+        EnumDyeColor enumdyecolor = null;
 
-        if (var2 != null && var2.hasKey("Base"))
+        if (nbttagcompound != null && nbttagcompound.hasKey("Base"))
         {
-            var3 = EnumDyeColor.func_176766_a(var2.getInteger("Base"));
+            enumdyecolor = EnumDyeColor.byDyeDamage(nbttagcompound.getInteger("Base"));
         }
         else
         {
-            var3 = EnumDyeColor.func_176766_a(p_179225_1_.getMetadata());
+            enumdyecolor = EnumDyeColor.byDyeDamage(stack.getMetadata());
         }
 
-        return var3;
+        return enumdyecolor;
     }
 }

@@ -8,12 +8,11 @@ import net.minecraft.world.EnumDifficulty;
 public class EntityAIBreakDoor extends EntityAIDoorInteract
 {
     private int breakingTime;
-    private int field_75358_j = -1;
-    private static final String __OBFID = "CL_00001577";
+    private int previousBreakProgress = -1;
 
-    public EntityAIBreakDoor(EntityLiving p_i1618_1_)
+    public EntityAIBreakDoor(EntityLiving entityIn)
     {
-        super(p_i1618_1_);
+        super(entityIn);
     }
 
     /**
@@ -25,14 +24,14 @@ public class EntityAIBreakDoor extends EntityAIDoorInteract
         {
             return false;
         }
-        else if (!this.theEntity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"))
+        else if (!this.theEntity.worldObj.getGameRules().getBoolean("mobGriefing"))
         {
             return false;
         }
         else
         {
-            BlockDoor var10000 = this.doorBlock;
-            return !BlockDoor.func_176514_f(this.theEntity.worldObj, this.field_179507_b);
+            BlockDoor blockdoor = this.doorBlock;
+            return !BlockDoor.isOpen(this.theEntity.worldObj, this.doorPosition);
         }
     }
 
@@ -50,22 +49,22 @@ public class EntityAIBreakDoor extends EntityAIDoorInteract
      */
     public boolean continueExecuting()
     {
-        double var1 = this.theEntity.getDistanceSq(this.field_179507_b);
-        boolean var3;
+        double d0 = this.theEntity.getDistanceSq(this.doorPosition);
+        boolean flag;
 
         if (this.breakingTime <= 240)
         {
-            BlockDoor var10000 = this.doorBlock;
+            BlockDoor blockdoor = this.doorBlock;
 
-            if (!BlockDoor.func_176514_f(this.theEntity.worldObj, this.field_179507_b) && var1 < 4.0D)
+            if (!BlockDoor.isOpen(this.theEntity.worldObj, this.doorPosition) && d0 < 4.0D)
             {
-                var3 = true;
-                return var3;
+                flag = true;
+                return flag;
             }
         }
 
-        var3 = false;
-        return var3;
+        flag = false;
+        return flag;
     }
 
     /**
@@ -74,7 +73,7 @@ public class EntityAIBreakDoor extends EntityAIDoorInteract
     public void resetTask()
     {
         super.resetTask();
-        this.theEntity.worldObj.sendBlockBreakProgress(this.theEntity.getEntityId(), this.field_179507_b, -1);
+        this.theEntity.worldObj.sendBlockBreakProgress(this.theEntity.getEntityId(), this.doorPosition, -1);
     }
 
     /**
@@ -86,23 +85,23 @@ public class EntityAIBreakDoor extends EntityAIDoorInteract
 
         if (this.theEntity.getRNG().nextInt(20) == 0)
         {
-            this.theEntity.worldObj.playAuxSFX(1010, this.field_179507_b, 0);
+            this.theEntity.worldObj.playAuxSFX(1010, this.doorPosition, 0);
         }
 
         ++this.breakingTime;
-        int var1 = (int)((float)this.breakingTime / 240.0F * 10.0F);
+        int i = (int)((float)this.breakingTime / 240.0F * 10.0F);
 
-        if (var1 != this.field_75358_j)
+        if (i != this.previousBreakProgress)
         {
-            this.theEntity.worldObj.sendBlockBreakProgress(this.theEntity.getEntityId(), this.field_179507_b, var1);
-            this.field_75358_j = var1;
+            this.theEntity.worldObj.sendBlockBreakProgress(this.theEntity.getEntityId(), this.doorPosition, i);
+            this.previousBreakProgress = i;
         }
 
         if (this.breakingTime == 240 && this.theEntity.worldObj.getDifficulty() == EnumDifficulty.HARD)
         {
-            this.theEntity.worldObj.setBlockToAir(this.field_179507_b);
-            this.theEntity.worldObj.playAuxSFX(1012, this.field_179507_b, 0);
-            this.theEntity.worldObj.playAuxSFX(2001, this.field_179507_b, Block.getIdFromBlock(this.doorBlock));
+            this.theEntity.worldObj.setBlockToAir(this.doorPosition);
+            this.theEntity.worldObj.playAuxSFX(1012, this.doorPosition, 0);
+            this.theEntity.worldObj.playAuxSFX(2001, this.doorPosition, Block.getIdFromBlock(this.doorBlock));
         }
     }
 }

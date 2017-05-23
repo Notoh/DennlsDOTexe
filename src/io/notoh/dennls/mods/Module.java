@@ -1,5 +1,6 @@
 package io.notoh.dennls.mods;
 
+import io.notoh.dennls.util.ModCategory;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -9,7 +10,7 @@ import net.minecraft.client.Minecraft;
 public abstract class Module {
 
     public Minecraft getMC() {
-        return Minecraft.getMC();
+        return Minecraft.getMinecraft();
     }
 
     public void onRender() {
@@ -24,9 +25,12 @@ public abstract class Module {
     public void onUpdate() {
         //do nothing, if this needs to be overridden it will be, this is just here for polymorphism
     }
+
+    public abstract void setKeyCode(int keyCode);
     public abstract int getKeyCode();
     public abstract String getName();
     public abstract void toggle();
     public abstract boolean getToggle();
+    public abstract ModCategory getCategory();
 
 }

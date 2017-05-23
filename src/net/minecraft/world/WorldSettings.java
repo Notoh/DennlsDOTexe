@@ -26,7 +26,6 @@ public final class WorldSettings
     /** True if the Bonus Chest is enabled. */
     private boolean bonusChestEnabled;
     private String worldName;
-    private static final String __OBFID = "CL_00000147";
 
     public WorldSettings(long seedIn, WorldSettings.GameType gameType, boolean enableMapFeatures, boolean hardcoreMode, WorldType worldTypeIn)
     {
@@ -135,18 +134,16 @@ public final class WorldSettings
 
     public static enum GameType
     {
-        NOT_SET("NOT_SET", 0, -1, ""),
-        SURVIVAL("SURVIVAL", 1, 0, "survival"),
-        CREATIVE("CREATIVE", 2, 1, "creative"),
-        ADVENTURE("ADVENTURE", 3, 2, "adventure"),
-        SPECTATOR("SPECTATOR", 4, 3, "spectator");
+        NOT_SET(-1, ""),
+        SURVIVAL(0, "survival"),
+        CREATIVE(1, "creative"),
+        ADVENTURE(2, "adventure"),
+        SPECTATOR(3, "spectator");
+
         int id;
         String name;
 
-        private static final WorldSettings.GameType[] $VALUES = new WorldSettings.GameType[]{NOT_SET, SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR};
-        private static final String __OBFID = "CL_00000148";
-
-        private GameType(String p_i1956_1_, int p_i1956_2_, int typeId, String nameIn)
+        private GameType(int typeId, String nameIn)
         {
             this.id = typeId;
             this.name = nameIn;
@@ -205,16 +202,11 @@ public final class WorldSettings
 
         public static WorldSettings.GameType getByID(int idIn)
         {
-            WorldSettings.GameType[] var1 = values();
-            int var2 = var1.length;
-
-            for (int var3 = 0; var3 < var2; ++var3)
+            for (WorldSettings.GameType worldsettings$gametype : values())
             {
-                WorldSettings.GameType var4 = var1[var3];
-
-                if (var4.id == idIn)
+                if (worldsettings$gametype.id == idIn)
                 {
-                    return var4;
+                    return worldsettings$gametype;
                 }
             }
 
@@ -223,16 +215,11 @@ public final class WorldSettings
 
         public static WorldSettings.GameType getByName(String p_77142_0_)
         {
-            WorldSettings.GameType[] var1 = values();
-            int var2 = var1.length;
-
-            for (int var3 = 0; var3 < var2; ++var3)
+            for (WorldSettings.GameType worldsettings$gametype : values())
             {
-                WorldSettings.GameType var4 = var1[var3];
-
-                if (var4.name.equals(p_77142_0_))
+                if (worldsettings$gametype.name.equals(p_77142_0_))
                 {
-                    return var4;
+                    return worldsettings$gametype;
                 }
             }
 

@@ -6,37 +6,31 @@ import net.minecraft.block.Block;
 public class ItemMultiTexture extends ItemBlock
 {
     protected final Block theBlock;
-    protected final Function nameFunction;
-    private static final String __OBFID = "CL_00000051";
+    protected final Function<ItemStack, String> nameFunction;
 
-    public ItemMultiTexture(Block p_i45784_1_, Block p_i45784_2_, Function p_i45784_3_)
+    public ItemMultiTexture(Block block, Block block2, Function<ItemStack, String> nameFunction)
     {
-        super(p_i45784_1_);
-        this.theBlock = p_i45784_2_;
-        this.nameFunction = p_i45784_3_;
+        super(block);
+        this.theBlock = block2;
+        this.nameFunction = nameFunction;
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
     }
 
-    public ItemMultiTexture(Block p_i45346_1_, Block p_i45346_2_, final String[] p_i45346_3_)
+    public ItemMultiTexture(Block block, Block block2, final String[] namesByMeta)
     {
-        this(p_i45346_1_, p_i45346_2_, new Function()
+        this(block, block2, new Function<ItemStack, String>()
         {
-            private static final String __OBFID = "CL_00002161";
-            public String apply(ItemStack p_179541_1_)
+            public String apply(ItemStack p_apply_1_)
             {
-                int var2 = p_179541_1_.getMetadata();
+                int i = p_apply_1_.getMetadata();
 
-                if (var2 < 0 || var2 >= p_i45346_3_.length)
+                if (i < 0 || i >= namesByMeta.length)
                 {
-                    var2 = 0;
+                    i = 0;
                 }
 
-                return p_i45346_3_[var2];
-            }
-            public Object apply(Object p_apply_1_)
-            {
-                return this.apply((ItemStack)p_apply_1_);
+                return namesByMeta[i];
             }
         });
     }

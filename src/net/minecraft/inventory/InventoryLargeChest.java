@@ -19,32 +19,31 @@ public class InventoryLargeChest implements ILockableContainer
 
     /** Inventory object corresponding to double chest lower part */
     private ILockableContainer lowerChest;
-    private static final String __OBFID = "CL_00001507";
 
-    public InventoryLargeChest(String p_i45905_1_, ILockableContainer p_i45905_2_, ILockableContainer p_i45905_3_)
+    public InventoryLargeChest(String nameIn, ILockableContainer upperChestIn, ILockableContainer lowerChestIn)
     {
-        this.name = p_i45905_1_;
+        this.name = nameIn;
 
-        if (p_i45905_2_ == null)
+        if (upperChestIn == null)
         {
-            p_i45905_2_ = p_i45905_3_;
+            upperChestIn = lowerChestIn;
         }
 
-        if (p_i45905_3_ == null)
+        if (lowerChestIn == null)
         {
-            p_i45905_3_ = p_i45905_2_;
+            lowerChestIn = upperChestIn;
         }
 
-        this.upperChest = p_i45905_2_;
-        this.lowerChest = p_i45905_3_;
+        this.upperChest = upperChestIn;
+        this.lowerChest = lowerChestIn;
 
-        if (p_i45905_2_.isLocked())
+        if (upperChestIn.isLocked())
         {
-            p_i45905_3_.setLockCode(p_i45905_2_.getLockCode());
+            lowerChestIn.setLockCode(upperChestIn.getLockCode());
         }
-        else if (p_i45905_3_.isLocked())
+        else if (lowerChestIn.isLocked())
         {
-            p_i45905_2_.setLockCode(p_i45905_3_.getLockCode());
+            upperChestIn.setLockCode(lowerChestIn.getLockCode());
         }
     }
 
@@ -59,9 +58,9 @@ public class InventoryLargeChest implements ILockableContainer
     /**
      * Return whether the given inventory is part of this large chest.
      */
-    public boolean isPartOfLargeChest(IInventory p_90010_1_)
+    public boolean isPartOfLargeChest(IInventory inventoryIn)
     {
-        return this.upperChest == p_90010_1_ || this.lowerChest == p_90010_1_;
+        return this.upperChest == inventoryIn || this.lowerChest == inventoryIn;
     }
 
     /**
@@ -80,22 +79,24 @@ public class InventoryLargeChest implements ILockableContainer
         return this.upperChest.hasCustomName() || this.lowerChest.hasCustomName();
     }
 
+    /**
+     * Get the formatted ChatComponent that will be used for the sender's username in chat
+     */
     public IChatComponent getDisplayName()
     {
         return (IChatComponent)(this.hasCustomName() ? new ChatComponentText(this.getName()) : new ChatComponentTranslation(this.getName(), new Object[0]));
     }
 
     /**
-     * Returns the stack in slot i
+     * Returns the stack in the given slot.
      */
-    public ItemStack getStackInSlot(int slotIn)
+    public ItemStack getStackInSlot(int index)
     {
-        return slotIn >= this.upperChest.getSizeInventory() ? this.lowerChest.getStackInSlot(slotIn - this.upperChest.getSizeInventory()) : this.upperChest.getStackInSlot(slotIn);
+        return index >= this.upperChest.getSizeInventory() ? this.lowerChest.getStackInSlot(index - this.upperChest.getSizeInventory()) : this.upperChest.getStackInSlot(index);
     }
 
     /**
-     * Removes from an inventory slot (first arg) up to a specified number (second arg) of items and returns them in a
-     * new stack.
+     * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
     public ItemStack decrStackSize(int index, int count)
     {
@@ -103,12 +104,11 @@ public class InventoryLargeChest implements ILockableContainer
     }
 
     /**
-     * When some containers are closed they call this on each slot, then drop whatever it returns as an EntityItem -
-     * like when you close a workbench GUI.
+     * Removes a stack from the given slot and returns it.
      */
-    public ItemStack getStackInSlotOnClosing(int index)
+    public ItemStack removeStackFromSlot(int index)
     {
-        return index >= this.upperChest.getSizeInventory() ? this.lowerChest.getStackInSlotOnClosing(index - this.upperChest.getSizeInventory()) : this.upperChest.getStackInSlotOnClosing(index);
+        return index >= this.upperChest.getSizeInventory() ? this.lowerChest.removeStackFromSlot(index - this.upperChest.getSizeInventory()) : this.upperChest.removeStackFromSlot(index);
     }
 
     /**
@@ -127,8 +127,7 @@ public class InventoryLargeChest implements ILockableContainer
     }
 
     /**
-     * Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be extended. *Isn't
-     * this more of a set than a get?*
+     * Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be extended.
      */
     public int getInventoryStackLimit()
     {
@@ -148,21 +147,21 @@ public class InventoryLargeChest implements ILockableContainer
     /**
      * Do not make give this method the name canInteractWith because it clashes with Container
      */
-    public boolean isUseableByPlayer(EntityPlayer playerIn)
+    public boolean isUseableByPlayer(EntityPlayer player)
     {
-        return this.upperChest.isUseableByPlayer(playerIn) && this.lowerChest.isUseableByPlayer(playerIn);
+        return this.upperChest.isUseableByPlayer(player) && this.lowerChest.isUseableByPlayer(player);
     }
 
-    public void openInventory(EntityPlayer playerIn)
+    public void openInventory(EntityPlayer player)
     {
-        this.upperChest.openInventory(playerIn);
-        this.lowerChest.openInventory(playerIn);
+        this.upperChest.openInventory(player);
+        this.lowerChest.openInventory(player);
     }
 
-    public void closeInventory(EntityPlayer playerIn)
+    public void closeInventory(EntityPlayer player)
     {
-        this.upperChest.closeInventory(playerIn);
-        this.lowerChest.closeInventory(playerIn);
+        this.upperChest.closeInventory(player);
+        this.lowerChest.closeInventory(player);
     }
 
     /**
@@ -178,7 +177,9 @@ public class InventoryLargeChest implements ILockableContainer
         return 0;
     }
 
-    public void setField(int id, int value) {}
+    public void setField(int id, int value)
+    {
+    }
 
     public int getFieldCount()
     {
@@ -211,9 +212,9 @@ public class InventoryLargeChest implements ILockableContainer
         return new ContainerChest(playerInventory, this, playerIn);
     }
 
-    public void clearInventory()
+    public void clear()
     {
-        this.upperChest.clearInventory();
-        this.lowerChest.clearInventory();
+        this.upperChest.clear();
+        this.lowerChest.clear();
     }
 }

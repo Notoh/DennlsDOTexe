@@ -11,16 +11,15 @@ import net.minecraft.world.World;
 public class GuiCrafting extends GuiContainer
 {
     private static final ResourceLocation craftingTableGuiTextures = new ResourceLocation("textures/gui/container/crafting_table.png");
-    private static final String __OBFID = "CL_00000750";
 
-    public GuiCrafting(InventoryPlayer p_i45504_1_, World worldIn)
+    public GuiCrafting(InventoryPlayer playerInv, World worldIn)
     {
-        this(p_i45504_1_, worldIn, BlockPos.ORIGIN);
+        this(playerInv, worldIn, BlockPos.ORIGIN);
     }
 
-    public GuiCrafting(InventoryPlayer p_i45505_1_, World worldIn, BlockPos p_i45505_3_)
+    public GuiCrafting(InventoryPlayer playerInv, World worldIn, BlockPos blockPosition)
     {
-        super(new ContainerWorkbench(p_i45505_1_, worldIn, p_i45505_3_));
+        super(new ContainerWorkbench(playerInv, worldIn, blockPosition));
     }
 
     /**
@@ -39,8 +38,8 @@ public class GuiCrafting extends GuiContainer
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(craftingTableGuiTextures);
-        int var4 = (this.width - this.xSize) / 2;
-        int var5 = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(var4, var5, 0, 0, this.xSize, this.ySize);
+        int i = (this.width - this.xSize) / 2;
+        int j = (this.height - this.ySize) / 2;
+        this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
     }
 }

@@ -7,18 +7,25 @@ import net.minecraft.server.MinecraftServer;
 
 public class CommandStop extends CommandBase
 {
-    private static final String __OBFID = "CL_00001132";
-
+    /**
+     * Gets the name of the command
+     */
     public String getCommandName()
     {
         return "stop";
     }
 
+    /**
+     * Gets the usage string for the command.
+     */
     public String getCommandUsage(ICommandSender sender)
     {
         return "commands.stop.usage";
     }
 
+    /**
+     * Callback when the command is invoked
+     */
     public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (MinecraftServer.getServer().worldServers != null)

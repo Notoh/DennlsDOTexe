@@ -21,7 +21,7 @@ public class SoundRegistry extends RegistrySimple<ResourceLocation, SoundEventAc
     }
 
     /**
-     * Reset the underlying sound map (Called on resource manager reload)
+     * Reset the underlying sound map (Called on resource commandManager reload)
      */
     public void clearMap()
     {

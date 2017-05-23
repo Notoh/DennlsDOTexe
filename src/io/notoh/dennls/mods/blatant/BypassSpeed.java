@@ -26,12 +26,12 @@ public class BypassSpeed extends Module {
     @Override
     public void onUpdate() {
         if(!this.toggle) return;
-            if((getMC().thePlayer.moveForward != 0 || getMC().thePlayer.moveStrafing != 0) && getMC().thePlayer
+        if((getMC().thePlayer.moveForward != 0 || getMC().thePlayer.moveStrafing != 0) && getMC().thePlayer
                     .onGround && !getMC().thePlayer.isSneaking()) {
-                getMC().thePlayer.motionY = 0.4d;
-                boolean hack = getMC().thePlayer.ticksExisted  % 2 == 0;
-                setSpeed(hack ? 0.1D : 1.6d); //might need to be 0.06
-            }
+            getMC().thePlayer.motionY = 0.4d;
+            boolean hack = getMC().thePlayer.ticksExisted  % 2 == 0;
+            setSpeed(hack ? 0.1D : 1.6d); //might need to be 0.06
+        }
     }
 
     private void setSpeed(double speed) {

@@ -52,6 +52,7 @@ public class Step extends Module {
     @Override
     public void onUpdate() {
         if(!this.toggle) {
+            Minecraft.getMinecraft().thePlayer.stepHeight = 0.5f;
             return;
         }
         if(getMC().thePlayer.isCollidedHorizontally && getMC().thePlayer.onGround) {
@@ -60,8 +61,6 @@ public class Step extends Module {
             getMC().thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(getMC().thePlayer.posX, getMC().thePlayer.posY + 0.75, getMC().thePlayer.posZ, getMC().thePlayer.onGround));
 
             getMC().thePlayer.stepHeight = 1.0f;
-        } else {
-            Minecraft.getMinecraft().thePlayer.stepHeight = 0.5f;
         }
     }
 }

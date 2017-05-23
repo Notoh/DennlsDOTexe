@@ -217,7 +217,7 @@ public abstract class Render<T extends Entity>
     }
 
     /**
-     * Returns the render manager's world object
+     * Returns the render commandManager's world object
      */
     private World getWorldFromRenderManager()
     {
@@ -322,7 +322,7 @@ public abstract class Render<T extends Entity>
     }
 
     /**
-     * Returns the font renderer from the set render manager
+     * Returns the font renderer from the set render commandManager
      */
     public FontRenderer getFontRendererFromRenderManager()
     {

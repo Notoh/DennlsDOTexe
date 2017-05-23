@@ -11,10 +11,10 @@ import org.darkstorm.minecraft.gui.util.GuiManagerDisplayScreen;
 public final class UIRenderer {
 
     public static void renderAndUpdateFrames() {
-        for(Frame frame : Dennls.guiManager.getFrames()) {
+        for(Frame frame : Dennls.getClient().guiManager.getFrames()) {
             frame.update();
         }
-        for(Frame frame : Dennls.guiManager.getFrames()) {
+        for(Frame frame : Dennls.getClient().guiManager.getFrames()) {
             if(frame.isPinned() || Minecraft.getMinecraft().currentScreen instanceof GuiManagerDisplayScreen) {
                 frame.render();
             }

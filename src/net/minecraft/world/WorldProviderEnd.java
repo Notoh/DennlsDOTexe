@@ -11,7 +11,7 @@ import net.minecraft.world.gen.ChunkProviderEnd;
 public class WorldProviderEnd extends WorldProvider
 {
     /**
-     * creates a new world chunk manager for WorldProvider
+     * creates a new world chunk commandManager for WorldProvider
      */
     public void registerWorldChunkManager()
     {

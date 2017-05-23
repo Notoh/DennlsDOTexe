@@ -2,6 +2,8 @@ package io.notoh.dennls.command;
 
 import io.notoh.dennls.Dennls;
 import io.notoh.dennls.command.cmds.Bind;
+import io.notoh.dennls.command.cmds.Help;
+import io.notoh.dennls.command.cmds.Toggle;
 
 import java.util.ArrayList;
 
@@ -10,10 +12,12 @@ import java.util.ArrayList;
  */
 public class CommandManager {
 
-    public ArrayList<Command> commands = new ArrayList<>();
+    private ArrayList<Command> commands = new ArrayList<>();
 
     public CommandManager() {
         commands.add(new Bind());
+        commands.add(new Toggle());
+        commands.add(new Help());
     }
 
     public ArrayList<Command> getCommands() {

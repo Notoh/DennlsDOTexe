@@ -52,7 +52,7 @@ public class SoundManager
     /** Set to true when the SoundManager has been initialised. */
     private boolean loaded;
 
-    /** A counter for how long the sound manager has been running */
+    /** A counter for how long the sound commandManager has been running */
     private int playTime = 0;
     private final Map<String, ISound> playingSounds = HashBiMap.<String, ISound>create();
     private final Map<ISound, String> invPlayingSounds;

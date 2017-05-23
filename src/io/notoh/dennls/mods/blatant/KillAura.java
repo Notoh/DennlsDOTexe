@@ -1,6 +1,7 @@
 package io.notoh.dennls.mods.blatant;
 
 import io.notoh.dennls.Dennls;
+import io.notoh.dennls.mods.Mode;
 import io.notoh.dennls.mods.Module;
 import io.notoh.dennls.util.ModCategory;
 import net.minecraft.client.Minecraft;
@@ -28,7 +29,7 @@ public class KillAura extends Module {
                 if(entity instanceof EntityPlayerSP) continue;
                 if(getMC().thePlayer.getDistanceToEntity(entity) <= Dennls.getActive().getReach()) {
                     if(entity.isEntityAlive()) {
-                        Dennls.aimbot.faceEntity(entity);
+                        if(Dennls.getActive() != Mode.BLATANT) Dennls.aimbot.faceEntity(entity);
                         getMC().playerController.attackEntity(getMC().thePlayer,entity);
                         getMC().thePlayer.swingItem();
                     }

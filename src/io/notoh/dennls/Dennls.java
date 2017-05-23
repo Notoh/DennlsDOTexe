@@ -51,9 +51,8 @@ public class Dennls {
     public static Waterwalk waterwalk;
     public static Xray xray;
     private static Mode active = Mode.SAFE;
-    public static CommandManager manager;
-    public static GuiManager guiManager;
-
+    public CommandManager commandManager;
+    public GuiManager guiManager;
 
     public static Dennls getInstance() {
         return instance;
@@ -92,7 +91,7 @@ public class Dennls {
         guiManager.setTheme(new SimpleTheme());
         guiManager.setup();
         gui = new ClientGui();
-        manager = new CommandManager();
+        commandManager = new CommandManager();
         Display.setTitle("DennlsDOTExe (test build 2.0.5)");
     }
 
@@ -146,7 +145,7 @@ public class Dennls {
 
     public static boolean onSendChatMessage(String message) {
         if (message.startsWith(".")) {
-            manager.callCommand(message.substring(1));
+            instance.commandManager.callCommand(message.substring(1));
             return false;
         }
 

@@ -27,7 +27,7 @@ public class ClickGui extends Module {
     @Override
     public void onEnable() {
         if(!(getMC().currentScreen instanceof GuiManagerDisplayScreen)) {
-            getMC().displayGuiScreen(new GuiManagerDisplayScreen(Dennls.guiManager));
+            getMC().displayGuiScreen(new GuiManagerDisplayScreen(Dennls.getClient().guiManager));
             UIRenderer.renderAndUpdateFrames();
         }
     }

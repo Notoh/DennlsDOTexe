@@ -44,6 +44,6 @@ public class Bind extends Command {
 
     @Override
     public String getSyntax() {
-        return prefix + "bind set <Module> <Key>";
+        return prefix + "bind set|get <Module> [Key]";
     }
 }

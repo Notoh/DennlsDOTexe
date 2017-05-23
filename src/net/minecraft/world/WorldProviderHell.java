@@ -10,7 +10,7 @@ import net.minecraft.world.gen.ChunkProviderHell;
 public class WorldProviderHell extends WorldProvider
 {
     /**
-     * creates a new world chunk manager for WorldProvider
+     * creates a new world chunk commandManager for WorldProvider
      */
     public void registerWorldChunkManager()
     {

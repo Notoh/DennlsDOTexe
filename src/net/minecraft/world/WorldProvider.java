@@ -23,7 +23,7 @@ public abstract class WorldProvider
     private WorldType terrainType;
     private String generatorSettings;
 
-    /** World chunk manager being used to generate chunks */
+    /** World chunk commandManager being used to generate chunks */
     protected WorldChunkManager worldChunkMgr;
 
     /**
@@ -72,7 +72,7 @@ public abstract class WorldProvider
     }
 
     /**
-     * creates a new world chunk manager for WorldProvider
+     * creates a new world chunk commandManager for WorldProvider
      */
     protected void registerWorldChunkManager()
     {

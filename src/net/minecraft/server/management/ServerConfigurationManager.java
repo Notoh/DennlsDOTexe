@@ -219,7 +219,7 @@ public abstract class ServerConfigurationManager
     }
 
     /**
-     * Sets the NBT manager to the one for the WorldServer given.
+     * Sets the NBT commandManager to the one for the WorldServer given.
      */
     public void setPlayerManager(WorldServer[] worldServers)
     {

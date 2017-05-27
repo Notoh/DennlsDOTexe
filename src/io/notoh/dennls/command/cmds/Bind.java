@@ -37,6 +37,10 @@ public class Bind extends Command {
                 }
             }
             Dennls.addChatMessage("That module doesn't exist!");
+        } else if(args[0].equalsIgnoreCase("clearall")) {
+            for(Module module : Dennls.getClient().getMods()) {
+                module.setKeyCode(Keyboard.KEY_NONE);
+            }
         } else {
             throw new RuntimeException("Invalid Syntax");
         }
@@ -44,6 +48,6 @@ public class Bind extends Command {
 
     @Override
     public String getSyntax() {
-        return prefix + "bind set|get <Module> [Key]";
+        return prefix + "bind set|get|clearall [Module] [Key]";
     }
 }

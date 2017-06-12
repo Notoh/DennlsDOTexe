@@ -65,10 +65,7 @@ public final class XrayUtils {
     }
 
     public static boolean isXrayBlock(Block block) {
-        if(XRAY_BLOCKS.contains(block)) {
-            return true;
-        }
-        return false;
+        return XRAY_BLOCKS.contains(block);
     }
 
 }

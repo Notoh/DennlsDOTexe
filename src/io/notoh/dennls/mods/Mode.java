@@ -1,7 +1,7 @@
 package io.notoh.dennls.mods;
 
 /**
- * Corresponds to the
+ * Corresponds to the mode toggle of the client.
  */
 public enum Mode {
 

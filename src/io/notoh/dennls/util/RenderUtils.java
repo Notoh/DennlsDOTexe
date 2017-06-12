@@ -14,8 +14,7 @@ import org.lwjgl.opengl.GL11;
  */
 public final class RenderUtils {
 
-    public static void entityESPBox(Entity entity, int mode)
-    {
+    public static void entityESPBox(Entity entity, int mode) {
         GL11.glBlendFunc(770, 771);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glLineWidth(2.0F);
@@ -260,8 +259,7 @@ public final class RenderUtils {
         render.render(red,green,blue,xPos,yPos,zPos);
     }
 
-    public static void blockESPBox(BlockPos blockPos)
-    {
+    public static void blockESPBox(BlockPos blockPos) {
         double x =
                 blockPos.getX()
                         - Minecraft.getMinecraft().getRenderManager().renderPosX;

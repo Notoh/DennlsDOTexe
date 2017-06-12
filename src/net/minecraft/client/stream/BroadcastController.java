@@ -193,7 +193,6 @@ public class BroadcastController
 
             if (ErrorCode.failed(p_getArchivingStateCallback_1_))
             {
-                ;
             }
         }
         public void runCommercialCallback(ErrorCode p_runCommercialCallback_1_)
@@ -1150,7 +1149,7 @@ public class BroadcastController
         void func_152892_c(ErrorCode p_152892_1_);
     }
 
-    public static enum BroadcastState
+    public enum BroadcastState
     {
         Uninitialized,
         Initialized,
@@ -1165,6 +1164,6 @@ public class BroadcastController
         Broadcasting,
         Stopping,
         Paused,
-        IngestTesting;
+        IngestTesting
     }
 }

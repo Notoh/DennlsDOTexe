@@ -196,7 +196,6 @@ public class ModelBlock
             }
             catch (NullPointerException var5)
             {
-                ;
             }
         }
     }

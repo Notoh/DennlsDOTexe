@@ -5,7 +5,7 @@ import java.util.*;
 import org.darkstorm.minecraft.gui.component.*;
 
 public class BasicButtonGroup implements ButtonGroup {
-	private List<Button> buttons = new ArrayList<Button>();
+	private List<Button> buttons = new ArrayList<>();
 
 	@Override
 	public void addButton(Button button) {

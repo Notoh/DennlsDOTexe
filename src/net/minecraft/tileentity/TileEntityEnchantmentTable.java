@@ -109,7 +109,6 @@ public class TileEntityEnchantmentTable extends TileEntity implements ITickable,
 
         for (f2 = this.field_145924_q - this.bookRotation; f2 >= (float)Math.PI; f2 -= ((float)Math.PI * 2F))
         {
-            ;
         }
 
         while (f2 < -(float)Math.PI)

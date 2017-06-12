@@ -89,13 +89,15 @@ public final class GuiManager extends AbstractGuiManager {
                     "Disable" : "Enable") {
                 @Override
                 public void update() {
-                    setText(updated.getToggle()? updated instanceof ChangeMode ? "Change" :
+                    setText(updated.getToggle()? updated instanceof ChangeMode ?
+							"Change" :
                             "Disable" : "Enable");
                 }
             };
             button.addButtonListener(b -> {
                 updated.toggle();
-                b.setText(updated.getToggle()? updated instanceof ChangeMode ? "Change" :
+                b.setText(updated.getToggle()? updated instanceof ChangeMode ?
+                        "Change" :
                         "Disable" : "Enable");
             });
             frame.add(button, GridLayoutManager.HorizontalGridConstraint.RIGHT);

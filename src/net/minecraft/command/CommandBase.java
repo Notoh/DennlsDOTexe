@@ -210,7 +210,6 @@ public abstract class CommandBase implements ICommand
             }
             catch (IllegalArgumentException var4)
             {
-                ;
             }
         }
 

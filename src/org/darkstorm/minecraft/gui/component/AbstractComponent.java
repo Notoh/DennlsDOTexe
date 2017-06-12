@@ -16,7 +16,7 @@ public abstract class AbstractComponent implements Component {
 	protected Color foreground, background;
 	protected boolean enabled = true, visible = true;
 
-	private List<ComponentListener> listeners = new CopyOnWriteArrayList<ComponentListener>();
+	private List<ComponentListener> listeners = new CopyOnWriteArrayList<>();
 
 	public void render() {
 		if(ui == null)

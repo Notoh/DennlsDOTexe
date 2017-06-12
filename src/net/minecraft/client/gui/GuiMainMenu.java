@@ -121,7 +121,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         }
         catch (IOException var12)
         {
-            ;
         }
         finally
         {
@@ -133,7 +132,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
                 }
                 catch (IOException var11)
                 {
-                    ;
                 }
             }
         }
@@ -233,7 +231,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private void addSingleplayerMultiplayerButtons(int p_73969_1_, int p_73969_2_)
     {
         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, p_73969_1_, I18n.format("menu.singleplayer", new Object[0])));
-        this.buttonList.add(new GuiButton(2, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 1, I18n.format("menu.multiplayer", new Object[0])));
+        this.buttonList.add(new GuiButton(2, this.width / 2 - 100, p_73969_1_ + p_73969_2_, I18n.format("menu.multiplayer", new Object[0])));
         this.buttonList.add(this.realmsButton = new GuiButton(14, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, I18n.format("menu.online", new Object[0])));
     }
 
@@ -243,7 +241,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private void addDemoButtons(int p_73972_1_, int p_73972_2_)
     {
         this.buttonList.add(new GuiButton(11, this.width / 2 - 100, p_73972_1_, I18n.format("menu.playdemo", new Object[0])));
-        this.buttonList.add(this.buttonResetDemo = new GuiButton(12, this.width / 2 - 100, p_73972_1_ + p_73972_2_ * 1, I18n.format("menu.resetdemo", new Object[0])));
+        this.buttonList.add(this.buttonResetDemo = new GuiButton(12, this.width / 2 - 100, p_73972_1_ + p_73972_2_, I18n.format("menu.resetdemo", new Object[0])));
         ISaveFormat isaveformat = this.mc.getSaveLoader();
         WorldInfo worldinfo = isaveformat.getWorldInfo("Demo_World");
 
@@ -518,16 +516,16 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
         if ((double)this.updateCounter < 1.0E-4D)
         {
-            this.drawTexturedModalRect(j + 0, k + 0, 0, 0, 99, 44);
-            this.drawTexturedModalRect(j + 99, k + 0, 129, 0, 27, 44);
-            this.drawTexturedModalRect(j + 99 + 26, k + 0, 126, 0, 3, 44);
-            this.drawTexturedModalRect(j + 99 + 26 + 3, k + 0, 99, 0, 26, 44);
-            this.drawTexturedModalRect(j + 155, k + 0, 0, 45, 155, 44);
+            this.drawTexturedModalRect(j, k, 0, 0, 99, 44);
+            this.drawTexturedModalRect(j + 99, k, 129, 0, 27, 44);
+            this.drawTexturedModalRect(j + 99 + 26, k, 126, 0, 3, 44);
+            this.drawTexturedModalRect(j + 99 + 26 + 3, k, 99, 0, 26, 44);
+            this.drawTexturedModalRect(j + 155, k, 0, 45, 155, 44);
         }
         else
         {
-            this.drawTexturedModalRect(j + 0, k + 0, 0, 0, 155, 44);
-            this.drawTexturedModalRect(j + 155, k + 0, 0, 45, 155, 44);
+            this.drawTexturedModalRect(j, k, 0, 0, 155, 44);
+            this.drawTexturedModalRect(j + 155, k, 0, 45, 155, 44);
         }
 
         GlStateManager.pushMatrix();

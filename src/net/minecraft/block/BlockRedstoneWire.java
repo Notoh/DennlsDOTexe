@@ -490,7 +490,7 @@ public class BlockRedstoneWire extends Block
         return new BlockState(this, new IProperty[] {NORTH, EAST, SOUTH, WEST, POWER});
     }
 
-    static enum EnumAttachPosition implements IStringSerializable
+    enum EnumAttachPosition implements IStringSerializable
     {
         UP("up"),
         SIDE("side"),
@@ -498,7 +498,7 @@ public class BlockRedstoneWire extends Block
 
         private final String name;
 
-        private EnumAttachPosition(String name)
+        EnumAttachPosition(String name)
         {
             this.name = name;
         }

@@ -8,7 +8,7 @@ public abstract class AbstractTheme implements Theme {
 	protected final Map<Class<? extends Component>, ComponentUI> uis;
 
 	public AbstractTheme() {
-		uis = new HashMap<Class<? extends Component>, ComponentUI>();
+		uis = new HashMap<>();
 	}
 
 	protected void installUI(AbstractComponentUI<?> ui) {

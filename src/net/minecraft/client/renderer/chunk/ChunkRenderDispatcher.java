@@ -139,7 +139,6 @@ public class ChunkRenderDispatcher
             }
             catch (InterruptedException var7)
             {
-                ;
             }
 
             flag = true;
@@ -158,7 +157,6 @@ public class ChunkRenderDispatcher
 
         while (this.runChunkUploads(0L))
         {
-            ;
         }
 
         List<RegionRenderCacheBuilder> list = Lists.<RegionRenderCacheBuilder>newArrayList();
@@ -171,7 +169,6 @@ public class ChunkRenderDispatcher
             }
             catch (InterruptedException var3)
             {
-                ;
             }
         }
 

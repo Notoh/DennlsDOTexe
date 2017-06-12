@@ -443,7 +443,7 @@ public class BlockDoor extends Block
         return new BlockState(this, new IProperty[] {HALF, FACING, OPEN, HINGE, POWERED});
     }
 
-    public static enum EnumDoorHalf implements IStringSerializable
+    public enum EnumDoorHalf implements IStringSerializable
     {
         UPPER,
         LOWER;
@@ -459,7 +459,7 @@ public class BlockDoor extends Block
         }
     }
 
-    public static enum EnumHingePosition implements IStringSerializable
+    public enum EnumHingePosition implements IStringSerializable
     {
         LEFT,
         RIGHT;

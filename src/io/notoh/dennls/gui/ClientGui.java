@@ -7,7 +7,6 @@ import io.notoh.dennls.mods.Mode;
 import io.notoh.dennls.mods.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.Display;
 
@@ -28,7 +27,6 @@ public class ClientGui extends GuiIngame {
         super.renderGameOverlay(partialTicks);
         if(Dennls.getActive() == Mode.GHOST) return;
         Display.setTitle("DennlsDOTExe (test build 2.0.5)");
-        ScaledResolution scaledresolution = new ScaledResolution(this.mc);
         this.mc.entityRenderer.setupOverlayRendering();
         GlStateManager.enableBlend();
         drawString(mc.fontRendererObj,"\247f\247lDennls\2475.\2474\247lExe",2,2,0xffffffff);

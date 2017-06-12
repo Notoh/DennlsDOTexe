@@ -657,7 +657,6 @@ public class EntityGuardian extends EntityMob
                 }
                 else if (this.tickCounter >= 60 && this.tickCounter % 20 == 0)
                 {
-                    ;
                 }
 
                 super.updateTask();

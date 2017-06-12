@@ -86,7 +86,7 @@ public class PotionHelper
                     {
                         f += (float)(j >> 16 & 255) / 255.0F;
                         f1 += (float)(j >> 8 & 255) / 255.0F;
-                        f2 += (float)(j >> 0 & 255) / 255.0F;
+                        f2 += (float)(j & 255) / 255.0F;
                         ++f3;
                     }
                 }

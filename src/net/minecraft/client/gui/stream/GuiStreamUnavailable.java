@@ -229,7 +229,7 @@ public class GuiStreamUnavailable extends GuiScreen
         }
     }
 
-    public static enum Reason
+    public enum Reason
     {
         NO_FBO(new ChatComponentTranslation("stream.unavailable.no_fbo", new Object[0])),
         LIBRARY_ARCH_MISMATCH(new ChatComponentTranslation("stream.unavailable.library_arch_mismatch", new Object[0])),
@@ -247,12 +247,12 @@ public class GuiStreamUnavailable extends GuiScreen
         private final IChatComponent field_152574_m;
         private final IChatComponent field_152575_n;
 
-        private Reason(IChatComponent p_i1066_3_)
+        Reason(IChatComponent p_i1066_3_)
         {
             this(p_i1066_3_, (IChatComponent)null);
         }
 
-        private Reason(IChatComponent p_i1067_3_, IChatComponent p_i1067_4_)
+        Reason(IChatComponent p_i1067_3_, IChatComponent p_i1067_4_)
         {
             this.field_152574_m = p_i1067_3_;
             this.field_152575_n = p_i1067_4_;

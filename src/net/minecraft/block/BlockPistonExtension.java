@@ -254,14 +254,14 @@ public class BlockPistonExtension extends Block
         return new BlockState(this, new IProperty[] {FACING, TYPE, SHORT});
     }
 
-    public static enum EnumPistonType implements IStringSerializable
+    public enum EnumPistonType implements IStringSerializable
     {
         DEFAULT("normal"),
         STICKY("sticky");
 
         private final String VARIANT;
 
-        private EnumPistonType(String name)
+        EnumPistonType(String name)
         {
             this.VARIANT = name;
         }

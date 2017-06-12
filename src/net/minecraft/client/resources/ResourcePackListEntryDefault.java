@@ -51,13 +51,9 @@ public class ResourcePackListEntryDefault extends ResourcePackListEntry
                 return packmetadatasection.getPackDescription().getFormattedText();
             }
         }
-        catch (JsonParseException jsonparseexception)
+        catch (JsonParseException | IOException jsonparseexception)
         {
             logger.error((String)"Couldn\'t load metadata info", (Throwable)jsonparseexception);
-        }
-        catch (IOException ioexception)
-        {
-            logger.error((String)"Couldn\'t load metadata info", (Throwable)ioexception);
         }
 
         return EnumChatFormatting.RED + "Missing " + "pack.mcmeta" + " :(";

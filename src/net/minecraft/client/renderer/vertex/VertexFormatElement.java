@@ -28,7 +28,7 @@ public class VertexFormatElement
         this.elementCount = count;
     }
 
-    private final boolean func_177372_a(int p_177372_1_, VertexFormatElement.EnumUsage p_177372_2_)
+    private boolean func_177372_a(int p_177372_1_, VertexFormatElement.EnumUsage p_177372_2_)
     {
         return p_177372_1_ == 0 || p_177372_2_ == VertexFormatElement.EnumUsage.UV;
     }
@@ -94,7 +94,7 @@ public class VertexFormatElement
         return i;
     }
 
-    public static enum EnumType
+    public enum EnumType
     {
         FLOAT(4, "Float", 5126),
         UBYTE(1, "Unsigned Byte", 5121),
@@ -108,7 +108,7 @@ public class VertexFormatElement
         private final String displayName;
         private final int glConstant;
 
-        private EnumType(int sizeIn, String displayNameIn, int glConstantIn)
+        EnumType(int sizeIn, String displayNameIn, int glConstantIn)
         {
             this.size = sizeIn;
             this.displayName = displayNameIn;
@@ -131,7 +131,7 @@ public class VertexFormatElement
         }
     }
 
-    public static enum EnumUsage
+    public enum EnumUsage
     {
         POSITION("Position"),
         NORMAL("Normal"),
@@ -143,7 +143,7 @@ public class VertexFormatElement
 
         private final String displayName;
 
-        private EnumUsage(String displayNameIn)
+        EnumUsage(String displayNameIn)
         {
             this.displayName = displayNameIn;
         }

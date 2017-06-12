@@ -117,7 +117,6 @@ public class BlockRendererDispatcher implements IResourceManagerReloadListener
             }
             catch (Exception var6)
             {
-                ;
             }
         }
 

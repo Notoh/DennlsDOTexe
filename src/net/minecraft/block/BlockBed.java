@@ -311,14 +311,14 @@ public class BlockBed extends BlockDirectional
         return new BlockState(this, new IProperty[] {FACING, PART, OCCUPIED});
     }
 
-    public static enum EnumPartType implements IStringSerializable
+    public enum EnumPartType implements IStringSerializable
     {
         HEAD("head"),
         FOOT("foot");
 
         private final String name;
 
-        private EnumPartType(String name)
+        EnumPartType(String name)
         {
             this.name = name;
         }

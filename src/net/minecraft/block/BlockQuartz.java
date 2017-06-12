@@ -109,7 +109,7 @@ public class BlockQuartz extends Block
         return new BlockState(this, new IProperty[] {VARIANT});
     }
 
-    public static enum EnumType implements IStringSerializable
+    public enum EnumType implements IStringSerializable
     {
         DEFAULT(0, "default", "default"),
         CHISELED(1, "chiseled", "chiseled"),
@@ -122,7 +122,7 @@ public class BlockQuartz extends Block
         private final String field_176805_h;
         private final String unlocalizedName;
 
-        private EnumType(int meta, String name, String unlocalizedName)
+        EnumType(int meta, String name, String unlocalizedName)
         {
             this.meta = meta;
             this.field_176805_h = name;

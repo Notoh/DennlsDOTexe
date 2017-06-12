@@ -904,7 +904,6 @@ public class WorldInfo
                 }
                 catch (Throwable var3)
                 {
-                    ;
                 }
 
                 return String.format("0x%05X - %s", new Object[] {Integer.valueOf(WorldInfo.this.saveVersion), s});

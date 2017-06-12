@@ -487,7 +487,7 @@ public class IngestServerTester
         void func_152907_a(IngestServerTester p_152907_1_, IngestServerTester.IngestTestState p_152907_2_);
     }
 
-    public static enum IngestTestState
+    public enum IngestTestState
     {
         Uninitalized,
         Starting,
@@ -497,6 +497,6 @@ public class IngestServerTester
         Finished,
         Cancelling,
         Cancelled,
-        Failed;
+        Failed
     }
 }

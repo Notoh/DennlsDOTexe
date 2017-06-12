@@ -147,7 +147,6 @@ public class GameRules
             }
             catch (NumberFormatException var4)
             {
-                ;
             }
 
             try
@@ -156,7 +155,6 @@ public class GameRules
             }
             catch (NumberFormatException var3)
             {
-                ;
             }
         }
 
@@ -181,10 +179,10 @@ public class GameRules
         }
     }
 
-    public static enum ValueType
+    public enum ValueType
     {
         ANY_VALUE,
         BOOLEAN_VALUE,
-        NUMERICAL_VALUE;
+        NUMERICAL_VALUE
     }
 }

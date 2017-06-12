@@ -98,7 +98,7 @@ public class BlockHugeMushroom extends Block
         return new BlockState(this, new IProperty[] {VARIANT});
     }
 
-    public static enum EnumType implements IStringSerializable
+    public enum EnumType implements IStringSerializable
     {
         NORTH_WEST(1, "north_west"),
         NORTH(2, "north"),
@@ -118,7 +118,7 @@ public class BlockHugeMushroom extends Block
         private final int meta;
         private final String name;
 
-        private EnumType(int meta, String name)
+        EnumType(int meta, String name)
         {
             this.meta = meta;
             this.name = name;

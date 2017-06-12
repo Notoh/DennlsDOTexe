@@ -286,7 +286,7 @@ public class ItemModelGenerator
         }
     }
 
-    static enum SpanFacing
+    enum SpanFacing
     {
         UP(EnumFacing.UP, 0, -1),
         DOWN(EnumFacing.DOWN, 0, 1),
@@ -297,7 +297,7 @@ public class ItemModelGenerator
         private final int field_178373_f;
         private final int field_178374_g;
 
-        private SpanFacing(EnumFacing facing, int p_i46215_4_, int p_i46215_5_)
+        SpanFacing(EnumFacing facing, int p_i46215_4_, int p_i46215_5_)
         {
             this.facing = facing;
             this.field_178373_f = p_i46215_4_;

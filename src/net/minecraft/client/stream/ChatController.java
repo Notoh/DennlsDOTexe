@@ -1,11 +1,9 @@
 package net.minecraft.client.stream;
 
 import com.google.common.collect.Lists;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+
+import java.util.*;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tv.twitch.AuthToken;
@@ -326,7 +324,6 @@ public class ChatController
                     }
                     catch (InterruptedException var2)
                     {
-                        ;
                     }
                 }
             }
@@ -784,10 +781,7 @@ public class ChatController
                 this.field_176044_d.add(p_chatChannelUserChangeCallback_4_[k]);
             }
 
-            for (int l = 0; l < p_chatChannelUserChangeCallback_2_.length; ++l)
-            {
-                this.field_176044_d.add(p_chatChannelUserChangeCallback_2_[l]);
-            }
+            this.field_176044_d.addAll(Arrays.asList(p_chatChannelUserChangeCallback_2_));
 
             try
             {
@@ -895,27 +889,27 @@ public class ChatController
         void func_176020_d(String p_176020_1_);
     }
 
-    public static enum ChatState
+    public enum ChatState
     {
         Uninitialized,
         Initializing,
         Initialized,
-        ShuttingDown;
+        ShuttingDown
     }
 
-    public static enum EnumChannelState
+    public enum EnumChannelState
     {
         Created,
         Connecting,
         Connected,
         Disconnecting,
-        Disconnected;
+        Disconnected
     }
 
-    public static enum EnumEmoticonMode
+    public enum EnumEmoticonMode
     {
         None,
         Url,
-        TextureAtlas;
+        TextureAtlas
     }
 }

@@ -178,7 +178,6 @@ public abstract class EntityFireball extends Entity
 
             for (this.rotationPitch = (float)(MathHelper.func_181159_b((double)f1, this.motionY) * 180.0D / Math.PI) - 90.0F; this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
             {
-                ;
             }
 
             while (this.rotationPitch - this.prevRotationPitch >= 180.0F)

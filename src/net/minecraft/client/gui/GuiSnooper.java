@@ -36,10 +36,7 @@ public class GuiSnooper extends GuiScreen
         String s = I18n.format("options.snooper.desc", new Object[0]);
         java.util.List<String> list = Lists.<String>newArrayList();
 
-        for (String s1 : this.fontRendererObj.listFormattedStringToWidth(s, this.width - 30))
-        {
-            list.add(s1);
-        }
+        list.addAll(this.fontRendererObj.listFormattedStringToWidth(s, this.width - 30));
 
         this.field_146607_r = (String[])list.toArray(new String[list.size()]);
         this.field_146604_g.clear();
@@ -48,7 +45,7 @@ public class GuiSnooper extends GuiScreen
         this.buttonList.add(new GuiButton(2, this.width / 2 + 2, this.height - 30, 150, 20, I18n.format("gui.done", new Object[0])));
         boolean flag = this.mc.getIntegratedServer() != null && this.mc.getIntegratedServer().getPlayerUsageSnooper() != null;
 
-        for (Entry<String, String> entry : (new TreeMap<String, String>(this.mc.getPlayerUsageSnooper().getCurrentStats())).entrySet())
+        for (Entry<String, String> entry : (new TreeMap<>(this.mc.getPlayerUsageSnooper().getCurrentStats())).entrySet())
         {
             this.field_146604_g.add((flag ? "C " : "") + (String)entry.getKey());
             this.field_146609_h.add(this.fontRendererObj.trimStringToWidth((String)entry.getValue(), this.width - 220));
@@ -56,7 +53,7 @@ public class GuiSnooper extends GuiScreen
 
         if (flag)
         {
-            for (Entry<String, String> entry1 : (new TreeMap<String, String>(this.mc.getIntegratedServer().getPlayerUsageSnooper().getCurrentStats())).entrySet())
+            for (Entry<String, String> entry1 : (new TreeMap<>(this.mc.getIntegratedServer().getPlayerUsageSnooper().getCurrentStats())).entrySet())
             {
                 this.field_146604_g.add("S " + (String)entry1.getKey());
                 this.field_146609_h.add(this.fontRendererObj.trimStringToWidth((String)entry1.getValue(), this.width - 220));

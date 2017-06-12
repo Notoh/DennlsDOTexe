@@ -770,7 +770,6 @@ public class WorldServer extends World implements IThreadListener
                 }
                 catch (Throwable var5)
                 {
-                    ;
                 }
 
                 throw new ReportedException(crashreport);

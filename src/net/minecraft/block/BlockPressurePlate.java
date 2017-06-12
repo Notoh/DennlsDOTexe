@@ -88,9 +88,9 @@ public class BlockPressurePlate extends BlockBasePressurePlate
         return new BlockState(this, new IProperty[] {POWERED});
     }
 
-    public static enum Sensitivity
+    public enum Sensitivity
     {
         EVERYTHING,
-        MOBS;
+        MOBS
     }
 }

@@ -27,7 +27,6 @@ public class NoiseGeneratorSimplex
 
         for (int i = 0; i < 256; this.field_151608_f[i] = i++)
         {
-            ;
         }
 
         for (int l = 0; l < 256; ++l)

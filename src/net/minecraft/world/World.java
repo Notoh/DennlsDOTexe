@@ -228,7 +228,6 @@ public abstract class World implements IBlockAccess
 
         for (blockpos = new BlockPos(pos.getX(), this.func_181545_F(), pos.getZ()); !this.isAirBlock(blockpos.up()); blockpos = blockpos.up())
         {
-            ;
         }
 
         return this.getBlockState(blockpos).getBlock();

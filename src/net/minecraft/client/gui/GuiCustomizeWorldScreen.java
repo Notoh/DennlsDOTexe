@@ -151,7 +151,6 @@ public class GuiCustomizeWorldScreen extends GuiScreen implements GuiSlider.Form
         }
         catch (NumberFormatException var5)
         {
-            ;
         }
 
         float f1 = 0.0F;

@@ -43,7 +43,6 @@ public class BlockPortal extends BlockBreakable
 
             for (blockpos = pos; !World.doesBlockHaveSolidTopSurface(worldIn, blockpos) && blockpos.getY() > 0; blockpos = blockpos.down())
             {
-                ;
             }
 
             if (i > 0 && !worldIn.getBlockState(blockpos.up()).getBlock().isNormalCube())
@@ -343,7 +342,6 @@ public class BlockPortal extends BlockBreakable
 
             for (BlockPos blockpos = p_i45694_2_; p_i45694_2_.getY() > blockpos.getY() - 21 && p_i45694_2_.getY() > 0 && this.func_150857_a(worldIn.getBlockState(p_i45694_2_.down()).getBlock()); p_i45694_2_ = p_i45694_2_.down())
             {
-                ;
             }
 
             int i = this.func_180120_a(p_i45694_2_, this.field_150863_d) - 1;

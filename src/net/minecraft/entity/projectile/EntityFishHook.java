@@ -313,7 +313,6 @@ public class EntityFishHook extends Entity
 
                 for (this.rotationPitch = (float)(MathHelper.func_181159_b(this.motionY, (double)f5) * 180.0D / Math.PI); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
                 {
-                    ;
                 }
 
                 while (this.rotationPitch - this.prevRotationPitch >= 180.0F)

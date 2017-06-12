@@ -147,7 +147,6 @@ public class LanServerDetector
             }
             catch (IOException var4)
             {
-                ;
             }
 
             this.socket.close();

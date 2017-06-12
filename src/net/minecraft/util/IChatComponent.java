@@ -54,7 +54,7 @@ public interface IChatComponent extends Iterable<IChatComponent>
      */
     IChatComponent createCopy();
 
-    public static class Serializer implements JsonDeserializer<IChatComponent>, JsonSerializer<IChatComponent>
+    class Serializer implements JsonDeserializer<IChatComponent>, JsonSerializer<IChatComponent>
     {
         private static final Gson GSON;
 

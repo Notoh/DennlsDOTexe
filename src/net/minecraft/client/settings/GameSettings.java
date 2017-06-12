@@ -1223,7 +1223,7 @@ public class GameSettings
         return this.field_181150_U;
     }
 
-    public static enum Options
+    public enum Options
     {
         INVERT_MOUSE("options.invertMouse", false, true),
         SENSITIVITY("options.sensitivity", true, false),
@@ -1290,12 +1290,12 @@ public class GameSettings
             return null;
         }
 
-        private Options(String p_i1015_3_, boolean p_i1015_4_, boolean p_i1015_5_)
+        Options(String p_i1015_3_, boolean p_i1015_4_, boolean p_i1015_5_)
         {
             this(p_i1015_3_, p_i1015_4_, p_i1015_5_, 0.0F, 1.0F, 0.0F);
         }
 
-        private Options(String p_i45004_3_, boolean p_i45004_4_, boolean p_i45004_5_, float p_i45004_6_, float p_i45004_7_, float p_i45004_8_)
+        Options(String p_i45004_3_, boolean p_i45004_4_, boolean p_i45004_5_, float p_i45004_6_, float p_i45004_7_, float p_i45004_8_)
         {
             this.enumString = p_i45004_3_;
             this.enumFloat = p_i45004_4_;

@@ -236,13 +236,13 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
         return new GameProfile(uuid, original.getName());
     }
 
-    static enum LoginState
+    enum LoginState
     {
         HELLO,
         KEY,
         AUTHENTICATING,
         READY_TO_ACCEPT,
         DELAY_ACCEPT,
-        ACCEPTED;
+        ACCEPTED
     }
 }

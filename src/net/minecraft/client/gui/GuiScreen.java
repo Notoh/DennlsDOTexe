@@ -131,7 +131,6 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         }
         catch (Exception var1)
         {
-            ;
         }
 
         return "";
@@ -151,7 +150,6 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
             }
             catch (Exception var2)
             {
-                ;
             }
         }
     }
@@ -287,7 +285,6 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                 }
                 catch (NBTException var11)
                 {
-                    ;
                 }
 
                 if (itemstack != null)

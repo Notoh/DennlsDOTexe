@@ -678,11 +678,11 @@ public abstract class BiomeGenBase
         }
     }
 
-    public static enum TempCategory
+    public enum TempCategory
     {
         OCEAN,
         COLD,
         MEDIUM,
-        WARM;
+        WARM
     }
 }

@@ -2,6 +2,8 @@ package io.notoh.dennls.command.cmds;
 
 import io.notoh.dennls.Dennls;
 import io.notoh.dennls.command.Command;
+import io.notoh.dennls.mods.ChangeMode;
+import io.notoh.dennls.mods.ClickGui;
 import io.notoh.dennls.mods.Module;
 import org.lwjgl.input.Keyboard;
 
@@ -37,6 +39,12 @@ public class Bind extends Command {
                 }
             }
             Dennls.addChatMessage("That module doesn't exist!");
+        } else if(args[0].equalsIgnoreCase("clearall")) {
+            for(Module module : Dennls.getClient().getMods()) {
+                if(module instanceof ClickGui || module instanceof ChangeMode) continue;
+                module.setKeyCode(Keyboard.KEY_NONE);
+            }
+            Dennls.addChatMessage("Keybinds cleared.");
         } else {
             throw new RuntimeException("Invalid Syntax");
         }
@@ -44,6 +52,6 @@ public class Bind extends Command {
 
     @Override
     public String getSyntax() {
-        return prefix + "bind set|get <Module> [Key]";
+        return prefix + "bind set|get|clearall [Module] [Key]";
     }
 }

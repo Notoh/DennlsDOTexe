@@ -3,14 +3,9 @@ package io.notoh.dennls;
 import io.notoh.dennls.command.CommandManager;
 import io.notoh.dennls.gui.ClientGui;
 import io.notoh.dennls.gui.GuiManager;
-import io.notoh.dennls.mods.ChangeMode;
-import io.notoh.dennls.mods.ClickGui;
-import io.notoh.dennls.mods.Mode;
-import io.notoh.dennls.mods.Module;
+import io.notoh.dennls.mods.*;
 import io.notoh.dennls.mods.blatant.*;
-import io.notoh.dennls.mods.ghost.Sprint;
-import io.notoh.dennls.mods.ghost.Step;
-import io.notoh.dennls.mods.ghost.Triggerbot;
+import io.notoh.dennls.mods.ghost.*;
 import io.notoh.dennls.mods.render.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.S02PacketChat;
@@ -45,9 +40,12 @@ public class Dennls {
     public static ESP esp;
     public static Sprint sprint;
     public static Step step;
+    public static Criticals criticals;
     public static Glide glide;
     public static BypassSpeed bypassSpeed;
+    public static SmoothAim smoothAim;
     public static Speed speed;
+    public static FastPlace fastPlace;
     public static Waterwalk waterwalk;
     public static Xray xray;
     private static Mode active = Mode.SAFE;
@@ -74,10 +72,13 @@ public class Dennls {
         registerMod(bypassSpeed = new BypassSpeed());
         registerMod(speed = new Speed());
         registerMod(highJump = new HighJump());
+        registerMod(fastPlace = new FastPlace());
         //ghost mods
         registerMod(triggerbot = new Triggerbot());
         registerMod(sprint = new Sprint());
         registerMod(step = new Step());
+        registerMod(criticals = new Criticals());
+        registerMod(smoothAim = new SmoothAim());
         //render mods
         registerMod(nukerESP = new NukerESP());
         registerMod(fullbright = new Fullbright());
@@ -168,5 +169,4 @@ public class Dennls {
         }
         return true;
     }
-
 }

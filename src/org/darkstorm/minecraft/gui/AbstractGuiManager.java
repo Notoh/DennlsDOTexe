@@ -41,7 +41,7 @@ public abstract class AbstractGuiManager implements GuiManager {
 	private Theme theme;
 
 	public AbstractGuiManager() {
-		frames = new CopyOnWriteArrayList<Frame>();
+		frames = new CopyOnWriteArrayList<>();
 	}
 
 	@Override

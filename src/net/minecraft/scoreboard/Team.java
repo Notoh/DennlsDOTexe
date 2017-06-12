@@ -31,7 +31,7 @@ public abstract class Team
 
     public abstract Team.EnumVisible getDeathMessageVisibility();
 
-    public static enum EnumVisible
+    public enum EnumVisible
     {
         ALWAYS("always", 0),
         NEVER("never", 1),
@@ -52,7 +52,7 @@ public abstract class Team
             return (Team.EnumVisible)field_178828_g.get(p_178824_0_);
         }
 
-        private EnumVisible(String p_i45550_3_, int p_i45550_4_)
+        EnumVisible(String p_i45550_3_, int p_i45550_4_)
         {
             this.field_178830_e = p_i45550_3_;
             this.field_178827_f = p_i45550_4_;

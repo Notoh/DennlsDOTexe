@@ -214,7 +214,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     /**
      * When you place a block, it's set to 6, decremented once per tick, when it's 0, you can place another block.
      */
-    private int rightClickDelayTimer;
+    public int rightClickDelayTimer;
     private String serverName;
     private int serverPort;
 
@@ -566,7 +566,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             }
             catch (InterruptedException var3)
             {
-                ;
             }
 
             if (this.fullscreen)
@@ -665,7 +664,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     }
                     catch (InterruptedException var2)
                     {
-                        ;
                     }
                 }
             }
@@ -971,7 +969,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             }
             catch (Throwable var5)
             {
-                ;
             }
 
             this.mcSoundHandler.unloadSounds();
@@ -1181,7 +1178,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         }
         catch (Throwable var3)
         {
-            ;
         }
 
         try
@@ -1191,7 +1187,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         }
         catch (Throwable var2)
         {
-            ;
         }
 
         System.gc();
@@ -1871,27 +1866,22 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
                         if (k == 17 && Keyboard.isKeyDown(61))
                         {
-                            ;
                         }
 
                         if (k == 18 && Keyboard.isKeyDown(61))
                         {
-                            ;
                         }
 
                         if (k == 47 && Keyboard.isKeyDown(61))
                         {
-                            ;
                         }
 
                         if (k == 38 && Keyboard.isKeyDown(61))
                         {
-                            ;
                         }
 
                         if (k == 22 && Keyboard.isKeyDown(61))
                         {
-                            ;
                         }
 
                         if (k == 20 && Keyboard.isKeyDown(61))
@@ -2040,17 +2030,14 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
                 while (this.gameSettings.keyBindAttack.isPressed())
                 {
-                    ;
                 }
 
                 while (this.gameSettings.keyBindUseItem.isPressed())
                 {
-                    ;
                 }
 
                 while (this.gameSettings.keyBindPickBlock.isPressed())
                 {
-                    ;
                 }
             }
             else
@@ -2238,7 +2225,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             }
             catch (InterruptedException var9)
             {
-                ;
             }
         }
 

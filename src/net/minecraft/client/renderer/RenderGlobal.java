@@ -233,15 +233,9 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
                 this.entityOutlineShader.createBindFramebuffers(this.mc.displayWidth, this.mc.displayHeight);
                 this.entityOutlineFramebuffer = this.entityOutlineShader.getFramebufferRaw("final");
             }
-            catch (IOException ioexception)
+            catch (IOException | JsonSyntaxException ioexception)
             {
                 logger.warn((String)("Failed to load shader: " + resourcelocation), (Throwable)ioexception);
-                this.entityOutlineShader = null;
-                this.entityOutlineFramebuffer = null;
-            }
-            catch (JsonSyntaxException jsonsyntaxexception)
-            {
-                logger.warn((String)("Failed to load shader: " + resourcelocation), (Throwable)jsonsyntaxexception);
                 this.entityOutlineShader = null;
                 this.entityOutlineFramebuffer = null;
             }
@@ -1307,8 +1301,8 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
             int i = this.theWorld.getMoonPhase();
             int k = i % 4;
             int i1 = i / 4 % 2;
-            float f22 = (float)(k + 0) / 4.0F;
-            float f23 = (float)(i1 + 0) / 2.0F;
+            float f22 = (float)(k) / 4.0F;
+            float f23 = (float)(i1) / 2.0F;
             float f24 = (float)(k + 1) / 4.0F;
             float f14 = (float)(i1 + 1) / 2.0F;
             worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -1464,10 +1458,10 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
                 {
                     for (int j1 = -256; j1 < 256; j1 += 32)
                     {
-                        worldrenderer.pos((double)(i1 + 0), (double)f7, (double)(j1 + 32)).tex((double)((float)(i1 + 0) * 4.8828125E-4F + f8), (double)((float)(j1 + 32) * 4.8828125E-4F + f9)).color(f1, f2, f3, 0.8F).endVertex();
+                        worldrenderer.pos((double)(i1), (double)f7, (double)(j1 + 32)).tex((double)((float)(i1) * 4.8828125E-4F + f8), (double)((float)(j1 + 32) * 4.8828125E-4F + f9)).color(f1, f2, f3, 0.8F).endVertex();
                         worldrenderer.pos((double)(i1 + 32), (double)f7, (double)(j1 + 32)).tex((double)((float)(i1 + 32) * 4.8828125E-4F + f8), (double)((float)(j1 + 32) * 4.8828125E-4F + f9)).color(f1, f2, f3, 0.8F).endVertex();
-                        worldrenderer.pos((double)(i1 + 32), (double)f7, (double)(j1 + 0)).tex((double)((float)(i1 + 32) * 4.8828125E-4F + f8), (double)((float)(j1 + 0) * 4.8828125E-4F + f9)).color(f1, f2, f3, 0.8F).endVertex();
-                        worldrenderer.pos((double)(i1 + 0), (double)f7, (double)(j1 + 0)).tex((double)((float)(i1 + 0) * 4.8828125E-4F + f8), (double)((float)(j1 + 0) * 4.8828125E-4F + f9)).color(f1, f2, f3, 0.8F).endVertex();
+                        worldrenderer.pos((double)(i1 + 32), (double)f7, (double)(j1)).tex((double)((float)(i1 + 32) * 4.8828125E-4F + f8), (double)((float)(j1) * 4.8828125E-4F + f9)).color(f1, f2, f3, 0.8F).endVertex();
+                        worldrenderer.pos((double)(i1), (double)f7, (double)(j1)).tex((double)((float)(i1) * 4.8828125E-4F + f8), (double)((float)(j1) * 4.8828125E-4F + f9)).color(f1, f2, f3, 0.8F).endVertex();
                     }
                 }
 
@@ -2290,7 +2284,7 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
                 int j1 = Items.potionitem.getColorFromDamage(p_180439_4_);
                 float f = (float)(j1 >> 16 & 255) / 255.0F;
                 float f1 = (float)(j1 >> 8 & 255) / 255.0F;
-                float f2 = (float)(j1 >> 0 & 255) / 255.0F;
+                float f2 = (float)(j1 & 255) / 255.0F;
                 EnumParticleTypes enumparticletypes = EnumParticleTypes.SPELL;
 
                 if (Items.potionitem.isEffectInstant(p_180439_4_))

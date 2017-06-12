@@ -1,7 +1,7 @@
 package org.darkstorm.minecraft.gui.component;
 
 public interface Label extends TextComponent {
-	public enum TextAlignment {
+	enum TextAlignment {
 		CENTER,
 		LEFT,
 		RIGHT,
@@ -9,11 +9,11 @@ public interface Label extends TextComponent {
 		BOTTOM
 	}
 
-	public TextAlignment getHorizontalAlignment();
+	TextAlignment getHorizontalAlignment();
 
-	public TextAlignment getVerticalAlignment();
+	TextAlignment getVerticalAlignment();
 
-	public void setHorizontalAlignment(TextAlignment alignment);
+	void setHorizontalAlignment(TextAlignment alignment);
 
-	public void setVerticalAlignment(TextAlignment alignment);
+	void setVerticalAlignment(TextAlignment alignment);
 }

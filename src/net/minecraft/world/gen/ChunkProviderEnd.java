@@ -61,13 +61,13 @@ public class ChunkProviderEnd implements IChunkProvider
                 for (int k1 = 0; k1 < 32; ++k1)
                 {
                     double d0 = 0.25D;
-                    double d1 = this.densities[((i1 + 0) * l + j1 + 0) * k + k1 + 0];
-                    double d2 = this.densities[((i1 + 0) * l + j1 + 1) * k + k1 + 0];
-                    double d3 = this.densities[((i1 + 1) * l + j1 + 0) * k + k1 + 0];
-                    double d4 = this.densities[((i1 + 1) * l + j1 + 1) * k + k1 + 0];
-                    double d5 = (this.densities[((i1 + 0) * l + j1 + 0) * k + k1 + 1] - d1) * d0;
-                    double d6 = (this.densities[((i1 + 0) * l + j1 + 1) * k + k1 + 1] - d2) * d0;
-                    double d7 = (this.densities[((i1 + 1) * l + j1 + 0) * k + k1 + 1] - d3) * d0;
+                    double d1 = this.densities[((i1) * l + j1) * k + k1];
+                    double d2 = this.densities[((i1) * l + j1 + 1) * k + k1];
+                    double d3 = this.densities[((i1 + 1) * l + j1) * k + k1];
+                    double d4 = this.densities[((i1 + 1) * l + j1 + 1) * k + k1];
+                    double d5 = (this.densities[((i1) * l + j1) * k + k1 + 1] - d1) * d0;
+                    double d6 = (this.densities[((i1) * l + j1 + 1) * k + k1 + 1] - d2) * d0;
+                    double d7 = (this.densities[((i1 + 1) * l + j1) * k + k1 + 1] - d3) * d0;
                     double d8 = (this.densities[((i1 + 1) * l + j1 + 1) * k + k1 + 1] - d4) * d0;
 
                     for (int l1 = 0; l1 < 4; ++l1)

@@ -449,7 +449,7 @@ public class BlockFlowerPot extends BlockContainer
         return EnumWorldBlockLayer.CUTOUT;
     }
 
-    public static enum EnumFlowerType implements IStringSerializable
+    public enum EnumFlowerType implements IStringSerializable
     {
         EMPTY("empty"),
         POPPY("rose"),
@@ -476,7 +476,7 @@ public class BlockFlowerPot extends BlockContainer
 
         private final String name;
 
-        private EnumFlowerType(String name)
+        EnumFlowerType(String name)
         {
             this.name = name;
         }

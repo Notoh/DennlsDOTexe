@@ -75,11 +75,7 @@ public class DefaultResourcePack implements IResourcePack
             InputStream inputstream = new FileInputStream((File)this.mapAssets.get("pack.mcmeta"));
             return AbstractResourcePack.readMetadata(p_135058_1_, inputstream, p_135058_2_);
         }
-        catch (RuntimeException var4)
-        {
-            return (T)null;
-        }
-        catch (FileNotFoundException var5)
+        catch (RuntimeException | FileNotFoundException var4)
         {
             return (T)null;
         }

@@ -327,7 +327,6 @@ public class ResourcePackRepository
             }
             catch (IOException var2)
             {
-                ;
             }
 
             if (this.texturePackIcon == null)

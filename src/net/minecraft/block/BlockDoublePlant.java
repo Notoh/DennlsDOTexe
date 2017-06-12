@@ -320,7 +320,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable
         return Block.EnumOffsetType.XZ;
     }
 
-    public static enum EnumBlockHalf implements IStringSerializable
+    public enum EnumBlockHalf implements IStringSerializable
     {
         UPPER,
         LOWER;
@@ -336,7 +336,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable
         }
     }
 
-    public static enum EnumPlantType implements IStringSerializable
+    public enum EnumPlantType implements IStringSerializable
     {
         SUNFLOWER(0, "sunflower"),
         SYRINGA(1, "syringa"),
@@ -350,12 +350,12 @@ public class BlockDoublePlant extends BlockBush implements IGrowable
         private final String name;
         private final String unlocalizedName;
 
-        private EnumPlantType(int meta, String name)
+        EnumPlantType(int meta, String name)
         {
             this(meta, name, name);
         }
 
-        private EnumPlantType(int meta, String name, String unlocalizedName)
+        EnumPlantType(int meta, String name, String unlocalizedName)
         {
             this.meta = meta;
             this.name = name;

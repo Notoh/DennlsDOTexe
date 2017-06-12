@@ -81,7 +81,7 @@ public class HoverEvent
         return i;
     }
 
-    public static enum Action
+    public enum Action
     {
         SHOW_TEXT("show_text", true),
         SHOW_ACHIEVEMENT("show_achievement", true),
@@ -92,7 +92,7 @@ public class HoverEvent
         private final boolean allowedInChat;
         private final String canonicalName;
 
-        private Action(String canonicalNameIn, boolean allowedInChatIn)
+        Action(String canonicalNameIn, boolean allowedInChatIn)
         {
             this.canonicalName = canonicalNameIn;
             this.allowedInChat = allowedInChatIn;

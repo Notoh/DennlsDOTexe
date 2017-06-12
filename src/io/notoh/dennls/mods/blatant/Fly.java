@@ -14,6 +14,7 @@ public class Fly extends Module {
 
     @Override
     public void onUpdate() {
+        if(!this.toggle) return;
         getMC().thePlayer.capabilities.isFlying = toggle;
     }
 

@@ -19,24 +19,20 @@ public class Util
             p_181617_0_.run();
             return p_181617_0_.get();
         }
-        catch (ExecutionException executionexception)
+        catch (ExecutionException | InterruptedException executionexception)
         {
             p_181617_1_.fatal((String)"Error executing task", (Throwable)executionexception);
-        }
-        catch (InterruptedException interruptedexception)
-        {
-            p_181617_1_.fatal((String)"Error executing task", (Throwable)interruptedexception);
         }
 
         return (V)null;
     }
 
-    public static enum EnumOS
+    public enum EnumOS
     {
         LINUX,
         SOLARIS,
         WINDOWS,
         OSX,
-        UNKNOWN;
+        UNKNOWN
     }
 }

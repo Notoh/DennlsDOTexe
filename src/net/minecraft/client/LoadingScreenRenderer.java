@@ -207,7 +207,6 @@ public class LoadingScreenRenderer implements IProgressUpdate
                 }
                 catch (Exception var15)
                 {
-                    ;
                 }
             }
         }

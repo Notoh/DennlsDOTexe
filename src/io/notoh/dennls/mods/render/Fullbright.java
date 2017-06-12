@@ -10,7 +10,7 @@ import org.lwjgl.input.Keyboard;
 public class Fullbright extends Module {
 
     private float gamma;
-    private int keycode = Keyboard.KEY_B;
+    private int keycode = Keyboard.KEY_NONE;
     private boolean toggle;
 
     @Override

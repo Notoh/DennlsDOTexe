@@ -29,10 +29,19 @@ public class KillAura extends Module {
                 if(entity instanceof EntityPlayerSP) continue;
                 if(getMC().thePlayer.getDistanceToEntity(entity) <= Dennls.getActive().getReach()) {
                     if(entity.isEntityAlive()) {
-                        if(Dennls.getActive() != Mode.BLATANT) Dennls.aimbot.faceEntity(entity);
-                        getMC().playerController.attackEntity(getMC().thePlayer,entity);
-                        getMC().thePlayer.swingItem();
+                        if(Dennls.getActive() != Mode.BLATANT) {
+                            Dennls.aimbot.faceEntity(entity);
+                        }
+                        if(getMC().thePlayer.motionY > 0.03) {
+                                getMC().thePlayer.motionY = -0.22;
+                        } else {
+                            if(getMC().thePlayer.motionY > -0.19 && getMC().thePlayer.onGround) {
+                                getMC().thePlayer.jump();
+                            }
+                        }
                     }
+                    getMC().playerController.attackEntity(getMC().thePlayer,entity);
+                    getMC().thePlayer.swingItem();
                 }
             }
         }

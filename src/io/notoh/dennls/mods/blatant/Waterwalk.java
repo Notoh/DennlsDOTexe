@@ -10,7 +10,7 @@ import org.lwjgl.input.Keyboard;
 public class Waterwalk extends Module {
 
     private boolean toggle;
-    private int keyCode = Keyboard.KEY_SEMICOLON;
+    private int keyCode = Keyboard.KEY_LBRACKET;
 
 
     @Override

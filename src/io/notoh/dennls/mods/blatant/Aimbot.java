@@ -55,7 +55,7 @@ public class Aimbot extends Module {
         }
     }
 
-    private float[] getRotationsNeeded(Entity entity) {
+    public float[] getRotationsNeeded(Entity entity) {
         if(entity == null) return null;
         final double diffx = entity.posX - getMC().thePlayer.posX;
         final double diffz = entity.posZ - getMC().thePlayer.posZ;

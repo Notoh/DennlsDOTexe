@@ -5,48 +5,33 @@ import io.notoh.dennls.util.ModCategory;
 import org.lwjgl.input.Keyboard;
 
 /**
- * Created by alexa on 5/20/2017.
+ * Created by alexa on 5/23/2017.
  */
-public class Fly extends Module {
+public class FastPlace extends Module {
 
-    private boolean toggle = false;
-    private int keycode = Keyboard.KEY_F;
-
-    @Override
-    public void onUpdate() {
-        if(!this.toggle) return;
-        getMC().thePlayer.capabilities.isFlying = toggle;
-    }
-
+    private int keycode = Keyboard.KEY_LBRACKET;
+    private boolean toggle;
 
     @Override
     public void setKeyCode(int keyCode) {
         this.keycode = keyCode;
     }
+
     @Override
     public int getKeyCode() {
         return keycode;
     }
 
-
     @Override
     public String getName() {
-        return "Flight";
+        return "FastPlace";
     }
 
     @Override
-    public void onEnable() {
-        getMC().thePlayer.capabilities.isFlying = toggle;
-    }
-
-    @Override
-    public ModCategory getCategory() {
-        return ModCategory.MOVEMENT;
-    }
-
-    @Override
-    public void onDisable() {
-        getMC().thePlayer.capabilities.isFlying = false;
+    public void onUpdate() {
+        if(this.toggle) {
+            getMC().rightClickDelayTimer = 0;
+        }
     }
 
     @Override
@@ -62,5 +47,10 @@ public class Fly extends Module {
     @Override
     public boolean getToggle() {
         return toggle;
+    }
+
+    @Override
+    public ModCategory getCategory() {
+        return ModCategory.WORLD;
     }
 }

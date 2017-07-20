@@ -1,8 +1,8 @@
 # DennlsDOTexe
 the meme
 
-side note: I don't encourage hacks, this client was made solely for the meme.
-
+side note: I don't encourage hacks, this client was made solely for the meme. There is no build of this for a reason, but if you are so desperate for hacks that you build one yourself, read LICENSE and realise that you are breaking international copyright law if you use this on multiplayer.
+ 
 Features
 click gui
 lots of hacks

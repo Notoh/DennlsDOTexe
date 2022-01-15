@@ -1,12 +1,14 @@
 # DennlsDOTexe
 the meme
 
-side note: I don't encourage hacks, this client was made solely for the meme. There is no build of this for a reason, but if you are so desperate for hacks that you build one yourself that is depressing.
-Features
+# NOTE FOR PEOPLE LOOKING AT THIS: 
+I don't encourage cheating, this client was made solely for the meme (basically a guy named Dennls got caught cheating in a game I played and it was really really funny watching him deny it so someone dared me to make this). There is no build of this for a reason, but if you are so desperate for hacks that you build one yourself that is (a) depressing and (b) why would you do that when you can use actually good hacks?
+
+## Features:
+
 click gui
-lots of hacks
-some of them will bypass
-no guarantees
+
+lots of hacks (some will bypass no guarantees)
 
 This client works in 3 modes, Ghost, Safe and Blatant
 
